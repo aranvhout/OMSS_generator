@@ -5,8 +5,8 @@ from matrix import create_matrix
 # Define the rules for the matrix
 rules = [
     (Ruletype.RANDOM, AttributeType.SHAPE),
-    (Ruletype.CONSTANT, AttributeType.SIZE),
-    (Ruletype.RANDOM, AttributeType.COLOR),
+    (Ruletype.RANDOM, AttributeType.SIZE),
+    (Ruletype.CONSTANT, AttributeType.COLOR),
     (Ruletype.CONSTANT, AttributeType.ANGLE)
 ]
 
