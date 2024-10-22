@@ -32,10 +32,10 @@ def apply_rule(rule, attribute, entity):
 
     # Progression
     if rule == Ruletype.PROGRESSION:
-        if attribute == AttributeType.SHAPE:
-            #apply constraints 
+        if attribute == AttributeType.SHAPE:            
             return get_next_shape(entity.shape)
         elif attribute == AttributeType.SIZE:
+            
             pass  # Placeholder for size progression rule logic
         elif attribute == AttributeType.COLOR:
             pass  # Placeholder for color progression rule logic

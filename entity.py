@@ -32,6 +32,9 @@ class Colors(Enum):
     RED = auto()
     BLUE = auto()
     GREEN = auto()
+    YELLOW = auto ()
+    PURPLE = auto ()
+    
 
 class Angles:
     angles = [0, 20, 40, 60, 80, 100, 120, 140, 160]

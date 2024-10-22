@@ -6,7 +6,7 @@ from matrix import create_matrix
 rules = [
     (Ruletype.RANDOM, AttributeType.SHAPE),
     (Ruletype.RANDOM, AttributeType.SIZE),
-    (Ruletype.CONSTANT, AttributeType.COLOR),
+    (Ruletype.RANDOM, AttributeType.COLOR),
     (Ruletype.CONSTANT, AttributeType.ANGLE)
 ]
 
