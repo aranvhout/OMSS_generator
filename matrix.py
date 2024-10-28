@@ -2,7 +2,7 @@ from row_generation import create_row
 from rules import Ruletype, AttributeType
 from seed import seed_generator, update_seedlist
 from collections import Counter
-import sys  # Add this import at the top of your file
+import sys  
 
 n_iteration=0 #create global iteration variable
 
@@ -78,7 +78,7 @@ def constrain(matrix, attribute):
     numerical_matrix[2].pop()#remove the answer entity (this should not be included in the checks)
    
     # 2 Perform the checks
-    #Constant rule  
+    #check constant rule  
     constant = True   
     for row in numerical_matrix:
         if len(set(row)) > 1: 
@@ -124,16 +124,14 @@ def constrain(matrix, attribute):
     if len(common_elements) <2:
         distribute_two = False
     
+    #check whether all checks are negative
     if constant or upward_progression or downward_progression or distribute_three or distribute_two:
         print(attribute, constant , upward_progression , downward_progression , distribute_three , distribute_two)
         print(numerical_matrix)
         for row_index, row in enumerate(matrix):
             print(f"\nRow {row_index + 1}:")
             for i, entity in enumerate(row):
-                print(f"  Entity {i + 1}: Shape={entity.shape}, Size={entity.size}, Color={entity.color}, Angle={entity.angle}, Index={entity.index}")
-        
-        
-        
+                print(f"  Entity {i + 1}: Shape={entity.shape}, Size={entity.size}, Color={entity.color}, Angle={entity.angle}, Index={entity.index}")    
         return False
         
     return True
