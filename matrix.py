@@ -1,40 +1,70 @@
-from enum import Enum, auto
-import random
-import numpy as np
 from row_generation import create_row
 from rules import Ruletype, AttributeType
+from seed import seed_generator, update_seedlist
+from collections import Counter
+import sys  # Add this import at the top of your file
 
+n_iteration=0 #create global iteration variable
 
-def create_matrix(num_rows, rules):
+def create_matrix(num_rows, rules, seed = None): 
+    global n_iteration
     matrix = []
+    seed_list=seed_generator(seed)
     
-    # Generate rows based on rules
+    # Generate rows based on rules    
     for _ in range(num_rows):
-        row = create_row (rules)  # Generate a row of entities
+        row = create_row (rules, seed_list)  # Generate a row of entities
         matrix.append(row)       # Add the row to the matrix
-    
+        seed_list = update_seedlist(seed_list)    
+        
     # apply constraints
-    matrix = constrain_matrix(matrix, rules)  
-    return matrix
+    if constrain_matrix(matrix, rules, seed):
+        print('matrix created')      
+        return matrix
+    
+    # If constraints are not met, retry with adjusted seed  
+    n_iteration += 117
+    if n_iteration < 117 * 11:
+        # Pass modified seed if initial seed is not None
+        new_seed = seed + n_iteration if seed is not None else None
+        return create_matrix(num_rows, rules, new_seed)
+    
+    # If max retries reached, fail gracefully
+    print('Matrix could not be created after multiple attempts.')
+    sys.exit()
 
-def constrain_matrix(matrix, rules):    
+   
+def constrain_matrix(matrix, rules, seed):
     for rule, attribute in rules:
-        if rule is Ruletype.RANDOM and attribute is AttributeType.SHAPE:             
-            constrain(matrix,attribute, rules)#I'm passing rules in order to be able to remake the matrix
+        if rule is Ruletype.RANDOM and attribute is AttributeType.SHAPE:
+            if not constrain(matrix, attribute):
+                print('shape constraint failed, retrying...')
+                return False  # Exit if constraint fails
+            print('shape checked')
+
+        if rule is Ruletype.RANDOM and attribute is AttributeType.SIZE:
+            if not constrain(matrix, attribute):
+                print('size constraint failed, retrying...')
+                return False  # Exit if constraint fails
+            print('size checked')
+
+        if rule is Ruletype.RANDOM and attribute is AttributeType.COLOR:
+            if not constrain(matrix, attribute):
+                print('color constraint failed, retrying...')
+                return False  # Exit if constraint fails
+            print('color checked')
+
+        if rule is Ruletype.RANDOM and attribute is AttributeType.ANGLE:
+            if not constrain(matrix, attribute):
+                print('angle constraint failed, retrying...')
+                return False  # Exit if constraint fails
+            print('angle checked')
+    
+  
+    return True  # All constraints passed
             
-        if rule is Ruletype.RANDOM and attribute is AttributeType.SIZE:             
-            constrain(matrix,attribute, rules)
-            
-        if rule is Ruletype.RANDOM and attribute is AttributeType.COLOR: 
-            constrain(matrix,attribute, rules)         
-            
-        if rule is Ruletype.RANDOM and attribute is AttributeType.ANGLE: 
-            constrain(matrix,attribute, rules) 
-            
-                      
-    return matrix
-            
-def constrain(matrix, attribute, rules): 
+def constrain(matrix, attribute): 
+       
     # 1 Create matrix with numbers associated with each attribute that is being checked
     numerical_matrix=[]  
     for row in matrix:
@@ -76,32 +106,38 @@ def constrain(matrix, attribute, rules):
             break  # Exit the outer loop if a non-progressing row is found 
       
     #check distribute three
-    distribute_three =  True
-    reference_row=numerical_matrix[0]    
-    for row in numerical_matrix[1:]: 
-        if not all(value in reference_row for value in row):  # Check if all values in `row` exist in `reference_row`
+    distribute_three = True
+    reference_row = numerical_matrix[0]
+
+    for row in numerical_matrix[1:]:
+        # Check if all values in row exist in reference_row and are unique in the row
+        if not all(value in reference_row for value in row) or len(row) != len(set(row)):
             distribute_three = False
-            break  # Exit the loop if a value is missing       
+            break
+  
     
-    #check distribute two (not sure whether to include this yet)
+    #check distribute two (not sure whether to include this yet) also i think this does need to check the whole matrix instead of the popped matrix
     distribute_two = True   
     common_elements = set(numerical_matrix[0])  # Initialize with the first row
     for row in numerical_matrix[1:]:
         common_elements.intersection_update(row)  # neved heard of this method but it is exactly what we need
     if len(common_elements) <2:
         distribute_two = False
-
+    
     if constant or upward_progression or downward_progression or distribute_three or distribute_two:
-        
-        print('recreating matrix', constant, upward_progression, downward_progression, distribute_three, distribute_two)
+        print(attribute, constant , upward_progression , downward_progression , distribute_three , distribute_two)
+        print(numerical_matrix)
         for row_index, row in enumerate(matrix):
             print(f"\nRow {row_index + 1}:")
             for i, entity in enumerate(row):
                 print(f"  Entity {i + 1}: Shape={entity.shape}, Size={entity.size}, Color={entity.color}, Angle={entity.angle}, Index={entity.index}")
-        return create_matrix(len(matrix), rules)# for now we just rerun it, I should include a max to ensure we dont get stuck in a loop
+        
+        
+        
+        return False
+        
+    return True
     
-    else:        
-        return matrix
         
         
     

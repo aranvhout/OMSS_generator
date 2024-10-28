@@ -62,7 +62,7 @@ def apply_rule(rule, attribute, entity):
         elif attribute == AttributeType.COLOR:
             return random.choice(list(Colors))
         elif attribute == AttributeType.ANGLE:
-            return Angles.random_angle()
+            return random.choice(list(Angles))
 
     # Return the unchanged attribute if no rule applies
     if attribute == AttributeType.SHAPE:

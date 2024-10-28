@@ -1,6 +1,7 @@
 from enum import Enum, auto
 import random
 import numpy as np
+from seed import update_seedlist, get_random_attribute
 
 class AttributeType(Enum):#probably move this somewhere else, this doesnt really refer to the entity but rather to what needs to be changed
     SHAPE = auto()        #its more of a setting so probably should be moved to main or something
@@ -36,12 +37,16 @@ class Colors(Enum):
     PURPLE = auto ()
     
 
-class Angles:
-    angles = [0, 20, 40, 60, 80, 100, 120, 140, 160]
-    
-    @classmethod
-    def random_angle(cls):
-       return random.choice(cls.angles)
+class Angles(Enum):
+    ZERO = auto()
+    TWENTY = auto()
+    FORTY = auto()
+    SIXTY = auto()
+    EIGHTY = auto()
+    HUNDRED = auto()
+    ONE_TWENTY = auto()
+    ONE_FORTY = auto()
+    ONE_SIXTY = auto()
 
 class Entity:
     def __init__(self, shape, size, color, angle,index=None):
@@ -51,12 +56,14 @@ class Entity:
         self.angle = angle
         self.index = index 
 
-def create_random_entity():
-    random_shape = random.choice(list(Shapes))
-    random_size = random.choice(list(Sizes))
-    random_color = random.choice(list(Colors))
-    random_angle = Angles.random_angle() 
+def create_random_entity(seed_list):
+    random_shape = get_random_attribute(seed_list, list(Shapes))
+    random_size = get_random_attribute(seed_list, list(Sizes))
+    random_color = get_random_attribute(seed_list, list(Colors))
+    random_angle = get_random_attribute(seed_list, list(Angles))
 
     return Entity(shape=random_shape, size=random_size, color=random_color, angle=random_angle)
+
+
    
         

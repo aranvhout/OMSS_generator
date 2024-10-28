@@ -7,15 +7,17 @@ rules = [
     (Ruletype.RANDOM, AttributeType.SHAPE),
     (Ruletype.RANDOM, AttributeType.SIZE),
     (Ruletype.RANDOM, AttributeType.COLOR),
-    (Ruletype.CONSTANT, AttributeType.ANGLE)
+    (Ruletype.RANDOM, AttributeType.ANGLE)
 ]
 
 
 
 # Generate matrix
 
-matrix = create_matrix(3, rules)
-for row_index, row in enumerate(matrix):
-    print(f"\nRow {row_index + 1}:")
-    for i, entity in enumerate(row):
-        print(f"  Entity {i + 1}: Shape={entity.shape}, Size={entity.size}, Color={entity.color}, Angle={entity.angle}, Index={entity.index}")
+matrix = create_matrix(3, rules, seed = 26)
+a =  True
+if a is True:
+    for row_index, row in enumerate(matrix):
+        print(f"\nRow {row_index + 1}:")
+        for i, entity in enumerate(row):
+            print(f"  Entity {i + 1}: Shape={entity.shape}, Size={entity.size}, Color={entity.color}, Angle={entity.angle}, Index={entity.index}")

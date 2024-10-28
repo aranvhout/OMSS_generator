@@ -4,9 +4,10 @@ from entity import create_random_entity, Entity
 from rules import apply_rule, Ruletype, AttributeType
 from constraints import apply_constraints
 
-def create_row(rules):
+
+def create_row(rules, seed_list):
     # Generate the first item randomly
-    first_entity = create_random_entity()
+    first_entity = create_random_entity(seed_list)
 
     # Apply constraints to the first entity
     first_entity = apply_constraints(first_entity, rules)
