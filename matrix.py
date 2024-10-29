@@ -1,7 +1,6 @@
 from row_generation import create_row
 from rules import Ruletype, AttributeType
 from seed import seed_generator, update_seedlist
-from collections import Counter
 import sys  
 
 n_iteration=0 #create global iteration variable
@@ -15,18 +14,19 @@ def create_matrix(num_rows, rules, seed = None):
     for _ in range(num_rows):
         row = create_row (rules, seed_list)  # Generate a row of entities
         matrix.append(row)       # Add the row to the matrix
-        seed_list = update_seedlist(seed_list)    
+        seed_list = update_seedlist(seed_list) 
         
-    # apply constraints
-    if constrain_matrix(matrix, rules, seed):
+    # check whether the random aspects in the matrix follow any accidental patterns
+    if validate_matrix(matrix, rules, seed): #if there a no non-intended patterns occuring return true
         print('matrix created')      
         return matrix
     
-    # If constraints are not met, retry with adjusted seed  
-    n_iteration += 117
+    # If there a non-intended paterns, try again (and if seed is not None, adjust the seed)
+    n_iteration += 117 # weird value, I want to avoid for example seed 3 and 4 being the same on the user end
     if n_iteration < 117 * 11:
         # Pass modified seed if initial seed is not None
         new_seed = seed + n_iteration if seed is not None else None
+        print(new_seed)
         return create_matrix(num_rows, rules, new_seed)
     
     # If max retries reached, fail gracefully
@@ -34,36 +34,36 @@ def create_matrix(num_rows, rules, seed = None):
     sys.exit()
 
    
-def constrain_matrix(matrix, rules, seed):
+def validate_matrix(matrix, rules, seed): #wrapper function to check whether the random-rule attribute combination yields accidental patterns
     for rule, attribute in rules:
-        if rule is Ruletype.RANDOM and attribute is AttributeType.SHAPE:
-            if not constrain(matrix, attribute):
-                print('shape constraint failed, retrying...')
-                return False  # Exit if constraint fails
+        if rule is Ruletype.RANDOM and attribute is AttributeType.SHAPE: 
+            if not check_rules(matrix, attribute):
+                print('shape check_rules failed, retrying...')
+                return False  # Exit if check_rules fails
             print('shape checked')
 
         if rule is Ruletype.RANDOM and attribute is AttributeType.SIZE:
-            if not constrain(matrix, attribute):
-                print('size constraint failed, retrying...')
-                return False  # Exit if constraint fails
+            if not check_rules(matrix, attribute):
+                print('size check_rules failed, retrying...')
+                return False  # Exit if check_rules fails
             print('size checked')
 
         if rule is Ruletype.RANDOM and attribute is AttributeType.COLOR:
-            if not constrain(matrix, attribute):
-                print('color constraint failed, retrying...')
-                return False  # Exit if constraint fails
+            if not check_rules(matrix, attribute):
+                print('color check_rules failed, retrying...')
+                return False  # Exit if check_rules fails
             print('color checked')
 
         if rule is Ruletype.RANDOM and attribute is AttributeType.ANGLE:
-            if not constrain(matrix, attribute):
-                print('angle constraint failed, retrying...')
-                return False  # Exit if constraint fails
+            if not check_rules(matrix, attribute):
+                print('angle check_rules failed, retrying...')
+                return False  # Exit if check_rules fails
             print('angle checked')
     
   
-    return True  # All constraints passed
+    return True  # All check_ruless passed
             
-def constrain(matrix, attribute): 
+def check_rules(matrix, attribute): 
        
     # 1 Create matrix with numbers associated with each attribute that is being checked
     numerical_matrix=[]  
@@ -78,6 +78,10 @@ def constrain(matrix, attribute):
     numerical_matrix[2].pop()#remove the answer entity (this should not be included in the checks)
    
     # 2 Perform the checks
+    #list of additional rules that be worth checking
+    #if all values are unique in each row
+    #binding rule (gonna be a challenge   
+    
     #check constant rule  
     constant = True   
     for row in numerical_matrix:

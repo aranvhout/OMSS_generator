@@ -1,12 +1,16 @@
-numerical_matrix = [[3, 2, 1], [3, 2, 1], [4, 1]]
+import random
+def seed_generator (seed_value):    
+    random.seed(seed_value)
+    vector = [0,1,2,3,4,5,6,7,8,9]
+    seed_list=random.choices(vector, k=10)#based on the seed,  250 random seeds are drawn from the vector and saved in the seed_list
+    random.seed(None)
+    return seed_list
 
-distribute_three = True
-reference_row = numerical_matrix[0]
+def update_seedlist (seed_list):
+    updated_seed_list=seed_list[1:] + [seed_list[0]] #reshuffle the list, putting the first element in last place      
+    return updated_seed_list
 
-for row in numerical_matrix[1:]:
-    # Check if all values in row exist in reference_row and are unique in the row
-    if not all(value in reference_row for value in row) or len(row) != len(set(row)):
-        distribute_three = False
-        break
-
-print(distribute_three)
+a=seed_generator(7)
+b=update_seedlist(a)
+print (a)
+print(b)
