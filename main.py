@@ -4,7 +4,7 @@ from matrix import create_matrix
 
 # Define the rules for the matrix
 rules = [
-    (Ruletype.CONSTANT, AttributeType.SHAPE),
+    (Ruletype.RANDOM, AttributeType.SHAPE),
     (Ruletype.RANDOM, AttributeType.SIZE),
     (Ruletype.RANDOM, AttributeType.COLOR),
     (Ruletype.RANDOM, AttributeType.ANGLE)
@@ -14,8 +14,8 @@ rules = [
 
 # Generate matrix
 
-matrix = create_matrix(3, rules, 18)
-a =  False
+matrix = create_matrix(3, rules, None)
+a =  True
 if a is True:
     for row_index, row in enumerate(matrix):
         print(f"\nRow {row_index + 1}:")

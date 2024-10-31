@@ -7,7 +7,8 @@ from constraints import apply_constraints
 
 def create_row(rules, seed_list):
     # Generate the first item randomly
-    first_entity = create_random_entity(seed_list)
+    first_entity, seed_list = create_random_entity(seed_list)
+    
 
     # Apply constraints to the first entity
     first_entity = apply_constraints(first_entity, rules)

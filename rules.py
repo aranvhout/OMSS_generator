@@ -1,5 +1,3 @@
-# rules.py
-
 from enum import Enum, auto
 from entity import Shapes, Sizes, Colors, Angles, AttributeType, Entity
 import random

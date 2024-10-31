@@ -9,7 +9,7 @@ def create_matrix(num_rows, rules, seed = None):
     global n_iteration
     matrix = []
     seed_list=seed_generator(seed)
-    
+        
     # Generate rows based on rules    
     for _ in range(num_rows):
         row = create_row (rules, seed_list)  # Generate a row of entities
@@ -26,7 +26,6 @@ def create_matrix(num_rows, rules, seed = None):
     if n_iteration < 117 * 11:
         # Pass modified seed if initial seed is not None
         new_seed = seed + n_iteration if seed is not None else None
-        print(new_seed)
         return create_matrix(num_rows, rules, new_seed)
     
     # If max retries reached, fail gracefully
@@ -77,11 +76,7 @@ def check_rules(matrix, attribute):
         numerical_matrix.append(numerical_row)    
     numerical_matrix[2].pop()#remove the answer entity (this should not be included in the checks)
    
-    # 2 Perform the checks
-    #list of additional rules that be worth checking
-    #if all values are unique in each row
-    #binding rule (gonna be a challenge   
-    
+        
     #check constant rule  
     constant = True   
     for row in numerical_matrix:
