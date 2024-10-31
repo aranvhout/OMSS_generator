@@ -129,9 +129,10 @@ def adjust_starting_entity(entity, attribute, max_value, step_size, direction):
     for enum_member in globals()[attribute.name.capitalize() + "s"]:
      if enum_member.value == current_value:
          #print(enum_member, current_value, step_size, potential_value)
-         setattr(entity, attribute.name.lower(), enum_member)
-      
+         setattr(entity, attribute.name.lower(), enum_member)     
          break
+    else:
+       raise ValueError(f"No matching enum value found for {current_value}.")
      
 def progression_rule(matrix, attribute, seed_list):
     """Applies a progression rule across each row for a given attribute."""
@@ -158,6 +159,8 @@ def progression_rule(matrix, attribute, seed_list):
                 if enum_member.value == new_value:
                     setattr(entity, attribute.name.lower(), enum_member)
                     break
+            else:                    
+                raise ValueError(f"No matching enum value found for {current_value}.")
 
 
        
