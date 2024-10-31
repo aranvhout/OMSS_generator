@@ -4,8 +4,9 @@ from seed import update_seedlist, get_random_attribute
 import random 
 
 vector = [0,1,2,3,4,5,6,7,8,9]
+random.seed(None)
 seed_list=random.choices(vector, k=15)
-print(seed_list)
+#print(seed_list)
 #seed_list=[9,5,4,3,10]
 
 #seed_list=[9,8,10]
@@ -99,15 +100,14 @@ def determine_progression_params(attribute, seed_list):
     # based on seed chose step_size and direction 
        
     step_size, seed_list = get_random_attribute(seed_list, possible_step_sizes)
-    direction, seed_list = get_random_attribute(seed_list, [-1, 1])
-   
+    direction, seed_list = get_random_attribute(seed_list, [-1,1])
+    
     return max_value, step_size, direction
 
 def adjust_starting_entity(entity, attribute, max_value, step_size, direction):
     """Adjust the starting entity's attribute value to ensure a valid progression is possible."""
     current_value = getattr(entity, attribute.name.lower()).value
-    size= getattr(entity, attribute.name.lower())
-    print(direction)
+    
     # Calculate potential ending value after progression
     potential_value = current_value + (step_size * 2 * direction)
     
@@ -116,15 +116,14 @@ def adjust_starting_entity(entity, attribute, max_value, step_size, direction):
         if potential_value > max_value:  # If it exceeds max value
             # Reduce current value just enough
             current_value = max_value - (step_size * 2)
-            print(current_value)
-            print('value reduced')
+            
     
     # Adjust for downward direction
     elif direction == -1:  # Downward progression
         if potential_value < 1:  # If it goes below 0
             # Increase current value just enough
             current_value = (step_size * 2) + 1  # Set to the lowest valid value *fun fact python indexing screwed me over so took me hours to find this 
-            print (current_value)
+            
     
     # Set the adjusted current value back to the entity
     for enum_member in globals()[attribute.name.capitalize() + "s"]:
@@ -142,14 +141,18 @@ def progression_rule(matrix, attribute, seed_list):
     
     for row in matrix:
         # Adjust the starting entity's attribute to ensure valid progression
+        current_value = getattr(row[0], attribute.name.lower()).value
+        
+        
         adjust_starting_entity(row[0], attribute, max_value, step_size, direction)
 
         # Get the starting value and apply progression across the row
         current_value = getattr(row[0], attribute.name.lower()).value
-        
+       
         for i, entity in enumerate(row):
             # Calculate the new value using the progression formula
-            new_value = (current_value + i * step_size * direction) % max_value
+            new_value = (current_value + i * step_size * direction) 
+           
             # Set the new value to the entity, using the corresponding enum
             for enum_member in globals()[attribute.name.capitalize() + "s"]:
                 if enum_member.value == new_value:
@@ -159,7 +162,6 @@ def progression_rule(matrix, attribute, seed_list):
 
        
         
-       
 
             
 new_matrix=apply_rules(matrix, rules, seed_list)
