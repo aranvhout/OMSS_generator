@@ -16,3 +16,4 @@ def get_random_attribute(seed_list, choices):
     attribute = random.choice(choices)
     seed_list=update_seedlist(seed_list)
     return attribute, seed_list
+

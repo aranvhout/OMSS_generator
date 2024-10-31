@@ -29,6 +29,9 @@ def create_starting_matrix(n_rows=3, n_columns=3, seed_list=None, z=None):
 matrix=create_starting_matrix(3,3,seed_list)
 
 
+
+
+
 a =  True
 if a is True:
     for row_index, row in enumerate(matrix):

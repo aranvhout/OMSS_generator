@@ -9,6 +9,12 @@ def create_matrix(num_rows, rules, seed = None):
     global n_iteration
     matrix = []
     seed_list=seed_generator(seed)
+    
+    
+    #new_plan
+    #1 create random matrix (done!)
+    #2 apply rules to this matrix
+    #3 validate etc (done!)
         
     # Generate rows based on rules    
     for _ in range(num_rows):
