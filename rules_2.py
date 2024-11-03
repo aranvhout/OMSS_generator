@@ -59,7 +59,7 @@ class Ruletype(Enum):
 rules = [
     (Ruletype.PROGRESSION, AttributeType.SHAPE),
     (Ruletype.PROGRESSION, AttributeType.SIZE),
-    (Ruletype.CONSTANT, AttributeType.COLOR),
+    (Ruletype.PROGRESSION, AttributeType.COLOR),
     (Ruletype.PROGRESSION, AttributeType.ANGLE)
 ]
 
@@ -71,6 +71,8 @@ def apply_rules(matrix, rules, seed_list = None ):
             pass  
         elif rule == Ruletype.PROGRESSION:
             progression_rule(matrix, attribute, seed_list)
+        elif rule == Ruletype.DISTRIBUTE_THREE:
+            distribute_three(matrix, attribute, seed_list)
             
             
             
@@ -93,7 +95,7 @@ def determine_progression_params(attribute, seed_list):
   
     #add 2 to potenrial stepsizes if possible
     for step_size in [1, 2]:
-      if max_value / step_size >= 3:
+      if max_value / step_size >= 2:
           possible_step_sizes.append(step_size)
           
           
@@ -120,7 +122,7 @@ def adjust_starting_entity(entity, attribute, max_value, step_size, direction):
     
     # Adjust for downward direction
     elif direction == -1:  # Downward progression
-        if potential_value < 1:  # If it goes below 0
+        if potential_value < 1:  # If it goes below 1 (enum starts at 1)
             # Increase current value just enough
             current_value = (step_size * 2) + 1  # Set to the lowest valid value *fun fact python indexing screwed me over so took me hours to find this 
             
@@ -160,11 +162,11 @@ def progression_rule(matrix, attribute, seed_list):
                     setattr(entity, attribute.name.lower(), enum_member)
                     break
             else:                    
-                raise ValueError(f"No matching enum value found for {current_value}.")
+                raise ValueError(f"No matching enum value found for {new_value}.", attribute)
 
 
        
-        
+def distribute_three (matrix, attribute, seed_list)  
 
             
 new_matrix=apply_rules(matrix, rules, seed_list)
@@ -176,7 +178,7 @@ if a is True:
     for row_index, row in enumerate(new_matrix):
         print(f"\nRow {row_index + 1}:")
         for i, entity in enumerate(row):
-            print(f"  Entity {i + 1}: Shape={entity.shape}, Size={entity.size}, Color={entity.color}, Angle={entity.angle}, Index={entity.index}")
+            print(f"  Entity {i + 1}: Shape={entity.shape.value}, Size={entity.size.value}, Color={entity.color.value}, Angle={entity.angle.value}")
             
             
             
