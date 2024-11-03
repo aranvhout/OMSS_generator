@@ -17,4 +17,5 @@
    3) check accidental rules
    4) possibly recreate the random matrix in case of 3
    however if would be better if 2 and 3 are reversed. NOTE( not 100 sure whether this is true, potentially applying the rules might create new rules, although I am almost 100 percent sure this is not true. Need to consider it
+- Progression rules work, but might be nice to prevent the same attributes appearing in each row (which essentialy is also a distribute three rule)
  
