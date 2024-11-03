@@ -7,6 +7,7 @@
 ### Broader picture/horizons
 - add binding rule (and checks for it)
 - create more complicated configurations (allowing new rules such as arithmetic and position) (note to self, probably easiest to adjust current 2-d matrices to the 3-d ones, with the z-axis referring to the addinational entities in a cell)
+- instead of the above, I could also opt for add-ons on top of the shapes (like three crossed lines etc). This would be a lot easier to code I reckon and resembles the original raven matrices a bit better
 
 ### Non-urgent to do list:
 - Update get_random_attribute function name, it is now more generalised
