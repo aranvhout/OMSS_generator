@@ -57,7 +57,7 @@ class Entity:
         self.index = index 
 
 def create_random_entity(seed_list):
-    random_shape, seed_list = get_random_attribute(seed_list, list(Shapes))    
+    random_shape, seed_list = get_random_attribute(seed_list, list(Shapes)) 
     random_size, seed_list = get_random_attribute(seed_list, list(Sizes))
     random_color, seed_list = get_random_attribute(seed_list, list(Colors))    
     random_angle, seed_list = get_random_attribute(seed_list, list(Angles))

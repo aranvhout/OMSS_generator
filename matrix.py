@@ -14,8 +14,11 @@ def create_matrix(num_rows, rules, seed = None):
         
     # check whether the random aspects in the matrix follow any accidental patterns
     if validate_matrix(matrix, rules, seed): #if there a no non-intended patterns occuring return true
-        print('matrix created')      
+        print('matrix created') 
+        #FUNCTION TO START MAKE SUBENTITIES
+        n_iteration=0
         return matrix
+        
     
     # If there a non-intended paterns, try again (and if seed is not None, adjust the seed)
     n_iteration += 117 # weird value, I want to avoid for example seed 3 and 4 being the same on the user end

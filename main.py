@@ -5,18 +5,19 @@ from matrix import create_matrix
 # Define the rules for the matrix
 rules = [
     (Ruletype.RANDOM, AttributeType.SHAPE),
-    (Ruletype.PROGRESSION, AttributeType.SIZE),
-    (Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
-    (Ruletype.PROGRESSION, AttributeType.ANGLE)
+    (Ruletype.RANDOM, AttributeType.SIZE),
+    (Ruletype.RANDOM, AttributeType.COLOR),
+    (Ruletype.RANDOM, AttributeType.ANGLE)
 ]
 
 
 
 # Generate matrix
+for i in range (0,999):
+    matrix = create_matrix(3, rules, i)
+    print(i)
 
-matrix = create_matrix(3, rules, None)
-
-a =  True
+a =  False
 if a is True:
     for row_index, row in enumerate(matrix):
         print(f"\nRow {row_index + 1}:")
