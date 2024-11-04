@@ -1,26 +1,16 @@
-from row_generation import create_row
-from rules import Ruletype, AttributeType
-from seed import seed_generator, update_seedlist
+from rules import Ruletype, AttributeType, apply_rules
+from seed import seed_generator
+from entity import create_random_entity
 import sys  
 
 n_iteration=0 #create global iteration variable
 
 def create_matrix(num_rows, rules, seed = None): 
     global n_iteration
-    matrix = []
     seed_list=seed_generator(seed)
-    
-    
-    #new_plan
-    #1 create random matrix (done!)
-    #2 apply rules to this matrix
-    #3 validate etc (done!)
-        
-    # Generate rows based on rules    
-    for _ in range(num_rows):
-        row = create_row (rules, seed_list)  # Generate a row of entities
-        matrix.append(row)       # Add the row to the matrix
-        seed_list = update_seedlist(seed_list) 
+    starting_matrix = create_starting_matrix(3,3, seed_list) #initialise random starting matrix    
+    matrix = apply_rules (starting_matrix, rules, seed_list)   
+                   
         
     # check whether the random aspects in the matrix follow any accidental patterns
     if validate_matrix(matrix, rules, seed): #if there a no non-intended patterns occuring return true
@@ -142,8 +132,18 @@ def check_rules(matrix, attribute):
     return True
     
         
-        
-    
+def create_starting_matrix(n_rows=3, n_columns=3, seed_list=None):
+    matrix = []
+    for i in range(n_rows):
+        row = []
+        for j in range(n_columns):
+            entity, seed_list = create_random_entity(seed_list)
+            row.append(entity)
+        matrix.append(row)   
+    return matrix
+
+
+
     
     
     
