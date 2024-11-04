@@ -1,7 +1,6 @@
 from enum import Enum, auto
-import random
 import numpy as np
-from seed import update_seedlist, get_random_attribute
+from seed import get_random_attribute
 
 class AttributeType(Enum):#probably move this somewhere else, this doesnt really refer to the entity but rather to what needs to be changed
     SHAPE = auto()        #its more of a setting so probably should be moved to main or something
