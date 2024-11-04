@@ -57,10 +57,10 @@ class Ruletype(Enum):
     
 #main module
 rules = [
-    (Ruletype.PROGRESSION, AttributeType.SHAPE),
-    (Ruletype.PROGRESSION, AttributeType.SIZE),
-    (Ruletype.PROGRESSION, AttributeType.COLOR),
-    (Ruletype.PROGRESSION, AttributeType.ANGLE)
+    (Ruletype.DISTRIBUTE_THREE, AttributeType.SHAPE),
+    (Ruletype.CONSTANT, AttributeType.SIZE),
+    (Ruletype.CONSTANT, AttributeType.COLOR),
+    (Ruletype.CONSTANT, AttributeType.ANGLE)
 ]
 
 def apply_rules(matrix, rules, seed_list = None ):
@@ -89,7 +89,7 @@ def constant_rule(matrix, attribute):
             
 #PROGRESSION            
 def determine_progression_params(attribute, seed_list):
-    """Determines the max steps, step size, and direction for a given attribute type."""
+    """Determines the max steps, step size, and direction for a given attribute type to make the progression rule work."""
     max_value = len(globals()[attribute.name.capitalize() + "s"])#this line works, chatgpt came up with it, i dont fully understand the globals part
     possible_step_sizes = [1]#stepsize 1 is always possible, I iniatialise it already here, so that it will occur twice in the stepsize list, giving it more chance to occur
   
@@ -166,7 +166,29 @@ def progression_rule(matrix, attribute, seed_list):
 
 
        
-def distribute_three (matrix, attribute, seed_list)  
+def distribute_three (matrix, attribute, seed_list):
+    # get three unique values from the attribute
+    max_value = len(globals()[attribute.name.capitalize() + "s"])
+    potential_values = list(range(1, max_value + 1))
+    distribute_three_values, seed_list = get_random_attribute(seed_list, potential_values, number = 3)
+            
+        # Assign these values to each entity in the row
+    for row in matrix:
+        # Create a new randomized order for each row (not the most straightforward way, but I want to update the seed_list)
+        
+       row_values, seed_list = get_random_attribute(seed_list, distribute_three_values, number = 3)
+       for i, entity in enumerate(row):
+            # Use the shuffled order to assign each value
+            value_to_assign = row_values[i]
+            
+            # Find the corresponding enum member and set it on the entity's attribute
+            for enum_member in globals()[attribute.name.capitalize() + "s"]:
+                if enum_member.value == value_to_assign:
+                    setattr(entity, attribute.name.lower(), enum_member)
+                    break
+            else:
+                raise ValueError(f"No matching enum value found for {value_to_assign}.")
+  
 
             
 new_matrix=apply_rules(matrix, rules, seed_list)
@@ -178,7 +200,7 @@ if a is True:
     for row_index, row in enumerate(new_matrix):
         print(f"\nRow {row_index + 1}:")
         for i, entity in enumerate(row):
-            print(f"  Entity {i + 1}: Shape={entity.shape.value}, Size={entity.size.value}, Color={entity.color.value}, Angle={entity.angle.value}")
+            print(f"  Entity {i + 1}: Shape={entity.shape}, Size={entity.size}, Color={entity.color}, Angle={entity.angle}")
             
             
             
