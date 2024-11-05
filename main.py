@@ -1,5 +1,6 @@
 # main.py
 from rules import Ruletype, AttributeType
+from subentities import SubEntityRuletype, Line, SubShape
 from matrix import create_matrix
 
 # Define the rules for the matrix
@@ -7,8 +8,8 @@ rules = [
     (Ruletype.RANDOM, AttributeType.SHAPE),
     (Ruletype.RANDOM, AttributeType.SIZE),
     (Ruletype.RANDOM, AttributeType.COLOR),
-    (Ruletype.RANDOM, AttributeType.ANGLE)
-]
+    (Ruletype.RANDOM, AttributeType.ANGLE),
+    (SubEntityRuletype.CONSTANT, SubShape.Colors)                                        ]
 
 
 

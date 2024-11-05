@@ -1,72 +1,118 @@
 from enum import Enum, auto
+from seed import get_random_attribute
 
-#For the subshape class
+#rules module for subentities
+class SubEntityRuletype(Enum):
+    CONSTANT = auto()
+    PROGRESSION = auto()
+    DISTRIBUTE_THREE = auto()
+    
+    
+
+# Define enums for types of SubEntities
+class SubEntityType(Enum):
+    LINE = auto()
+    SUBSHAPE = auto()
+
+# Enums for SubShape attributes
 class SubShapeShapes(Enum):
     TRIANGLE = auto()
     SQUARE = auto()
-    PENTAGON = auto ()
+    PENTAGON = auto()
     CIRCLE = auto()
-        
+
 class SubShapePosition(Enum):
     TOPLEFT = auto()
     TOPRIGHT = auto()
-    BOTTOMLEFT = auto ()
+    BOTTOMLEFT = auto()
     BOTTOMRIGHT = auto()
- 
-class SubShapeNumber (Enum):
-    SINGLE = auto ()
-    DOUBLE = auto ()
-    TRIPLE = auto ()
-    
-class SubShapeColors(Enum): #could also take colours from the entity module, for now I keep it seperaate
+
+class SubShapeNumber(Enum):
+    SINGLE = auto()
+    DOUBLE = auto()
+    TRIPLE = auto()
+
+class SubShapeColors(Enum):
     RED = auto()
     BLUE = auto()
     GREEN = auto()
     YELLOW = auto()
     PURPLE = auto()
 
+# SubShape class
 class SubShape:
-    def __init__(self, shape: SubShapeShapes, color: SubShapeColors, number: SubShapeNumber, position: SubShapePosition):
-        self.shape = shape             # Shape of the subshape, using SubShapeShapes enum
-        self.color = color             # Color of the subshape, using Colors enum
-        self.number = number           # Number of subshapes, using SubShapeNumber enum
-        self.position = position       # Position of the subshape, using SubShapePosition enum
-
+    Shapes = SubShapeShapes  
+    Colors = SubShapeColors   
+    Positions = SubShapePosition
+    Numbers = SubShapeNumber
     
-#For the line class
-class LineShape(Enum):
+    def __init__(self, shape: Shapes, color: Colors, number: Numbers, position: Positions):
+        self.shape = shape             
+        self.color = color             
+        self.number = number           
+        self.position = position 
+        
+# Enums for Line attributes
+class LineShapes(Enum):
     STRAIGHT = auto()
     CURVED = auto()
 
-class LineNumber (Enum):
-    SINGLE = auto ()
-    DOUBLE = auto ()
-    TRIPLE = auto ()
-    
-class LineAngles (Enum):
+class LineNumbers(Enum):
+    SINGLE = auto()
+    DOUBLE = auto()
+    TRIPLE = auto()
+
+class LineAngles(Enum):
     ZERO = auto()
     FORTYFIVE = auto()
     NINETY = auto()
 
-# Lines class with attributes for number, position, and shape
+# Line class
 class Line:
-    def __init__(self, number: LineNumber, shape: LineShape, angle = LineAngles):
-        self.number = number  # Number of lines
-        self.angle = angle  # Could be an array of coordinates or description of location
-        self.shape = shape  # Shape of the line (straight or curved)    
+    Shapes = LineShapes  # Expose the enum
+    Numbers = LineNumbers # Expose the enum
+    Angles = LineAngles   # Expose the enum
 
-# Subentity class that contains lines and subshapes
-class SubEntity:
-    def __init__(self, lines=None, subshapes=None):
-        self.lines = lines if lines is not None else []
-        self.subshapes = subshapes if subshapes is not None else []
+    def __init__(self, number: Numbers, shape: Shapes, angle: Angles):
+        self.number = number  
+        self.angle = angle  
+        self.shape = shape       
 
-    def add_line(self, line):
-        self.lines.append(line)
 
-    def add_subshape(self, subshape):
-        self.subshapes.append(subshape)
+# Factory function to create a SubEntity based on type
+def create_random_subentity(subentitytype, seed_list):
+        
+    if subentitytype == SubEntityType.LINE:
+        # Randomly select attributes for a Line
+        lineshape, seed_list = get_random_attribute(seed_list, list(LineShapes))
+        linenumber, seed_list = get_random_attribute(seed_list, list(LineNumbers))
+        lineangle, seed_list = get_random_attribute(seed_list, list(LineAngles))
+        
+        # Create a Line instance 
+        line = Line(number=linenumber, shape=lineshape, angle=lineangle)
+        return line
+        
+    elif subentitytype == SubEntityType.SUBSHAPE:
+        # Randomly select attributes for a SubShape
+        shape, seed_list = get_random_attribute(seed_list, list(SubShapeShapes))
+        color, seed_list = get_random_attribute(seed_list, list(SubShapeColors))
+        number, seed_list = get_random_attribute(seed_list, list(SubShapeNumber))
+        position, seed_list = get_random_attribute(seed_list, list(SubShapePosition))
+        
+        # Create a SubShape instance 
+        subshape = SubShape(shape=shape, color=color, number=number, position=position)
+        return subshape
 
+# Assuming seed_list and create_subentity function are already defined
+seed_list = [1444,12,1,999,5,6,7,8,11]
+entity = create_subentity(SubEntityType.SUBSHAPE, seed_list)
+
+# Print entity details based on its type
+if isinstance(entity, Line):
+    print(f"Entity: Shape={entity.shape.name}, Number={entity.number.name}, Angle={entity.angle.name}")
+elif isinstance(entity, SubShape):
+    print(f"Entity: Shape={entity.shape.name}, Color={entity.color.name}, "
+          f"Number={entity.number.name}, Position={entity.position.name}")
 
 
 
