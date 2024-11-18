@@ -18,7 +18,7 @@ def apply_rules(matrix, rules, seed_list):
             progression_rule(matrix, attribute, seed_list)
         elif rule == Ruletype.DISTRIBUTE_THREE:
             distribute_three(matrix, attribute, seed_list)      
-           
+       elif 
             
     return matrix
 

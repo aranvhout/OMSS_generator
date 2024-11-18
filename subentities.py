@@ -105,14 +105,26 @@ def create_random_subentity(subentitytype, seed_list):
 
 # Assuming seed_list and create_subentity function are already defined
 seed_list = [1444,12,1,999,5,6,7,8,11]
-entity = create_subentity(SubEntityType.SUBSHAPE, seed_list)
 
-# Print entity details based on its type
-if isinstance(entity, Line):
-    print(f"Entity: Shape={entity.shape.name}, Number={entity.number.name}, Angle={entity.angle.name}")
-elif isinstance(entity, SubShape):
-    print(f"Entity: Shape={entity.shape.name}, Color={entity.color.name}, "
-          f"Number={entity.number.name}, Position={entity.position.name}")
+
+def create_subentity_matrix(n_rows=3, n_columns=3, subentity_rules, seed_list=None):
+    subentity_matrix = []
+    
+    # Extract the class name from the second part of the first rule
+    # Assuming the rules are structured correctly
+    rule_class_name = subentity_rules[0][1].__class__.__name__  # Gets the class name
+    subentity_type = SubEntityType[rule_class_name.upper()]  # Capitalize and map to SubEntityType
+
+    for i in range(n_rows):
+        row = []
+        for j in range(n_columns):
+            # Directly create the subentity using the inferred type
+            subentity, seed_list = create_random_subentity(subentity_type, seed_list)
+            row.append(subentity)
+        subentity_matrix.append(row)
+
+    return subentity_matrix
+
 
 
 

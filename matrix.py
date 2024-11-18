@@ -6,7 +6,7 @@ import sys
 
 n_iteration=0 #create global iteration variable
 
-def create_matrix(num_rows, rules, subentity_rules = None,  seed = None): 
+def create_matrix(num_rows, rules, seed = None): 
     global n_iteration
     seed_list=seed_generator(seed)
     starting_matrix = create_starting_matrix(3,3, seed_list) #initialise random starting matrix    
@@ -16,10 +16,13 @@ def create_matrix(num_rows, rules, subentity_rules = None,  seed = None):
     # check whether the random aspects in the matrix follow any accidental patterns
     if validate_matrix(matrix, rules, seed): #if there a no non-intended patterns occuring return true
         print('matrix created') 
-        if subentity is not None:
-            create_subentity_matrix 
+        
+        #make subentity matrix if required
+        if rule in rules begins with subentity rule type
+            starting_subentity_matrix = create_subentity_matrix (3, 3, subentity_rules, seed_list)#based on the rules also create the subentities instances
+            subentity_matrix = apply_rule (starting_subentity_matrix) 
         n_iteration=0
-        return matrix
+        return matrix, subentity_matrix
         
     
     # If there a non-intended paterns, try again (and if seed is not None, adjust the seed)
@@ -147,13 +150,15 @@ def create_starting_matrix(n_rows=3, n_columns=3, seed_list=None):
         matrix.append(row)   
     return matrix
 
-def create_subentity_matrix(n_rows=3, n_columns=3, subentity_type=None, seed_list=None):
+
+ rules = [(SubEntityRuletype.CONSTANT, SubShape.Colors)  ]   
+
+def create_subentity_matrix(n_rows=3, n_columns=3, subentity_rules, seed_list=None):
     subentity_matrix = []
     for i in range(n_rows):
         row = []
         for j in range(n_columns):
-            # Use the provided subentity_type directly
-            
+                       
             subentity, seed_list = create_random_subentity(subentity_type, seed_list)
             row.append(subentity)
         subentity_matrix.append(row)
