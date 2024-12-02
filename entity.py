@@ -48,22 +48,55 @@ class Angles(Enum):
     ONE_FORTY = auto()
     ONE_SIXTY = auto()
 
-class Entity:
-    def __init__(self, shape, size, color, angle,index=None):
+
+# Enum for line types
+class LineTypes(Enum):
+    SOLID = auto()
+    DASHED = auto()
+    DOTTED = auto()
+
+# Enum for line widths
+class LineWidths(Enum):
+    THIN = auto()
+    MEDIUM = auto()
+    THICK = auto()
+
+# Class for BigShape entity
+class BigShape:
+    def __init__(self, shape, size, color, angle, index=None):
         self.shape = shape
         self.size = size 
         self.color = color
         self.angle = angle
         self.index = index 
 
-def create_random_entity(seed_list):
-    random_shape, seed_list = get_random_attribute(seed_list, list(Shapes)) 
-    random_size, seed_list = get_random_attribute(seed_list, list(Sizes))
-    random_color, seed_list = get_random_attribute(seed_list, list(Colors))    
-    random_angle, seed_list = get_random_attribute(seed_list, list(Angles))
-    
+# Class for Line entity
+class Line:
+    def __init__(self, line_type, line_width,  index=None):
+        self.line_type = line_type
+        self.line_width = line_width
+        self.index = index
 
-    return Entity(shape=random_shape, size=random_size, color=random_color, angle=random_angle), seed_list
+# Function to create a random entity (either BigShape or Line)
+def create_random_entity(seed_list, entity_type="big-shape"):
+    if entity_type == "big-shape":
+        # Create random BigShape attributes
+        random_shape, seed_list = get_random_attribute(seed_list, list(Shapes)) 
+        random_size, seed_list = get_random_attribute(seed_list, list(Sizes))
+        random_color, seed_list = get_random_attribute(seed_list, list(Colors))    
+        random_angle, seed_list = get_random_attribute(seed_list, list(Angles))
+        return BigShape(shape=random_shape, size=random_size, color=random_color, angle=random_angle), seed_list
+
+    elif entity_type == "line":
+        # Create random Line attributes
+        random_line_type, seed_list = get_random_attribute(seed_list, list(LineTypes))
+        random_line_width, seed_list = get_random_attribute(seed_list, list(LineWidths))
+        random_color, seed_list = get_random_attribute(seed_list, list(Colors))
+        return Line(line_type=random_line_type, line_width=random_line_width, color=random_color), seed_list
+
+    else:
+        raise ValueError("Unknown entity type")
+
 
 
    

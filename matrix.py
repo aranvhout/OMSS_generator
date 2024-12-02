@@ -7,10 +7,13 @@ from render import render_matrix
 
 n_iteration=0 #create global iteration variable
 
-def create_matrix(num_rows, rules, seed = None): 
+# Function to create a matrix of entities (BigShape or Line)
+def create_matrix(num_rows, num_columns, rules, seed=None, entity_type="big-shape"): 
     global n_iteration
-    seed_list=seed_generator(seed)
-    starting_matrix = create_starting_matrix(3,3, seed_list) #initialise random starting matrix    
+    seed_list = seed_generator(seed)
+    
+    # Initialize a random starting matrix
+    starting_matrix = create_starting_matrix(num_rows, num_columns, seed_list, entity_type)   
     matrix = apply_rules (starting_matrix, rules, seed_list)   
                    
         
@@ -147,16 +150,15 @@ def check_rules(matrix, attribute):
     return True
     
         
-def create_starting_matrix(n_rows=3, n_columns=3, seed_list=None):
+def create_starting_matrix(n_rows=3, n_columns=3, seed_list=None, entity_type="big-shape"):
     matrix = []
     for i in range(n_rows):
         row = []
         for j in range(n_columns):
-            entity, seed_list = create_random_entity(seed_list)
+            entity, seed_list = create_random_entity(seed_list, entity_type)  # Specify entity_type (BigShape or Line)
             row.append(entity)
-        matrix.append(row)   
+        matrix.append(row)
     return matrix
-
 
 
     

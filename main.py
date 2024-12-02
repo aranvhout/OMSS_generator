@@ -4,7 +4,7 @@ from matrix import create_matrix
 
 # Define the rules for the matrix
 rules = [
-    (Ruletype.DISTRIBUTE_THREE, AttributeType.SHAPE),
+    (Ruletype.RANDOM, AttributeType.SHAPE),
     (Ruletype.DISTRIBUTE_THREE, AttributeType.SIZE),
     (Ruletype.RANDOM, AttributeType.COLOR),
     (Ruletype.RANDOM, AttributeType.ANGLE)
@@ -14,7 +14,7 @@ rules = [
 
 # Generate matrix
 
-matrix = create_matrix(3, rules)
+matrix = create_matrix(3, 3, rules, seed=None, entity_type="big-shape")
     
 
 a =  False
