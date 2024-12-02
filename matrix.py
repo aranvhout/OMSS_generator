@@ -1,8 +1,9 @@
 from rules import Ruletype, AttributeType, apply_rules
 from seed import seed_generator
 from entity import create_random_entity
-from subentities import create_random_subentity
-import sys  
+import sys, cv2
+from render import render_matrix
+
 
 n_iteration=0 #create global iteration variable
 
@@ -16,13 +17,19 @@ def create_matrix(num_rows, rules, seed = None):
     # check whether the random aspects in the matrix follow any accidental patterns
     if validate_matrix(matrix, rules, seed): #if there a no non-intended patterns occuring return true
         print('matrix created') 
+        row_lengths = [(0, 3), (0, 3), (0, 3)] 
+        rendered_solution_matrix = render_matrix (matrix, row_lengths)
+        output_path_with_lines = "solution_matrix.png"
+        cv2.imwrite(output_path_with_lines, rendered_solution_matrix)
         
-        #make subentity matrix if required
-        if rule in rules begins with subentity rule type
-            starting_subentity_matrix = create_subentity_matrix (3, 3, subentity_rules, seed_list)#based on the rules also create the subentities instances
-            subentity_matrix = apply_rule (starting_subentity_matrix) 
+        row_lengths = [(0, 3), (0, 3), (0, 2)] 
+        rendered_solution_matrix = render_matrix (matrix, row_lengths)
+        output_path_with_lines = "problem_matrix.png"
+        cv2.imwrite(output_path_with_lines, rendered_solution_matrix)
+                     
+        
         n_iteration=0
-        return matrix, subentity_matrix
+        return matrix
         
     
     # If there a non-intended paterns, try again (and if seed is not None, adjust the seed)
@@ -149,20 +156,6 @@ def create_starting_matrix(n_rows=3, n_columns=3, seed_list=None):
             row.append(entity)
         matrix.append(row)   
     return matrix
-
-
- rules = [(SubEntityRuletype.CONSTANT, SubShape.Colors)  ]   
-
-def create_subentity_matrix(n_rows=3, n_columns=3, subentity_rules, seed_list=None):
-    subentity_matrix = []
-    for i in range(n_rows):
-        row = []
-        for j in range(n_columns):
-                       
-            subentity, seed_list = create_random_subentity(subentity_type, seed_list)
-            row.append(subentity)
-        subentity_matrix.append(row)
-    return subentity_matrix
 
 
 

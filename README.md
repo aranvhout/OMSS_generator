@@ -1,8 +1,13 @@
 # OMMS_generator
 ### Current to do list
-- create all the rules
-- add render module
-- alternatives
+- create all the rules Fixed!!
+- add subentities (see below)
+- add render module Fixed!!
+- fix the misbehaving rules (eg with distribute three the circles are always red) Fixed!!
+- alternatives X
+
+### Subentities
+I think these subentities can be best viewed as an separate class from the main entities (aka shapes). The program should first create matrix for the normal entities, makes sure everything works and only then go for these subentities. You can almost think of it as a seperate puzzle from the main entities
 
 ### Broader picture/horizons
 - add binding rule (and checks for it)
@@ -18,5 +23,6 @@
    3) check accidental rules
    4) possibly recreate the random matrix in case of 3
    however if would be better if 2 and 3 are reversed. NOTE( not 100 sure whether this is true, potentially applying the rules might create new rules, although I am almost 100 percent sure this is not true. Need to consider it
-- Progression rules work, but might be nice to prevent the same attributes appearing in each row (which essentialy is also a distribute three rule)
+- Have a constrain option. Now, the matrices might look weird and ugly since just by chance a distribute three rule might look like a progression etc etc. (I know what I mean by this),
+also for example with the random rule, just by chance a colour might be really dominant
  

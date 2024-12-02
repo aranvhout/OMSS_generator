@@ -1,6 +1,6 @@
 from enum import Enum, auto
 from entity import Shapes, Sizes, Colors, Angles, AttributeType
-from seed import get_random_attribute
+from seed import get_random_attribute, update_seedlist
 
 class Ruletype(Enum):
     RANDOM = auto()
@@ -16,9 +16,11 @@ def apply_rules(matrix, rules, seed_list):
             pass  
         elif rule == Ruletype.PROGRESSION:
             progression_rule(matrix, attribute, seed_list)
+            seed_list=update_seedlist(seed_list)#we have to update it each time we use this function
         elif rule == Ruletype.DISTRIBUTE_THREE:
-            distribute_three(matrix, attribute, seed_list)      
-       elif 
+            distribute_three(matrix, attribute, seed_list)
+            seed_list=update_seedlist(seed_list)#we have to update it each time we use this function
+           
             
     return matrix
 
@@ -113,14 +115,16 @@ def progression_rule(matrix, attribute, seed_list):
 def distribute_three (matrix, attribute, seed_list):
     # get three unique values from the attribute
     max_value = len(globals()[attribute.name.capitalize() + "s"])
+    
     potential_values = list(range(1, max_value + 1))
     distribute_three_values, seed_list = get_random_attribute(seed_list, potential_values, number = 3)
-            
+       
         # Assign these values to each entity in the row
     for row in matrix:
         # Create a new randomized order for each row (not the most straightforward way, but I want to update the seed_list)
         
        row_values, seed_list = get_random_attribute(seed_list, distribute_three_values, number = 3)
+       
        for i, entity in enumerate(row):
             # Use the shuffled order to assign each value
             value_to_assign = row_values[i]
