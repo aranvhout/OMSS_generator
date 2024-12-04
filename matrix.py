@@ -8,43 +8,38 @@ from render import render_matrix
 n_iteration=0 #create global iteration variable
 
 # Function to create a matrix of entities (BigShape or Line)
-def create_matrix(num_rows, num_columns, rules, seed=None, entity_type="big-shape"): 
-    global n_iteration
-    seed_list = seed_generator(seed)
+def create_matrix(num_rows, num_columns, rules, seed=None, entity_types=["big-shape"]): 
     
-    # Initialize a random starting matrix
-    starting_matrix = create_starting_matrix(num_rows, num_columns, seed_list, entity_type)   
-    matrix = apply_rules (starting_matrix, rules, seed_list)   
-                   
-        
-    # check whether the random aspects in the matrix follow any accidental patterns
-    if validate_matrix(matrix, rules, seed): #if there a no non-intended patterns occuring return true
-        print('matrix created') 
-        row_lengths = [(0, 3), (0, 3), (0, 3)] 
-        rendered_solution_matrix = render_matrix (matrix, row_lengths)
-        output_path_with_lines = "solution_matrix.png"
-        cv2.imwrite(output_path_with_lines, rendered_solution_matrix)
-        
-        row_lengths = [(0, 3), (0, 3), (0, 2)] 
-        rendered_solution_matrix = render_matrix (matrix, row_lengths)
-        output_path_with_lines = "problem_matrix.png"
-        cv2.imwrite(output_path_with_lines, rendered_solution_matrix)
-                     
-        
-        n_iteration=0
-        return matrix
-        
+    matrices = {}  # To store valid matrices
     
-    # If there a non-intended paterns, try again (and if seed is not None, adjust the seed)
-    n_iteration += 117 # weird value, I want to avoid for example seed 3 and 4 being the same on the user end
-    if n_iteration < 117 * 11:
-        # Pass modified seed if initial seed is not None
-        new_seed = seed + n_iteration if seed is not None else None
-        return create_matrix(num_rows, rules, new_seed)
+    for entity_type in entity_types:
+        if entity_type not in rules:
+            raise ValueError(f"No rules defined for entity type: {entity_type}")
+        entity_rules = rules[entity_type]
+        n_iteration = 0  # Track adjustments for seed
+        attempt = 0  # Track retries for each entity type
+        
+        while entity_type not in matrices and attempt < 11:
+            # Generate seed list
+            seed_list = seed_generator(seed + n_iteration if seed is not None else seed)
+            # Create a starting matrix for the current entity type
+            starting_matrix = create_starting_matrix(num_rows, num_columns, seed_list, entity_type)#note to self. entity type defined in the for-loop 
+            # Apply rules to the starting matrix
+            matrix = apply_rules(starting_matrix, entity_rules, seed_list)
+            
+            # Validate the matrix
+            if validate_matrix(matrix, entity_rules, seed):
+                matrices[entity_type] = matrix  # Save the valid matrix
+            else:
+                # Adjust seed if necessary and retry
+                n_iteration += 117
+                attempt += 1
+
+    # Check if any entity types failed to generate a valid matrix
+    if len(matrices) != len(entity_types):
+        raise ValueError("Unable to generate valid matrices for all specified entity types after multiple attempts")
     
-    # If max retries reached, fail gracefully
-    print('Matrix could not be created after multiple attempts.')
-    sys.exit()
+    return matrices
 
    
 def validate_matrix(matrix, rules, seed): #wrapper function to check whether the random-rule attribute combination yields accidental patterns
@@ -72,6 +67,20 @@ def validate_matrix(matrix, rules, seed): #wrapper function to check whether the
                 print('angle check_rules failed, retrying...')
                 return False  # Exit if check_rules fails
             print('angle checked')
+            
+        if rule is Ruletype.RANDOM and attribute is AttributeType.LINETYPE:
+            if not check_rules(matrix, attribute):
+                print('linetype check_rules failed, retrying...')
+                return False  # Exit if check_rules fails
+            print('linetype checked')
+            
+        if rule is Ruletype.RANDOM and attribute is AttributeType.LINEWIDTH:
+            if not check_rules(matrix, attribute):
+                print('linewidth check_rules failed, retrying...')
+                return False  # Exit if check_rules fails
+            print('linewidth checked')
+            
+            
     
   
     return True  # All check_ruless passed
@@ -140,17 +149,18 @@ def check_rules(matrix, attribute):
     #check whether all checks are negative
     if constant or upward_progression or downward_progression or distribute_three or distribute_two:
         print(attribute, constant , upward_progression , downward_progression , distribute_three , distribute_two)
-        print(numerical_matrix)
+        
         for row_index, row in enumerate(matrix):
             print(f"\nRow {row_index + 1}:")
             for i, entity in enumerate(row):
-                print(f"  Entity {i + 1}: Shape={entity.shape}, Size={entity.size}, Color={entity.color}, Angle={entity.angle}, Index={entity.index}")    
+                #print(f"  Entity {i + 1}: Shape={entity.shape}, Size={entity.size}, Color={entity.color}, Angle={entity.angle}, Index={entity.index}")   
+                print(f"  Entity {i + 1}: Color={entity.color}, Linewidth={entity.linewidth}, Linetype={entity.linetype}")   
         return False
         
     return True
     
         
-def create_starting_matrix(n_rows=3, n_columns=3, seed_list=None, entity_type="big-shape"):
+def create_starting_matrix(n_rows=3, n_columns=3, seed_list=None, entity_type=["big-shape"]):
     matrix = []
     for i in range(n_rows):
         row = []

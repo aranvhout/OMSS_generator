@@ -5,7 +5,8 @@
 - add render module Fixed!!
 - fix the misbehaving rules (eg with distribute three the circles are always red) Fixed!!
 - alternatives X
-
+- position for line entity (middle (big), and all the corners). Rules so be able to change this (progression, distribute three, random, constant). But also the user should be able to put the stimuli in the main center square 
+  best way would be to add a placement rule. if the spefified middle, the entity would just be placed there. other rule that apply to the position should disregard the middle option i think
 ### Subentities
 I think these subentities can be best viewed as an separate class from the main entities (aka shapes). The program should first create matrix for the normal entities, makes sure everything works and only then go for these subentities. You can almost think of it as a seperate puzzle from the main entities
 
@@ -25,4 +26,5 @@ I think these subentities can be best viewed as an separate class from the main 
    however if would be better if 2 and 3 are reversed. NOTE( not 100 sure whether this is true, potentially applying the rules might create new rules, although I am almost 100 percent sure this is not true. Need to consider it
 - Have a constrain option. Now, the matrices might look weird and ugly since just by chance a distribute three rule might look like a progression etc etc. (I know what I mean by this),
 also for example with the random rule, just by chance a colour might be really dominant
+- remove columns and row arguments
  

@@ -8,6 +8,8 @@ class AttributeType(Enum):#probably move this somewhere else, this doesnt really
     SIZE = auto()
     COLOR = auto()
     ANGLE = auto()
+    LINETYPE = auto ()
+    LINEWIDTH = auto ()
     
 class Attribute:
 
@@ -72,9 +74,10 @@ class BigShape:
 
 # Class for Line entity
 class Line:
-    def __init__(self, line_type, line_width,  index=None):
-        self.line_type = line_type
-        self.line_width = line_width
+    def __init__(self, linetype, linewidth, color, index=None):
+        self.linetype = linetype
+        self.linewidth = linewidth
+        self.color = color
         self.index = index
 
 # Function to create a random entity (either BigShape or Line)
@@ -92,7 +95,7 @@ def create_random_entity(seed_list, entity_type="big-shape"):
         random_line_type, seed_list = get_random_attribute(seed_list, list(LineTypes))
         random_line_width, seed_list = get_random_attribute(seed_list, list(LineWidths))
         random_color, seed_list = get_random_attribute(seed_list, list(Colors))
-        return Line(line_type=random_line_type, line_width=random_line_width, color=random_color), seed_list
+        return Line(linetype=random_line_type, linewidth=random_line_width, color=random_color), seed_list
 
     else:
         raise ValueError("Unknown entity type")
