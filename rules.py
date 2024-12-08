@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from entity import Shapes, Sizes, Colors, Angles, AttributeType
+from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linewidths, AttributeType
 from seed import get_random_attribute, update_seedlist
 
 class Ruletype(Enum):
@@ -80,7 +80,9 @@ def adjust_starting_entity(entity, attribute, max_value, step_size, direction):
          setattr(entity, attribute.name.lower(), enum_member)     
          break
     else:
-       raise ValueError(f"No matching enum value found for {current_value}.")
+        print(enum_member)
+        raise ValueError(f"No matching enum value found for {current_value}.")
+       
      
 def progression_rule(matrix, attribute, seed_list):
     """Applies a progression rule across each row for a given attribute."""

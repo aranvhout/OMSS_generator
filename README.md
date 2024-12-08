@@ -27,4 +27,4 @@ I think these subentities can be best viewed as an separate class from the main 
 - Have a constrain option. Now, the matrices might look weird and ugly since just by chance a distribute three rule might look like a progression etc etc. (I know what I mean by this),
 also for example with the random rule, just by chance a colour might be really dominant
 - remove columns and row arguments
- 
+ - what if not all the rules are specified for an entity. I think it just fills in random stuff, but doesnt check whether there are accidental patterns. maybe make constant the default

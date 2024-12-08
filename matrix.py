@@ -23,22 +23,32 @@ def create_matrix(num_rows, num_columns, rules, seed=None, entity_types=["big-sh
             # Generate seed list
             seed_list = seed_generator(seed + n_iteration if seed is not None else seed)
             # Create a starting matrix for the current entity type
-            starting_matrix = create_starting_matrix(num_rows, num_columns, seed_list, entity_type)#note to self. entity type defined in the for-loop 
+            starting_matrix = create_starting_matrix(entity_rules, num_rows, num_columns, seed_list, entity_type)#note to self. entity type defined in the for-loop 
             # Apply rules to the starting matrix
             matrix = apply_rules(starting_matrix, entity_rules, seed_list)
             
             # Validate the matrix
             if validate_matrix(matrix, entity_rules, seed):
                 matrices[entity_type] = matrix  # Save the valid matrix
+                
+                
+       
             else:
                 # Adjust seed if necessary and retry
                 n_iteration += 117
                 attempt += 1
-
+        
     # Check if any entity types failed to generate a valid matrix
     if len(matrices) != len(entity_types):
         raise ValueError("Unable to generate valid matrices for all specified entity types after multiple attempts")
-    
+    else:
+        row_lengths = [(0, 3), (0, 3), (0,3)] 
+        rendered_solution_matrix = render_matrix (matrices)
+        output_path_with_lines = "solution_matrix.png"
+        cv2.imwrite(output_path_with_lines, rendered_solution_matrix)
+
+        
+    print(matrices)  
     return matrices
 
    
@@ -153,22 +163,27 @@ def check_rules(matrix, attribute):
         for row_index, row in enumerate(matrix):
             print(f"\nRow {row_index + 1}:")
             for i, entity in enumerate(row):
-                #print(f"  Entity {i + 1}: Shape={entity.shape}, Size={entity.size}, Color={entity.color}, Angle={entity.angle}, Index={entity.index}")   
-                print(f"  Entity {i + 1}: Color={entity.color}, Linewidth={entity.linewidth}, Linetype={entity.linetype}")   
+                print(f"  Entity {i + 1}: Shape={entity.shape}, Size={entity.size}, Color={entity.color}, Angle={entity.angle}, Index={entity.index}")   
+                #print(f"  Entity {i + 1}: Color={entity.color}, Linewidth={entity.linewidth}, Linetype={entity.linetype}")   
         return False
         
     return True
     
         
-def create_starting_matrix(n_rows=3, n_columns=3, seed_list=None, entity_type=["big-shape"]):
+def create_starting_matrix(rules, n_rows=3, n_columns=3, seed_list=None, entity_type=["big-shape"]):
     matrix = []
     for i in range(n_rows):
         row = []
         for j in range(n_columns):
-            entity, seed_list = create_random_entity(seed_list, entity_type)  # Specify entity_type (BigShape or Line)
+            if not any(rule[1] == AttributeType.POSITION for rule in rules):
+                entity, seed_list = create_random_entity(seed_list, entity_type)#  Default position
+                
+            else:                
+                entity, seed_list = create_random_entity(seed_list, entity_type, position = "random" ) # Random position
+                
             row.append(entity)
         matrix.append(row)
-    return matrix
+    return matrix 
 
 
     

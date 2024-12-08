@@ -6,43 +6,48 @@ from matrix import create_matrix
 rules = [
     (Ruletype.RANDOM, AttributeType.SHAPE),
     (Ruletype.DISTRIBUTE_THREE, AttributeType.SIZE),
-    (Ruletype.RANDOM, AttributeType.COLOR),
+    (Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
     (Ruletype.RANDOM, AttributeType.ANGLE)
+    
 ]
 
 
 
 # Define rules for each entity
 rules = {
-    "big-shape": [
-        (Ruletype.RANDOM, AttributeType.SHAPE),
-        (Ruletype.DISTRIBUTE_THREE, AttributeType.SIZE),
-        (Ruletype.RANDOM, AttributeType.COLOR),
-        (Ruletype.RANDOM, AttributeType.ANGLE)
+    'line': [
+        (Ruletype.DISTRIBUTE_THREE, AttributeType.LINETYPE),
+        (Ruletype.PROGRESSION, AttributeType.LINEWIDTH),
+        
+        (Ruletype.CONSTANT, AttributeType.POSITION)
+        
     ],
-    "line": [
-        (Ruletype.RANDOM, AttributeType.COLOR),
-        (Ruletype.RANDOM, AttributeType.LINETYPE),
-        (Ruletype.RANDOM, AttributeType.LINEWIDTH),
-    ]
+    
+    
+    "big-shape": [
+        (Ruletype.DISTRIBUTE_THREE, AttributeType.SHAPE),
+        (Ruletype.PROGRESSION, AttributeType.SIZE),
+        (Ruletype.PROGRESSION, AttributeType.COLOR),
+        (Ruletype.CONSTANT, AttributeType.ANGLE)]
+    
+    
+    
 }
-
 
 
 # Generate matrix
 
-matrix = create_matrix(3, 3, rules, seed =10,   entity_types=["line"])
-    
+matrix = create_matrix(3, 3, rules, entity_types=[ 'big-shape', 'line'])
 
 # Attribute mapping for each entity type
 entity_attributes = {
-    "big-shape": ["shape", "size", "color", "angle", "index"],
-    "line": ["color", "linetype", "linewidth", "index"]
+    "big-shape": ["shape", "size", "color", "angle", "position", "index"],
+    "line": ["color", "linetype", "linewidth", "position" ,"index"]
 }
 
 # Check and print the matrix for the specified entity type
 a = True
-entity_type = "line"  # Specify the entity type to print
+entity_type = "big-shape"  # Specify the entity type to print
 
 if a is True and entity_type in matrix:
     matrix = matrix[entity_type]  # Retrieve the matrix for the specified entity type
