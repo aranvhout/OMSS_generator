@@ -17,9 +17,9 @@ rules = [
 rules = {
     'line': [
         (Ruletype.DISTRIBUTE_THREE, AttributeType.LINETYPE),
-        (Ruletype.PROGRESSION, AttributeType.LINEWIDTH),
-        
-        (Ruletype.CONSTANT, AttributeType.POSITION)
+        (Ruletype.CONSTANT, AttributeType.LINEWIDTH),
+        (Ruletype.PROGRESSION, AttributeType.ANGLE)
+       
         
     ],
     
@@ -27,8 +27,14 @@ rules = {
     "big-shape": [
         (Ruletype.DISTRIBUTE_THREE, AttributeType.SHAPE),
         (Ruletype.PROGRESSION, AttributeType.SIZE),
-        (Ruletype.PROGRESSION, AttributeType.COLOR),
-        (Ruletype.CONSTANT, AttributeType.ANGLE)]
+        (Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
+        (Ruletype.CONSTANT, AttributeType.ANGLE)],
+    
+    "little-shape": [
+        (Ruletype.PROGRESSION, AttributeType.SHAPE),
+        (Ruletype.CONSTANT, AttributeType.SIZE),
+        (Ruletype.CONSTANT, AttributeType.COLOR),
+        (Ruletype.DISTRIBUTE_THREE, AttributeType.POSITION)]
     
     
     
@@ -37,7 +43,7 @@ rules = {
 
 # Generate matrix
 
-matrix = create_matrix(3, 3, rules, entity_types=[ 'big-shape', 'line'])
+matrix = create_matrix(3, 3, rules, entity_types=['big-shape', 'little-shape', 'line'])
 
 # Attribute mapping for each entity type
 entity_attributes = {

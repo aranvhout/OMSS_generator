@@ -43,7 +43,7 @@ def create_matrix(num_rows, num_columns, rules, seed=None, entity_types=["big-sh
         raise ValueError("Unable to generate valid matrices for all specified entity types after multiple attempts")
     else:
         row_lengths = [(0, 3), (0, 3), (0,3)] 
-        rendered_solution_matrix = render_matrix (matrices)
+        rendered_solution_matrix = render_matrix (matrices,)
         output_path_with_lines = "solution_matrix.png"
         cv2.imwrite(output_path_with_lines, rendered_solution_matrix)
 

@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linewidths, AttributeType
+from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linelengths, Linewidths, AttributeType
 from seed import get_random_attribute, update_seedlist
 
 class Ruletype(Enum):
