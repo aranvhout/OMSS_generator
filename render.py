@@ -166,6 +166,8 @@ def render_triangle(img, center, size, entity):
 def render_square(img, center, size, entity):
     color = COLOR_MAP[entity.color]
     angle = ANGLE_MAP[entity.angle] * pi / 180
+    scale_factor = 1.3
+    size = size * scale_factor
     half_size = size / 2
 
     pts = np.array([
