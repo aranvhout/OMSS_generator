@@ -1,5 +1,5 @@
 # main.py
-from rules import Ruletype, AttributeType
+from rules import Ruletype, AttributeType, Rule
 from matrix import create_matrix
 
 # Define the rules for the matrix
@@ -15,36 +15,28 @@ rules = [
 
 # Define rules for each entity
 rules = {
-    'line': [
-        (Ruletype.DISTRIBUTE_THREE, AttributeType.LINETYPE),
-        (Ruletype.CONSTANT, AttributeType.LINEWIDTH),
-        (Ruletype.CONSTANT, AttributeType.ANGLE),
-        (Ruletype.PROGRESSION, AttributeType.POSITION)
-        
-    ],
+    'big-shape': [
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SHAPE, value ='triangle'),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.COLOR, value = 'red'),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')],
     
     
-    "big-shape": [
-        (Ruletype.CONSTANT, AttributeType.SHAPE),
-        (Ruletype.PROGRESSION, AttributeType.SIZE),
-        (Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
-        (Ruletype.RANDOM, AttributeType.ANGLE)],
-    
-    "little-shape": [
-        (Ruletype.CONSTANT, AttributeType.SHAPE),
-        (Ruletype.CONSTANT, AttributeType.SIZE),
-        (Ruletype.CONSTANT, AttributeType.COLOR),
-        (Ruletype.PROGRESSION, AttributeType.POSITION)]
-    
-    
-    
-}
+       'line': [
+           Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE, value = 'ONE_EIGHTY'),
+           Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.LINENUMBER),
+           Rule(Ruletype.RANDOM, AttributeType.LINELENGTH, value = 'LONG'),
+           Rule(Ruletype.RANDOM, AttributeType.LINEWIDTH, value = 'MEDIUM'),
+           Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium'),
+           Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.LINETYPE),
+       
+       ]}
+
 
 
 # Generate matrix
 
-matrix = create_matrix(3, 3, rules, entity_types=[ 'big-shape', 'line'])
-
+matrix = create_matrix(3, 3, rules, entity_types=['big-shape', 'line'])
 # Attribute mapping for each entity type
 entity_attributes = {
     "big-shape": ["shape", "size", "color", "angle", "position", "index"],

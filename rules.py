@@ -1,31 +1,82 @@
 from enum import Enum, auto
-from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linelengths, Linewidths, AttributeType
+from typing import Optional
+from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linelengths, Linewidths, AttributeType, Linenumbers
 from seed import get_random_attribute, update_seedlist
+
+ATTRIBUTE_TO_ENUM = {
+    AttributeType.COLOR: Colors,
+    AttributeType.SHAPE: Shapes,
+    AttributeType.SIZE: Sizes,
+    AttributeType.ANGLE: Angles,
+    AttributeType.POSITION: Positions,
+    AttributeType.LINETYPE: Linetypes,
+    AttributeType.LINEWIDTH: Linewidths,
+    AttributeType.LINELENGTH: Linelengths,
+    AttributeType.LINENUMBER: Linenumbers,
+}
 
 class Ruletype(Enum):
     RANDOM = auto()
     CONSTANT = auto()
+    FULL_CONSTANT = auto ()
     PROGRESSION = auto()
     DISTRIBUTE_THREE = auto()
-
+    
+    
+class Rule:
+    def __init__(self, rule_type: Ruletype, attribute, value: Optional[str] = None):
+        self.rule_type = rule_type
+        self.attribute = attribute
+        self.value = value  # Optional additional value    
+  
 def apply_rules(matrix, rules, seed_list):
-    for rule, attribute in rules:
+    for rule_obj in rules:
+        rule = rule_obj.rule_type  # Accessing rule_type from Rule object
+        attribute = rule_obj.attribute
+        value = rule_obj.value  # Optional additional value
+        
+        
         if rule == Ruletype.CONSTANT:
             constant_rule(matrix, attribute)
+            
+        elif rule == Ruletype.FULL_CONSTANT:
+            full_constant_rule(matrix, attribute, value)
+                        
         elif rule == Ruletype.RANDOM:            
             pass  
+        
         elif rule == Ruletype.PROGRESSION:
             progression_rule(matrix, attribute, seed_list)
-            seed_list=update_seedlist(seed_list)#we have to update it each time we use this function
+            seed_list = update_seedlist(seed_list)  # Update each time
+            
         elif rule == Ruletype.DISTRIBUTE_THREE:
             distribute_three(matrix, attribute, seed_list)
-            seed_list=update_seedlist(seed_list)#we have to update it each time we use this function
-           
+            seed_list = update_seedlist(seed_list)  # Update each time
             
     return matrix
 
+
+def full_constant_rule(matrix, attribute, value):
+    if value is not None:
+        enum_class = ATTRIBUTE_TO_ENUM.get(attribute)#use the mapping dict to get the match the attribute to the class
+        
+        try:
+            # Convert the string to uppercase and look up the corresponding enum value in the class
+            constant_value = enum_class[value.upper()]
+            
+        except KeyError:
+            raise ValueError(f"Invalid value '{value}' for {attribute.name}.")
+    else:
+        # If no value provided, use the existing attribute from the first matrix entity
+        constant_value = getattr(matrix[0][0], attribute.name.lower()) 
+
+    # Apply the constant value to all entities in the matrix
+    for row in matrix:
+        for entity in row:
+            setattr(entity, attribute.name.lower(), constant_value)
+            
 #CONSTANT            
-def constant_rule(matrix, attribute):
+def constant_rule(matrix, attribute):    
     for row in matrix:
         # Get the attribute value of the first entity in the row
         constant_value = getattr(row[0], attribute.name.lower())

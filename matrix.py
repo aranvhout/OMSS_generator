@@ -1,4 +1,4 @@
-from rules import Ruletype, AttributeType, apply_rules
+from rules import Ruletype, AttributeType, apply_rules, Rule
 from seed import seed_generator
 from entity import create_random_entity
 import sys, cv2
@@ -53,7 +53,9 @@ def create_matrix(num_rows, num_columns, rules, seed=None, entity_types=["big-sh
 
    
 def validate_matrix(matrix, rules, seed): #wrapper function to check whether the random-rule attribute combination yields accidental patterns
-    for rule, attribute in rules:
+    for rule_obj in rules:
+        rule = rule_obj.rule_type  # Accessing the rule type from the Rule object
+        attribute = rule_obj.attribute  # Accessing the attribute from the Rule object
         if rule is Ruletype.RANDOM and attribute is AttributeType.SHAPE: 
             if not check_rules(matrix, attribute):
                 print('shape check_rules failed, retrying...')
@@ -175,7 +177,7 @@ def create_starting_matrix(rules, n_rows=3, n_columns=3, seed_list=None, entity_
     for i in range(n_rows):
         row = []
         for j in range(n_columns):
-            if not any(rule[1] == AttributeType.POSITION for rule in rules):
+            if not any(rule.attribute == AttributeType.POSITION for rule in rules):
                 entity, seed_list = create_random_entity(seed_list, entity_type)#  Default position
                 
             else:                

@@ -12,6 +12,7 @@ class AttributeType(Enum):#probably move this somewhere else, this doesnt really
     LINETYPE = auto ()
     LINEWIDTH = auto ()
     LINELENGTH = auto ()
+    LINENUMBER = auto ()
     
 class Attribute:
 
@@ -33,12 +34,19 @@ class Sizes(Enum):
     MEDIUM = auto()
     LARGE = auto()
 
+
 class Colors(Enum):
     RED = auto()
     BLUE = auto()
     GREEN = auto()
-    YELLOW = auto ()
-    PURPLE = auto ()
+    YELLOW = auto()
+    LAVENDER = auto()
+    ORANGE = auto()
+    PINK = auto()
+    BEIGE = auto()
+    TEAL = auto()  # New color: Turquoise
+
+       
     
 
 class Angles(Enum):
@@ -64,6 +72,11 @@ class Linetypes(Enum):
     SOLID = auto()
     DASHED = auto()
     LARGEDASHED = auto()
+    
+class Linenumbers(Enum):
+    ONE = auto ()
+    TWO = auto ()
+    THREE = auto ()
     
 class Linelengths(Enum):
     SHORT = auto()
@@ -99,11 +112,12 @@ class LittleShape:
 
 # Class for Line entity
 class Line:
-    def __init__(self, linetype, linewidth, position, size, linelength, angle, index=None):
+    def __init__(self, linetype, linewidth, position, size, linelength, angle, linenumber, index=None):
         self.linetype = linetype
         self.linewidth = linewidth
         self.position = position
         self.linelength = linelength
+        self.linenumber = linenumber
         self.size = size 
         self.angle = angle
         self.index = index
@@ -130,7 +144,7 @@ def create_random_entity(seed_list, entity_type=['big-shape'], position = None):
         random_line_type, seed_list = get_random_attribute(seed_list, list(Linetypes))
         random_line_width, seed_list = get_random_attribute(seed_list, list(Linewidths))
         random_length, seed_list = get_random_attribute(seed_list, list(Linelengths))
-               
+        random_number, seed_list = get_random_attribute(seed_list, list(Linenumbers))      
         random_angle, seed_list = get_random_attribute(seed_list, list(Angles))
         if position == 'random':
             entity_position, seed_list = get_random_attribute(seed_list, list(Positions))
@@ -138,7 +152,7 @@ def create_random_entity(seed_list, entity_type=['big-shape'], position = None):
         else:
             entity_position = None
             
-        return Line(linetype=random_line_type, linewidth=random_line_width, position= entity_position, size=Sizes.MEDIUM, linelength = random_length, angle=random_angle), seed_list
+        return Line(linetype=random_line_type, linewidth=random_line_width, position= entity_position, size=Sizes.MEDIUM, linelength = random_length, angle=random_angle, linenumber=random_number), seed_list
     
     
     

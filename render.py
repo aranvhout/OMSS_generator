@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from math import cos, sin, pi
-from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linelengths, Linewidths, Line, BigShape, LittleShape
+from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linelengths, Linewidths, Line, BigShape, LittleShape, Linenumbers
 
 def render_matrix(entity_dict, panel_size=1500, background_color=(255, 255, 255), line_color=(0, 0, 0), line_thickness=5):
     """
@@ -59,21 +59,32 @@ ANGLE_MAP = {
     Angles.TWO_EIGHTY_EIGHT: 288,
     Angles.THREE_TWENTY_FOUR: 324,
 }
+
 COLOR_MAP = {
-        Colors.RED: (0, 0, 255),      # BGR format
-        Colors.BLUE: (255, 0, 0),
-        Colors.GREEN: (0, 255, 0),
-        Colors.YELLOW: (0, 255, 255),
-        Colors.PURPLE: (255, 0, 255),
-    }
-    
+    Colors.RED: (100, 60, 180),       # Softer Red
+    Colors.BLUE: (180, 140, 255),     # Soft Sky Blue
+    Colors.GREEN: (90, 200, 100),     # Soft Green
+    Colors.YELLOW: (200, 180, 120),   # Mellow Yellow
+    Colors.LAVENDER: (180, 130, 250), # Soft Lavender
+    Colors.ORANGE: (220, 120, 80),    # Muted Orange
+    Colors.PINK: (230, 130, 190),     # Softer Pink
+    Colors.BEIGE: (180, 160, 120),    # Beige
+    Colors.TEAL: (100, 180, 180),     # Teal
+}
+
+
+NUMBER_MAP = {
+    Linenumbers.ONE: 1,
+    Linenumbers.TWO: 2,
+    Linenumbers.THREE: 3}
+
     
 LINEWIDTH_MAP = {
         Linewidths.THIN: 3,
         Linewidths.MEDIUM: 5,
         Linewidths.THICK: 7
     }
-
+LINE_SPACING = 30  # Distance between multiple lines
 
 
 def render_entity(entities, panel_size=500, background_color=(255, 255, 255)):
@@ -161,6 +172,7 @@ def render_triangle(img, center, size, entity):
     rotation_matrix = cv2.getRotationMatrix2D(center, -angle, 1.0)
     pts = cv2.transform(np.array([pts]), rotation_matrix)[0].astype(np.int32)
     cv2.fillPoly(img, [pts], color)
+    cv2.polylines(img, [pts], isClosed=True, color=(0, 0, 0), thickness=2)  # Outline
 
 
 def render_square(img, center, size, entity):
@@ -180,6 +192,7 @@ def render_square(img, center, size, entity):
     rotation_matrix = cv2.getRotationMatrix2D(center, -angle, 1.0)
     pts = cv2.transform(np.array([pts]), rotation_matrix)[0].astype(np.int32)
     cv2.fillPoly(img, [pts], color)
+    cv2.polylines(img, [pts], isClosed=True, color=(0, 0, 0), thickness=2)  # Outline
 
 
 def render_pentagon(img, center, size, entity):
@@ -192,6 +205,7 @@ def render_pentagon(img, center, size, entity):
         pts.append((int(x), int(y)))
     pts = np.array(pts, np.int32).reshape((-1, 1, 2))
     cv2.fillPoly(img, [pts], color)
+    cv2.polylines(img, [pts], isClosed=True, color=(0, 0, 0), thickness=2)  # Outline
 
 
 def render_hexagon(img, center, size, entity):
@@ -204,6 +218,7 @@ def render_hexagon(img, center, size, entity):
         pts.append((int(x), int(y)))
     pts = np.array(pts, np.int32).reshape((-1, 1, 2))
     cv2.fillPoly(img, [pts], color)
+    cv2.polylines(img, [pts], isClosed=True, color=(0, 0, 0), thickness=2)  # Outline
 
 
 def render_decagon(img, center, size, entity):
@@ -216,11 +231,14 @@ def render_decagon(img, center, size, entity):
         pts.append((int(x), int(y)))
     pts = np.array(pts, np.int32).reshape((-1, 1, 2))
     cv2.fillPoly(img, [pts], color)
+    cv2.polylines(img, [pts], isClosed=True, color=(0, 0, 0), thickness=2)  # Outline
 
 
 def render_circle(img, center, length, entity):
     color = COLOR_MAP[entity.color]
     cv2.circle(img, center, int(length), color, -1)
+    cv2.circle(img, center, int(length), (0, 0, 0), 2)  # Outline
+
 
 
 # Line Rendering Functions
@@ -242,56 +260,77 @@ def rotate_point(point, center, angle):#needed for the lines
     py = y_new + cy
     return int(px), int(py)
 
+
+
 def render_solid_line(img, center, length, entity):
     """
-    Renders a solid line with rotation based on entity.angle.
+    Renders one or multiple solid lines with rotation based on entity.angle.
     """
     color = (0, 0, 0)  # Default black color
     thickness = LINEWIDTH_MAP.get(entity.linewidth, 1)
     angle = ANGLE_MAP[entity.angle] * pi / 180  # Convert to radians
+    number = NUMBER_MAP[entity.linenumber]  # Get the number of lines to draw
     
-    # Calculate unrotated start and end points
-    line_start = (center[0] - length // 2, center[1])
-    line_end = (center[0] + length // 2, center[1])
+    # Calculate vertical offsets for multiple lines
+    total_offset = (number - 1) * LINE_SPACING // 2
     
-    # Rotate points around the center
-    line_start = rotate_point(line_start, center, angle)
-    line_end = rotate_point(line_end, center, angle)
-    
-    # Draw the rotated line
-    cv2.line(img, line_start, line_end, color, thickness)
+    for i in range(number):
+        offset = -total_offset + i * LINE_SPACING
+        
+        # Adjust center for the current line
+        adjusted_center = (center[0], center[1] + offset)
+        
+        # Calculate unrotated start and end points
+        line_start = (adjusted_center[0] - length // 2, adjusted_center[1])
+        line_end = (adjusted_center[0] + length // 2, adjusted_center[1])
+        
+        # Rotate points around the center
+        line_start = rotate_point(line_start, center, angle)
+        line_end = rotate_point(line_end, center, angle)
+        
+        # Draw the rotated line
+        cv2.line(img, line_start, line_end, color, thickness)
 
 def render_dashed_line(img, center, length, entity, gap_multiplier=1):
     """
-    Renders a dashed line with rotation based on entity.angle.
+    Renders one or multiple dashed lines with rotation based on entity.angle.
     """
     color = (0, 0, 0)  # Default black color
     thickness = LINEWIDTH_MAP.get(entity.linewidth, 1)
     angle = ANGLE_MAP[entity.angle] * pi / 180  # Convert to radians
+    number = NUMBER_MAP[entity.linenumber]  # Get the number of lines to draw
     dash_length = length // 10
     gap_length = dash_length * gap_multiplier
-    total_length = length
-    line_start_x = center[0] - total_length // 2
-    line_end_x = center[0] + total_length // 2
-
-    # Generate dashes
-    dashes = []
-    for start_x in range(line_start_x, line_end_x, dash_length + gap_length):
-        dash_end_x = min(start_x + dash_length, line_end_x)  # Ensure it doesn't overshoot
-        dash_start = (start_x, center[1])
-        dash_end = (dash_end_x, center[1])
-        dashes.append((dash_start, dash_end))
     
-    # Rotate and draw each dash
-    for dash_start, dash_end in dashes:
-        dash_start = rotate_point(dash_start, center, angle)
-        dash_end = rotate_point(dash_end, center, angle)
-        cv2.line(img, dash_start, dash_end, color, thickness)
+    # Calculate vertical offsets for multiple lines
+    total_offset = (number - 1) * LINE_SPACING // 2
+    
+    for i in range(number):
+        offset = -total_offset + i * LINE_SPACING
+        adjusted_center = (center[0], center[1] + offset)
+        
+        # Generate dashes for the current line
+        line_start_x = adjusted_center[0] - length // 2
+        line_end_x = adjusted_center[0] + length // 2
+        dashes = []
+        
+        for start_x in range(line_start_x, line_end_x, dash_length + gap_length):
+            dash_end_x = min(start_x + dash_length, line_end_x)  # Ensure it doesn't overshoot
+            dash_start = (start_x, adjusted_center[1])
+            dash_end = (dash_end_x, adjusted_center[1])
+            dashes.append((dash_start, dash_end))
+        
+        # Rotate and draw each dash
+        for dash_start, dash_end in dashes:
+            dash_start = rotate_point(dash_start, center, angle)
+            dash_end = rotate_point(dash_end, center, angle)
+            cv2.line(img, dash_start, dash_end, color, thickness)
 
 def render_large_dashed_line(img, center, length, entity):
     """
-    Renders a dashed line with larger gaps and rotation based on entity.angle.
+    Renders one or multiple dashed lines with larger gaps and rotation based on entity.angle.
     """
     render_dashed_line(img, center, length, entity, gap_multiplier=3)
+
 
 
