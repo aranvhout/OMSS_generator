@@ -86,6 +86,27 @@ LINEWIDTH_MAP = {
     }
 LINE_SPACING = 30  # Distance between multiple lines
 
+def render_alternatives (entities, panel_size=500, background_color=(255, 255, 255)):
+    """
+    Render multiple entities together in a single grid and return the image.
+    
+    Args:
+        entities: A list of entity objects to be drawn.
+        panel_size: Size of the square canvas.
+        background_color: Background color as an RGB tuple.
+    
+    Returns:
+        A NumPy array representing the image.
+    """
+    print('a', entities)
+    # Create a blank canvas
+    img = np.ones((panel_size, panel_size, 3), dtype=np.uint8) * np.array(background_color, dtype=np.uint8)
+
+    # Use the existing function to render the entities
+    img = render_entity(entities, panel_size=panel_size, background_color=background_color)
+
+    return img
+
 
 def render_entity(entities, panel_size=500, background_color=(255, 255, 255)):
     """
@@ -154,50 +175,127 @@ def render_entity(entities, panel_size=500, background_color=(255, 255, 255)):
     
 
 
-# Updated Shape Rendering Functions
+import numpy as np
+import cv2
+from math import cos, sin, pi
+
 def render_triangle(img, center, size, entity):
+    angle = ANGLE_MAP[entity.angle] * pi / 180  # Convert angle to radians
+    print(f"Rotation angle in radians: {angle}")  # Debugging line
+
     color = COLOR_MAP[entity.color]
-    angle = ANGLE_MAP[entity.angle] * pi / 180
+
     scale_factor = 1.7
     adjusted_size = size * scale_factor
     half_size = adjusted_size / 2
     height = adjusted_size * np.sqrt(3) / 2
 
+    # Define main triangle points
+    C1 = [0, -2 * height / 3]  # Top vertex
+    C2 = [-half_size, height / 3]  # Bottom-left vertex
+    C6 = [half_size, height / 3]  # Bottom-right vertex
+
+    # Define cutout wedge points
+    wedge_size = adjusted_size / 3
+    wedge_size = wedge_size * 0.5# Adjust the size of the missing wedge
+    wedge_height = wedge_size * np.sqrt(3) / 2  # Height of the wedge
+
+    C3 = [-wedge_size / 2, height / 3]  # Left edge of wedge
+    C4 = [0, height / 3 - wedge_height]  # Bottom tip of wedge
+    C5 = [wedge_size / 2, height / 3]  # Right edge of wedge
+
+    # Create the ordered list of points to form the correct shape
     pts = np.array([
-        [center[0], center[1] - 2 * height / 3],
-        [center[0] - half_size, center[1] + height / 3],
-        [center[0] + half_size, center[1] + height / 3],
+        C1,  # Top vertex
+        C2,  # Bottom-left vertex
+        C3,  # Left edge of wedge
+        C4,  # Bottom tip of wedge
+        C5,  # Right edge of wedge
+        C6   # Bottom-right vertex
     ], np.float32)
 
-    rotation_matrix = cv2.getRotationMatrix2D(center, -angle, 1.0)
-    pts = cv2.transform(np.array([pts]), rotation_matrix)[0].astype(np.int32)
-    cv2.fillPoly(img, [pts], color)
-    cv2.polylines(img, [pts], isClosed=True, color=(0, 0, 0), thickness=2)  # Outline
+    # Apply rotation manually
+    rotation_matrix = np.array([
+        [cos(-angle), -sin(-angle)],
+        [sin(-angle), cos(-angle)]
+    ])
+
+    rotated_pts = np.dot(pts, rotation_matrix.T) + center  # Rotate and shift to center
+
+    # Convert to integer points for OpenCV
+    rotated_pts = rotated_pts.astype(np.int32)
+
+    # Draw the modified triangle
+    cv2.fillPoly(img, [rotated_pts], color)
+    
+    # Outline for visibility
+    cv2.polylines(img, [rotated_pts], isClosed=True, color=(0, 0, 0), thickness=2)
+
+
+
+
+# Updated Shape Rendering Functions
+
+
+
 
 
 def render_square(img, center, size, entity):
+    angle = ANGLE_MAP[entity.angle] * pi / 180  # Convert angle to radians
     color = COLOR_MAP[entity.color]
-    angle = ANGLE_MAP[entity.angle] * pi / 180
     scale_factor = 1.3
-    size = size * scale_factor
-    half_size = size / 2
+    adjusted_size = size * scale_factor
+    half_size = adjusted_size / 2
+    
+    # Define the square points 
+    C1 = [center[0] - half_size, center[1] - half_size]  # Top-left corner
+    C2 = [center[0] + half_size, center[1] - half_size]  # Top-right corner
+    C3 = [center[0] + half_size, center[1] + half_size]  # Bottom-right corner
+    C4 = [center[0] - half_size, center[1] + half_size]  # Bottom-left corner
+        
+    
+    # Define the wedge points 
+    wedge_size = adjusted_size / 4
+    
+    wedge_height = wedge_size * np.sqrt(3) / 2  # Height of the wedge
+    
+    C5 = [center[0] + wedge_size / 2, center[1] + half_size]  # Bottom-right corner of wedge
+    C6 = [center[0], center[1] + half_size - wedge_height]  # Tip of the wedge
+    C7 = [center[0] -  wedge_size / 2, center[1] + half_size]  # Bottom-left corner of wedge
+    
+    # Combine the points for the square and wedge
+    pts = np.array([C1, C2, C3, C5, C6, C7, C4], np.int32)
 
-    pts = np.array([
-        [center[0] - half_size, center[1] - half_size],
-        [center[0] + half_size, center[1] - half_size],
-        [center[0] + half_size, center[1] + half_size],
-        [center[0] - half_size, center[1] + half_size],
-    ], np.float32)
+    # Apply rotation manually
+    rotation_matrix = np.array([
+        [cos(-angle), -sin(-angle)],
+        [sin(-angle), cos(-angle)]
+    ])
 
-    rotation_matrix = cv2.getRotationMatrix2D(center, -angle, 1.0)
-    pts = cv2.transform(np.array([pts]), rotation_matrix)[0].astype(np.int32)
-    cv2.fillPoly(img, [pts], color)
-    cv2.polylines(img, [pts], isClosed=True, color=(0, 0, 0), thickness=2)  # Outline
+    # Calculate the center shift and apply rotation
+    shifted_pts = np.dot(pts - np.array(center), rotation_matrix.T) + center
+
+    # Convert to integer points for OpenCV
+    shifted_pts = shifted_pts.astype(np.int32)
+
+    # Draw the modified square with the triangle cutout
+    cv2.fillPoly(img, [shifted_pts], color)
+
+    # Outline for visibility
+    cv2.polylines(img, [shifted_pts], isClosed=True, color=(0, 0, 0), thickness=2)
+
+
+
+
+
 
 
 def render_pentagon(img, center, size, entity):
     color = COLOR_MAP[entity.color]
-    angle = ANGLE_MAP[entity.angle] * pi / 180
+    if entity.angle is not None:        
+       angle = ANGLE_MAP[entity.angle] * pi / 180    
+    else:
+      angle = ANGLE_MAP[Angles.ZERO] * pi / 180
     pts = []
     for i in range(5):
         x = center[0] + size * cos(2 * pi * i / 5 + angle)
@@ -210,7 +308,10 @@ def render_pentagon(img, center, size, entity):
 
 def render_hexagon(img, center, size, entity):
     color = COLOR_MAP[entity.color]
-    angle = ANGLE_MAP[entity.angle] * pi / 180
+    if entity.angle is not None:        
+        angle = ANGLE_MAP[entity.angle] * pi / 180    
+    else:
+       angle = ANGLE_MAP[Angles.ZERO] * pi / 180
     pts = []
     for i in range(6):
         x = center[0] + size * cos(2 * pi * i / 6 + angle)
@@ -222,8 +323,12 @@ def render_hexagon(img, center, size, entity):
 
 
 def render_decagon(img, center, size, entity):
-    color = COLOR_MAP[entity.color]
-    angle = ANGLE_MAP[entity.angle] * pi / 180
+    if entity.angle is not None:        
+        angle = ANGLE_MAP[entity.angle] * pi / 180    
+    else:
+       angle = ANGLE_MAP[Angles.ZERO] * pi / 180 
+       
+    color = COLOR_MAP[entity.color]   
     pts = []
     for i in range(10):
         x = center[0] + size * cos(2 * pi * i / 10 + angle)
@@ -232,13 +337,40 @@ def render_decagon(img, center, size, entity):
     pts = np.array(pts, np.int32).reshape((-1, 1, 2))
     cv2.fillPoly(img, [pts], color)
     cv2.polylines(img, [pts], isClosed=True, color=(0, 0, 0), thickness=2)  # Outline
+    
+    
 
+
+
+import cv2
+import numpy as np
+import math
 
 def render_circle(img, center, length, entity):
     color = COLOR_MAP[entity.color]
-    cv2.circle(img, center, int(length), color, -1)
-    cv2.circle(img, center, int(length), (0, 0, 0), 2)  # Outline
+    start_angle = ANGLE_MAP[entity.angle]
+    end_angle = start_angle + 324  # 360 - 36
 
+    # Draw the filled arc
+    cv2.ellipse(img, center, (int(length), int(length)), 0, start_angle, end_angle, color, -1)
+
+    # Calculate the start and end points for the missing pie section
+    start_rad = math.radians(start_angle)
+    end_rad = math.radians(end_angle)
+
+    start_point = (int(center[0] + length * math.cos(start_rad)), int(center[1] + length * math.sin(start_rad)))
+    end_point = (int(center[0] + length * math.cos(end_rad)), int(center[1] + length * math.sin(end_rad)))
+
+    # Draw the outer arc
+    cv2.ellipse(img, center, (int(length), int(length)), 0, start_angle, end_angle, (0, 0, 0), 2)
+
+    # Draw the missing pie edges (lines from center to the arc)
+    cv2.line(img, center, start_point, (0, 0, 0), 2)
+    cv2.line(img, center, end_point, (0, 0, 0), 2)
+
+
+
+    
 
 
 # Line Rendering Functions

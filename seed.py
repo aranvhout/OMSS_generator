@@ -25,3 +25,12 @@ def get_random_attribute(seed_list, choices, number=None):
     seed_list = update_seedlist(seed_list)
     random.seed(None)
     return attribute, seed_list
+
+def random_shuffle (seed_list, input_list):
+    random.seed(seed_list[0])
+    
+    random.shuffle(input_list)
+    
+    seed_list = update_seedlist(seed_list)
+    random.seed(None)
+    return input_list, seed_list    

@@ -92,27 +92,27 @@ class Linewidths(Enum):
 
 # Class for BigShape entity
 class BigShape:
-    def __init__(self, shape, size, color, angle, position, index=None):
+    def __init__(self, shape, size, color, angle, position):
         self.shape = shape
         self.size = size 
         self.color = color
         self.angle = angle
         self.position = position
-        self.index = index 
+        
         
 class LittleShape:
-    def __init__(self, shape, size, color, angle, position, index=None):
+    def __init__(self, shape, size, color, angle, position):
         self.shape = shape
         self.size = size 
         self.color = color
         self.angle = angle
         self.position = position
-        self.index = index 
+        
 
 
 # Class for Line entity
 class Line:
-    def __init__(self, linetype, linewidth, position, size, linelength, angle, linenumber, index=None):
+    def __init__(self, linetype, linewidth, position, size, linelength, angle, linenumber):
         self.linetype = linetype
         self.linewidth = linewidth
         self.position = position
@@ -120,11 +120,11 @@ class Line:
         self.linenumber = linenumber
         self.size = size 
         self.angle = angle
-        self.index = index
+        
 
 # Function to create a random entity (either BigShape or Line)
-def create_random_entity(seed_list, entity_type=['big-shape'], position = None):
-    if entity_type == "big-shape":
+def create_random_entity(seed_list, entity_type=['BigShape'], position = None):
+    if entity_type == "BigShape":
         # Create random BigShape attributes
         random_shape, seed_list = get_random_attribute(seed_list, list(Shapes)) 
         random_size, seed_list = get_random_attribute(seed_list, list(Sizes))
@@ -137,9 +137,9 @@ def create_random_entity(seed_list, entity_type=['big-shape'], position = None):
         else:
             entity_position = None
         
-        return BigShape(shape=random_shape, size=random_size, color=random_color, angle=random_angle, position= entity_position), seed_list
+        return BigShape(shape=random_shape, size=random_size, color=random_color, angle= random_angle, position= entity_position), seed_list
 
-    elif entity_type == "line":
+    elif entity_type == "Line":
         # Create random Line attributes
         random_line_type, seed_list = get_random_attribute(seed_list, list(Linetypes))
         random_line_width, seed_list = get_random_attribute(seed_list, list(Linewidths))
@@ -156,7 +156,7 @@ def create_random_entity(seed_list, entity_type=['big-shape'], position = None):
     
     
     
-    elif entity_type == "little-shape":
+    elif entity_type == "LittleShape":
         # Create random BigShape attributes
         random_shape, seed_list = get_random_attribute(seed_list, list(Shapes)) 
         random_size, seed_list = get_random_attribute(seed_list, list(Sizes))

@@ -2,13 +2,13 @@ from rules import Ruletype, AttributeType, apply_rules, Rule
 from seed import seed_generator
 from entity import create_random_entity
 import sys, cv2
-from render import render_matrix
-
-
+from render import render_matrix, render_entity, render_alternatives
+from alternatives import generate_alternatives
+import os
 n_iteration=0 #create global iteration variable
 
 # Function to create a matrix of entities (BigShape or Line)
-def create_matrix(num_rows, num_columns, rules, seed=None, entity_types=["big-shape"]): 
+def create_matrix(num_rows, num_columns, rules, seed=None, alternatives = None,  entity_types=["big-shape"]): 
     
     matrices = {}  # To store valid matrices
     
@@ -26,26 +26,38 @@ def create_matrix(num_rows, num_columns, rules, seed=None, entity_types=["big-sh
             starting_matrix = create_starting_matrix(entity_rules, num_rows, num_columns, seed_list, entity_type)#note to self. entity type defined in the for-loop 
             # Apply rules to the starting matrix
             matrix = apply_rules(starting_matrix, entity_rules, seed_list)
-            
+            print(matrix)
             # Validate the matrix
             if validate_matrix(matrix, entity_rules, seed):
                 matrices[entity_type] = matrix  # Save the valid matrix
-                
-                
-       
+                                      
             else:
                 # Adjust seed if necessary and retry
                 n_iteration += 117
                 attempt += 1
         
-    # Check if any entity types failed to generate a valid matrix
+    
+    # Ensure all entity types have valid matrices
     if len(matrices) != len(entity_types):
         raise ValueError("Unable to generate valid matrices for all specified entity types after multiple attempts")
-    else:
-        row_lengths = [(0, 3), (0, 3), (0,3)] 
-        rendered_solution_matrix = render_matrix (matrices,)
-        output_path_with_lines = "solution_matrix.png"
-        cv2.imwrite(output_path_with_lines, rendered_solution_matrix)
+    
+    row_lengths = [(0, 3), (0, 3), (0,3)] 
+    rendered_solution_matrix = render_matrix (matrices,)
+    output_path_with_lines = "solution_matrix.png"
+    cv2.imwrite(output_path_with_lines, rendered_solution_matrix)
+        
+    if alternatives is not None:
+       alternative = generate_alternatives(matrices, entity_types, alternatives, seed_list)
+       os.makedirs("alternatives", exist_ok=True)  # Create the folder if it doesn't exist
+
+       for idx, single_alternative in enumerate(alternative['BigShape']):  # Loop over each alternative
+            rendered_alternative = render_alternatives([single_alternative])  # Wrap in list
+            
+            # Save each alternative separately in the "alternatives" folder
+            output_path = os.path.join("alternatives", f"alternative_BigShape_{idx}.png")
+            cv2.imwrite(output_path, rendered_alternative)
+        
+    
 
         
     print(matrices)  

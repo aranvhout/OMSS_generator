@@ -2,33 +2,26 @@
 from rules import Ruletype, AttributeType, Rule
 from matrix import create_matrix
 
-# Define the rules for the matrix
-rules = [
-    (Ruletype.RANDOM, AttributeType.SHAPE),
-    (Ruletype.DISTRIBUTE_THREE, AttributeType.SIZE),
-    (Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
-    (Ruletype.RANDOM, AttributeType.ANGLE)
-    
-]
 
 
 
 # Define rules for each entity
 rules = {
-    'big-shape': [
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.SHAPE, value ='triangle'),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.COLOR, value = 'red'),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')],
+    'BigShape': [
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SHAPE, value = 'Circle'),
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
+        Rule(Ruletype.PROGRESSION, AttributeType.ANGLE),
+        Rule(Ruletype.CONSTANT, AttributeType.SIZE)],
     
     
-       'line': [
+       'Line': [
            Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE, value = 'ONE_EIGHTY'),
            Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.LINENUMBER),
            Rule(Ruletype.RANDOM, AttributeType.LINELENGTH, value = 'LONG'),
            Rule(Ruletype.RANDOM, AttributeType.LINEWIDTH, value = 'MEDIUM'),
            Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium'),
            Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.LINETYPE),
+           Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.POSITION),
        
        ]}
 
@@ -36,7 +29,7 @@ rules = {
 
 # Generate matrix
 
-matrix = create_matrix(3, 3, rules, entity_types=['big-shape', 'line'])
+matrix = create_matrix(3, 3, rules, alternatives=16, seed = None, entity_types=['BigShape'])
 # Attribute mapping for each entity type
 entity_attributes = {
     "big-shape": ["shape", "size", "color", "angle", "position", "index"],
