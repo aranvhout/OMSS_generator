@@ -25,7 +25,7 @@ class Shapes(Enum):
     TRIANGLE = auto()
     SQUARE = auto()
     PENTAGON = auto()
-    HEXAGON = auto()
+    SEPTAGON = auto()
     DECAGON = auto()
     CIRCLE = auto()
 

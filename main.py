@@ -8,7 +8,7 @@ from matrix import create_matrix
 # Define rules for each entity
 rules = {
     'BigShape': [
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.SHAPE, value = 'Circle'),
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.SHAPE),
         Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
         Rule(Ruletype.PROGRESSION, AttributeType.ANGLE),
         Rule(Ruletype.CONSTANT, AttributeType.SIZE)],
