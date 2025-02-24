@@ -1,7 +1,8 @@
 from enum import Enum, auto
 from typing import Optional
 from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linelengths, Linewidths, AttributeType, Linenumbers
-from seed import get_random_attribute, update_seedlist
+from seed import get_random_attribute, update_seedlist, random_shuffle
+import numpy as np
 
 ATTRIBUTE_TO_ENUM = {
     AttributeType.COLOR: Colors,
@@ -30,6 +31,7 @@ class Rule:
         self.value = value  # Optional additional value    
   
 def apply_rules(matrix, rules, seed_list):
+    binding_list = [] #for now this is only relevant for dist3, basically it check
     for rule_obj in rules:
         rule = rule_obj.rule_type  # Accessing rule_type from Rule object
         attribute = rule_obj.attribute
@@ -47,12 +49,15 @@ def apply_rules(matrix, rules, seed_list):
         
         elif rule == Ruletype.PROGRESSION:
             progression_rule(matrix, attribute, seed_list)
+            
             seed_list = update_seedlist(seed_list)  # Update each time
             
         elif rule == Ruletype.DISTRIBUTE_THREE:
-            distribute_three(matrix, attribute, seed_list)
+            distribute_three(matrix, attribute, binding_list, seed_list)
             seed_list = update_seedlist(seed_list)  # Update each time
-            
+        
+    dis3_binding = check_binding(binding_list)
+    print (dis3_binding)
     return matrix
 
 
@@ -165,29 +170,61 @@ def progression_rule(matrix, attribute, seed_list):
 
 
        
-def distribute_three (matrix, attribute, seed_list):
-    # get three unique values from the attribute
+def distribute_three(matrix, attribute, binding_list, seed_list):
+    # Get the total number of unique attribute values
     max_value = len(globals()[attribute.name.capitalize() + "s"])
-    
     potential_values = list(range(1, max_value + 1))
-    distribute_three_values, seed_list = get_random_attribute(seed_list, potential_values, number = 3)
-       
-        # Assign these values to each entity in the row
-    for row in matrix:
-        # Create a new randomized order for each row (not the most straightforward way, but I want to update the seed_list)
+
+    # Get three unique values
+    distribute_three_values, seed_list = get_random_attribute(seed_list, potential_values, number=3)
+    
+    # copy the values in a list and shuffle
+    rows = [distribute_three_values[:]]  # Slice the entire, distribute_three_values list hereby essentialy copying it
+
+    
+    for _ in range(1, len(matrix)):  # Create the remaining rows with a cyclic shift
+        new_row = rows[-1][1:] + rows[-1][:1]
+        rows.append(new_row)
+   
+    rows, seed_list = random_shuffle(seed_list, rows)  # Shuffle row order for randomness
+    
+
+# Get the diagonal, then save the direction in binding list. 
+    np_matrix = np.array(rows)
+    diagonal = np.diagonal(np_matrix)
+    if len(np.unique(diagonal)) > 1:
+        binding_list.append ('lower')
+    elif len(np.unique(diagonal)) <= 1:
+        binding_list.append ('upper')
+    
+    
+    # Assign values to entities
+    for row, row_values in zip(matrix, rows):
         
-       row_values, seed_list = get_random_attribute(seed_list, distribute_three_values, number = 3)
-       
-       for i, entity in enumerate(row):
-            # Use the shuffled order to assign each value
+        for i, entity in enumerate(row):
             value_to_assign = row_values[i]
-            
-            # Find the corresponding enum member and set it on the entity's attribute
+
+            # Find the corresponding enum member and set the attribute
             for enum_member in globals()[attribute.name.capitalize() + "s"]:
                 if enum_member.value == value_to_assign:
                     setattr(entity, attribute.name.lower(), enum_member)
                     break
             else:
                 raise ValueError(f"No matching enum value found for {value_to_assign}.")
-            
+
+    return binding_list  
+
+def check_binding(binding_list):
+    """
+    Checks the binding list. If at least two elements are the same ('upper' or 'lower'),
+    it indicates binding.
+
+    Parameters:
+    binding_list (list of str): A list containing 'upper' or 'lower' strings.
+
+    Returns:
+    bool: True if binding is occurring (at least two values are the same), False otherwise.
+    """
+    unique_elements, counts = np.unique(binding_list, return_counts=True)
+    return any(count >= 2 for count in counts)  # True if any element appears at least twice
   

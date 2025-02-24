@@ -62,15 +62,14 @@ ANGLE_MAP = {
 }
 
 COLOR_MAP = {
-    Colors.RED: (100, 60, 180),       # Softer Red
-    Colors.BLUE: (180, 140, 255),     # Soft Sky Blue
-    Colors.GREEN: (90, 200, 100),     # Soft Green
-    Colors.YELLOW: (200, 180, 120),   # Mellow Yellow
-    Colors.LAVENDER: (180, 130, 250), # Soft Lavender
-    Colors.ORANGE: (220, 120, 80),    # Muted Orange
-    Colors.PINK: (230, 130, 190),     # Softer Pink
-    Colors.BEIGE: (180, 160, 120),    # Beige
-    Colors.TEAL: (100, 180, 180),     # Teal
+    Colors.RED: (100, 60, 180),       # Softer Red V
+    Colors.PINK: (180, 140, 255),     # Pink V
+    Colors.GREEN: (90, 200, 100),     # Soft Green V
+    Colors.YELLOW: (0, 230, 255),     # Mellow Yellow V
+    Colors.BLUE: (180, 160, 120),     # Blue
+    Colors.LAVENDER: (230, 130, 190),     # Lavender
+    Colors.BROWN: (100, 180, 180),     # brown
+    Colors.ORANGE: (100, 160, 255)   #teal
 }
 
 
@@ -99,7 +98,7 @@ def render_alternatives (entities, panel_size=500, background_color=(255, 255, 2
     Returns:
         A NumPy array representing the image.
     """
-    print('a', entities)
+    
     # Create a blank canvas
     img = np.ones((panel_size, panel_size, 3), dtype=np.uint8) * np.array(background_color, dtype=np.uint8)
 

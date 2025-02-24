@@ -3,25 +3,21 @@ from seed import random_shuffle, get_random_attribute
 from entity import BigShape, LittleShape, Line, Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linelengths, Linenumbers, Linewidths
 import inspect
 import copy
+from rules import Ruletype
 
-def generate_alternatives(matrices, entity_types, n_alternatives, seed_list):
+def generate_alternatives(matrices, entity_types, n_alternatives, seed_list, rules):
     # 1. Make a dictionary of each entity and its latest entrances
     alternative_dict = {entity_type: matrices[entity_type][-1][-1] for entity_type in matrices}
 
    # 2. Generate alternatives for each entity and replace its value in the dictionary
     for key in alternative_dict:
-        alternative_dict[key] = generate_alternatives_for_entity(alternative_dict[key], key, n_alternatives, seed_list)
+        alternative_dict[key] = generate_alternatives_for_entity(alternative_dict[key], key, n_alternatives, seed_list, rules)
 
-   # 3. Print out each instance in the alternative_dict properly #can be removed later
-    for key in alternative_dict:
-        print(f"\nEntity Type: {key}")
-        for instance in alternative_dict[key]:  # Iterate over the list of instances
-            print(vars(instance))  # Print all attributes of the instance
-    
+   
     return alternative_dict
     
     
-def generate_alternatives_for_entity (entity, entity_type, n_alternatives, seed_list):
+def generate_alternatives_for_entity (entity, entity_type, n_alternatives, seed_list, rules):
     #1 ; list for entity_type
     if entity_type == 'BigShape':
         init_signature = inspect.signature(BigShape.__init__)
@@ -35,12 +31,38 @@ def generate_alternatives_for_entity (entity, entity_type, n_alternatives, seed_
         init_signature = inspect.signature(Line.__init__)
         attribute_list = [param for param in init_signature.parameters if param != "self"]
         
-   #2: shuffle entity list
-    attribute_list, seed_list = random_shuffle(seed_list, attribute_list)   
-    print('attributes', attribute_list)
-    #3: Generate alternatives by change one attribute at time, then using the resulting entities as a new starting point untill number of needed alternatives is reached  
+    
+
+    
+
+    
+   #2: shuffle attribute list
+    attribute_list, seed_list = random_shuffle(seed_list, attribute_list)
+    
+    #3 save all the non-constant rules in a separate list
+    # Get rules for this entity type
+    non_constant_attributes = []
+    entity_rules = rules.get(entity_type, [])
+    for rule in entity_rules:
+        if rule.rule_type != Ruletype.CONSTANT:
+            non_constant_attributes.append(rule.attribute)  # Store attribute_type
+            
+    #4 reorder the attribute list so that the constant rules get put in last place
+    attribute_list[:] = [
+    attribute for attribute in attribute_list if attribute.lower() in [str(attr.name).lower() for attr in non_constant_attributes]
+    ] + [
+    attribute for attribute in attribute_list if attribute.lower() not in [str(attr.name).lower() for attr in non_constant_attributes]
+    ]
+
+   
+    
+    #5: Generate alternatives by change one attribute at time, then using the resulting entities as a new starting point untill number of needed alternatives is reached  
     iterations = math.ceil(math.log(n_alternatives, 2)) #calculate number of iterations
     alternative_list = [entity]
+    
+    
+    
+    
     for i in range(iterations):  
         attribute=attribute_list[i]
         new_alternative_list = []
@@ -64,6 +86,9 @@ def modify_attribute(entity, attribute, seed_list):
     # Get the original value of the attribute
     original_value = getattr(entity, attribute)
     
+    #apply constraints
+    
+    
     # Get a new random value that is different from the original
     new_value, seed_list = get_new_random_value(attribute, seed_list, exclude=original_value)
 
@@ -78,7 +103,7 @@ def modify_attribute(entity, attribute, seed_list):
     return alternative_list
 
 def get_new_random_value(attribute, seed_list, exclude=None):
-    """Dynamically fetch a random value for the given attribute, ensuring it's different from 'exclude'."""
+    """Dynamically fetch a random value for the given attribute, ensuring it's not in 'exclude'."""
     enum_class_name = attribute.capitalize() + "s"  # Example: "shape" -> "Shapes"
     
     if enum_class_name not in globals():  
@@ -86,8 +111,14 @@ def get_new_random_value(attribute, seed_list, exclude=None):
 
     enum_class = globals()[enum_class_name]  # Retrieve the Enum class dynamically
 
-    # Get all possible values, excluding the current one if provided
-    possible_values = [val for val in list(enum_class) if val != exclude]
+    # Ensure exclude is a list
+    if exclude is None:
+        exclude = []
+    elif not isinstance(exclude, list):
+        exclude = [exclude]
+
+    # Get all possible values, excluding any in the exclude list
+    possible_values = [val for val in list(enum_class) if val not in exclude]
 
     # Ensure there's at least one option left
     if not possible_values:

@@ -10,7 +10,7 @@ rules = {
     'BigShape': [
         Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.SHAPE),
         Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
-        Rule(Ruletype.PROGRESSION, AttributeType.ANGLE),
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.ANGLE),
         Rule(Ruletype.CONSTANT, AttributeType.SIZE)],
     
     
@@ -29,7 +29,7 @@ rules = {
 
 # Generate matrix
 
-matrix = create_matrix(3, 3, rules, alternatives=16, seed = None, entity_types=['BigShape'])
+matrix = create_matrix(3, 3, rules, alternatives=17, seed = None, alternative_seed = 8, entity_types=['BigShape'])
 # Attribute mapping for each entity type
 entity_attributes = {
     "big-shape": ["shape", "size", "color", "angle", "position", "index"],
@@ -37,7 +37,7 @@ entity_attributes = {
 }
 
 # Check and print the matrix for the specified entity type
-a = True
+a = False
 entity_type = "big-shape"  # Specify the entity type to print
 
 if a is True and entity_type in matrix:
@@ -54,6 +54,15 @@ if a is True and entity_type in matrix:
                 f"{attr.capitalize()}={getattr(entity, attr, 'N/A')}" for attr in attributes
             )
             print(f"  Entity {i + 1}: {entity_details}")
+            
+            
+            
+            
+            
+            
+            
+            
+            
 else:
     print(f"Matrix for entity type '{entity_type}' not found or 'a' is False.")
 

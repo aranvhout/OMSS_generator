@@ -37,15 +37,14 @@ class Sizes(Enum):
 
 class Colors(Enum):
     RED = auto()
-    BLUE = auto()
+    PINK = auto()
     GREEN = auto()
     YELLOW = auto()
+    BLUE = auto()
     LAVENDER = auto()
-    ORANGE = auto()
-    PINK = auto()
-    BEIGE = auto()
-    TEAL = auto()  # New color: Turquoise
-
+    BROWN = auto()
+    ORANGE = auto ()#
+  
        
     
 

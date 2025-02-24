@@ -8,7 +8,7 @@ import os
 n_iteration=0 #create global iteration variable
 
 # Function to create a matrix of entities (BigShape or Line)
-def create_matrix(num_rows, num_columns, rules, seed=None, alternatives = None,  entity_types=["big-shape"]): 
+def create_matrix(num_rows, num_columns, rules, seed=None, alternatives = None, alternative_seed = None,  entity_types=["big-shape"]): 
     
     matrices = {}  # To store valid matrices
     
@@ -21,12 +21,12 @@ def create_matrix(num_rows, num_columns, rules, seed=None, alternatives = None, 
         
         while entity_type not in matrices and attempt < 11:
             # Generate seed list
-            seed_list = seed_generator(seed + n_iteration if seed is not None else seed)
+            seed_list = seed_generator(seed + n_iteration if seed is not None else seed)#aka if seed is none, keep doing it the iteration with none
             # Create a starting matrix for the current entity type
             starting_matrix = create_starting_matrix(entity_rules, num_rows, num_columns, seed_list, entity_type)#note to self. entity type defined in the for-loop 
             # Apply rules to the starting matrix
             matrix = apply_rules(starting_matrix, entity_rules, seed_list)
-            print(matrix)
+            
             # Validate the matrix
             if validate_matrix(matrix, entity_rules, seed):
                 matrices[entity_type] = matrix  # Save the valid matrix
@@ -47,10 +47,11 @@ def create_matrix(num_rows, num_columns, rules, seed=None, alternatives = None, 
     cv2.imwrite(output_path_with_lines, rendered_solution_matrix)
         
     if alternatives is not None:
-       alternative = generate_alternatives(matrices, entity_types, alternatives, seed_list)
+       alternative_seed_list = seed_generator (alternative_seed)
+       alternatives = generate_alternatives(matrices, entity_types, alternatives, alternative_seed_list, rules)
        os.makedirs("alternatives", exist_ok=True)  # Create the folder if it doesn't exist
 
-       for idx, single_alternative in enumerate(alternative['BigShape']):  # Loop over each alternative
+       for idx, single_alternative in enumerate(alternatives['BigShape']):  # Loop over each alternative
             rendered_alternative = render_alternatives([single_alternative])  # Wrap in list
             
             # Save each alternative separately in the "alternatives" folder
@@ -60,7 +61,7 @@ def create_matrix(num_rows, num_columns, rules, seed=None, alternatives = None, 
     
 
         
-    print(matrices)  
+    
     return matrices
 
    
