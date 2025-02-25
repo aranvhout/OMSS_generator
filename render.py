@@ -4,7 +4,7 @@ import math
 from math import cos, sin, pi
 from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linelengths, Linewidths, Line, BigShape, LittleShape, Linenumbers
 
-def render_matrix(entity_dict, panel_size=1500, background_color=(255, 255, 255), line_color=(0, 0, 0), line_thickness=5):
+def render_matrix(entity_dict, problem_matrix = False, panel_size=1500, background_color=(255, 255, 255), line_color=(0, 0, 0), line_thickness=5):
     """
     Render corresponding entities from multiple 3x3 matrices together in each grid cell.
     
@@ -27,6 +27,8 @@ def render_matrix(entity_dict, panel_size=1500, background_color=(255, 255, 255)
     # Render the grid for all entities
     for r in range(3):  # Loop over rows
         for c in range(3):  # Loop over columns
+            if r == 2 and c == 2 and problem_matrix == True:
+                continue  
             # Collect entities from each matrix at the current position
             entities = [matrix[r][c] for matrix in entity_dict.values()]
 

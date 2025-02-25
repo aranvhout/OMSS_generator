@@ -28,3 +28,7 @@ I think these subentities can be best viewed as an separate class from the main 
 also for example with the random rule, just by chance a colour might be really dominant
 - remove columns and row arguments
  - what if not all the rules are specified for an entity. I think it just fills in random stuff, but doesnt check whether there are accidental patterns. maybe make constant the default
+ 
+ -make sure a seed_list is returned in more functions!!
+ -HOW DOES FULL CONSTANT RELATE TO ALTERNATIVES? SOLVED, just put it back at the splitting order
+ -constant should always have different values for each row, FIXED

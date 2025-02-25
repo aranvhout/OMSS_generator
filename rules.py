@@ -39,7 +39,7 @@ def apply_rules(matrix, rules, seed_list):
         
         
         if rule == Ruletype.CONSTANT:
-            constant_rule(matrix, attribute)
+            constant_rule(matrix, attribute, seed_list)
             
         elif rule == Ruletype.FULL_CONSTANT:
             full_constant_rule(matrix, attribute, value)
@@ -81,84 +81,55 @@ def full_constant_rule(matrix, attribute, value):
             setattr(entity, attribute.name.lower(), constant_value)
             
 #CONSTANT            
-def constant_rule(matrix, attribute):    
+def constant_rule(matrix, attribute, seed_list):   
+    #1 list all values of class
+    values=[]
+    
+    for enum_member in globals()[attribute.name.capitalize() + "s"]:
+        values.append(enum_member)
+   
+    n_values =len(values)
+   
     for row in matrix:
-        # Get the attribute value of the first entity in the row
-        constant_value = getattr(row[0], attribute.name.lower())
+        constant_value, seed_value = get_random_attribute(seed_list, values)
+        if n_values >=3: 
+            values.remove (constant_value)# remove it so we get unique values for each row, only remove it when we the attribute does have 3 instances at least
+        
         # Set this constant value for the specified attribute across all entities in the row
         for entity in row:
             setattr(entity, attribute.name.lower(), constant_value)
             
-#PROGRESSION            
-def determine_progression_params(attribute, seed_list):
-    """Determines the max steps, step size, and direction for a given attribute type to make the progression rule work."""
-    max_value = len(globals()[attribute.name.capitalize() + "s"])#this line works, chatgpt came up with it, i dont fully understand the globals part
-    possible_step_sizes = [1]#stepsize 1 is always possible, I iniatialise it already here, so that it will occur twice in the stepsize list, giving it more chance to occur
-  
-    #add 2 to potenrial stepsizes if possible
-    for step_size in [1, 2]:
-      if max_value / step_size >= 2:
-          possible_step_sizes.append(step_size)
-          
-          
-    # based on seed chose step_size and direction 
-       
-    step_size, seed_list = get_random_attribute(seed_list, possible_step_sizes)
-    direction, seed_list = get_random_attribute(seed_list, [-1,1])
+#PROGRESSION    
     
-    return max_value, step_size, direction
-
-def adjust_starting_entity(entity, attribute, max_value, step_size, direction):
-    """Adjust the starting entity's attribute value to ensure a valid progression is possible."""
-    current_value = getattr(entity, attribute.name.lower()).value
-    
-    # Calculate potential ending value after progression
-    potential_value = current_value + (step_size * 2 * direction)
-    
-    # Adjust for upward direction
-    if direction == 1:  # Upward progression
-        if potential_value > max_value:  # If it exceeds max value
-            # Reduce current value just enough
-            current_value = max_value - (step_size * 2)
-            
-    
-    # Adjust for downward direction
-    elif direction == -1:  # Downward progression
-        if potential_value < 1:  # If it goes below 1 (enum starts at 1)
-            # Increase current value just enough
-            current_value = (step_size * 2) + 1  # Set to the lowest valid value *fun fact python indexing screwed me over so took me hours to find this 
-            
-    
-    # Set the adjusted current value back to the entity
-    for enum_member in globals()[attribute.name.capitalize() + "s"]:
-     if enum_member.value == current_value:
-         #print(enum_member, current_value, step_size, potential_value)
-         setattr(entity, attribute.name.lower(), enum_member)     
-         break
-    else:
-        print(enum_member)
-        raise ValueError(f"No matching enum value found for {current_value}.")
-       
-     
 def progression_rule(matrix, attribute, seed_list):
     """Applies a progression rule across each row for a given attribute."""
     
     # Get the maximum value, step size, and direction for the progression
-    max_value, step_size, direction = determine_progression_params(attribute, seed_list)
+    max_value, step_size, direction, seed_list = determine_progression_params(attribute, seed_list)
+    start_values = determine_starting_values( attribute, max_value, step_size, direction)  
     
-    for row in matrix:
-        # Adjust the starting entity's attribute to ensure valid progression
-        current_value = getattr(row[0], attribute.name.lower()).value
         
         
-        adjust_starting_entity(row[0], attribute, max_value, step_size, direction)
-
+        
+    for row in matrix:    
+        
+            
+        start_values, seed_list = adjust_starting_entity(row[0], attribute, start_values, seed_list)#adjusts the entity and updates the start values
+        
+        
         # Get the starting value and apply progression across the row
         current_value = getattr(row[0], attribute.name.lower()).value
        
         for i, entity in enumerate(row):
             # Calculate the new value using the progression formula
             new_value = (current_value + i * step_size * direction) 
+            
+            #the next part ensures that we can cycle in case of position or angle
+            if new_value > max_value and attribute in (AttributeType.POSITION, AttributeType.ANGLE): #in case of upward progression
+                new_value = new_value - max_value
+            
+            if new_value <1 and max_value and attribute in (AttributeType.POSITION, AttributeType.ANGLE): #in case of downward progression
+                new_value = new_value + max_value
            
             # Set the new value to the entity, using the corresponding enum
             for enum_member in globals()[attribute.name.capitalize() + "s"]:
@@ -166,7 +137,76 @@ def progression_rule(matrix, attribute, seed_list):
                     setattr(entity, attribute.name.lower(), enum_member)
                     break
             else:                    
-                raise ValueError(f"No matching enum value found for {new_value}.", attribute)
+                raise ValueError(f"No matching enum value found for {new_value}.", attribute) 
+                
+def determine_progression_params(attribute, seed_list):
+    """Determines the max steps, step size, and direction for a given attribute type to make the progression rule work."""
+    max_value = len(globals()[attribute.name.capitalize() + "s"])#this line works, chatgpt came up with it, i dont fully understand the globals part
+    
+    if max_value <7:
+        possible_step_sizes = [1] #if we want each row to start with a different attribute, we need atleast 7 options for a 2-size progression
+  
+    if max_value >7:
+        possible_step_sizes = [1,1,2]#in cases of 7 options can progress with 2, however I increased the numbers of 1, making a smaller progression more likely
+   
+       
+          
+    
+    # based on seed chose step_size and direction        
+    step_size, seed_list = get_random_attribute(seed_list, possible_step_sizes)
+    direction, seed_list = get_random_attribute(seed_list, [-1,1])
+    
+    return max_value, step_size, direction, seed_list
+
+def determine_starting_values ( attribute, max_value, step_size, direction):
+    'creates a list of potential starting values'
+    if attribute in (AttributeType.POSITION, AttributeType.ANGLE): #these attributes can progress indefinitely so we need a slighlty different logic, firstly each starting value should be possible  
+        start_value_list = []
+        for value in (globals()[attribute.name.capitalize() + "s"]):
+            start_value_list.append(value.value)       
+    
+       
+    else:
+        start_value_list = []
+        if direction == 1: #upward progression
+            for value in (globals()[attribute.name.capitalize() + "s"]):
+                if value.value + (step_size * 2) <= max_value:
+                    start_value_list.append(value.value)
+                
+        elif direction == -1: #downward progression
+            for value in (globals()[attribute.name.capitalize() + "s"]):
+                if value.value + (step_size * - 2) >=1:  # If it stays larger than 1, enum starts at 1
+                    start_value_list.append(value.value)
+   
+    
+        #safety to make sure there will always be enough values 
+        i = 0
+        while len(start_value_list) < 3:
+            start_value_list.append(start_value_list[i]) #no need for randomness since we randomly sample later
+            i += 1
+            print('increase by', i, 'values')
+              
+    return start_value_list
+    
+def adjust_starting_entity(entity, attribute, start_value_list, seed_list):
+    "select value from the start value_list and set it as starting value"   
+    
+    start_value, seed_list  = get_random_attribute(seed_list, start_value_list)
+    start_value_list.remove(start_value)
+       
+    # Set the adjusted current value back to the entity
+    for enum_member in globals()[attribute.name.capitalize() + "s"]:
+     if enum_member.value == start_value:
+         #print(enum_member, current_value, step_size, potential_value)
+         setattr(entity, attribute.name.lower(), enum_member)     
+         break
+        
+    
+    else:
+        print(enum_member)
+        raise ValueError(f"No matching enum value found for {start_value}.")
+       
+    return start_value_list, seed_list
 
 
        

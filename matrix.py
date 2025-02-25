@@ -8,7 +8,7 @@ import os
 n_iteration=0 #create global iteration variable
 
 # Function to create a matrix of entities (BigShape or Line)
-def create_matrix(num_rows, num_columns, rules, seed=None, alternatives = None, alternative_seed = None,  entity_types=["big-shape"]): 
+def create_matrix( rules, seed=None, alternatives = None, alternative_seed = None,  entity_types=["big-shape"]): 
     
     matrices = {}  # To store valid matrices
     
@@ -23,7 +23,7 @@ def create_matrix(num_rows, num_columns, rules, seed=None, alternatives = None, 
             # Generate seed list
             seed_list = seed_generator(seed + n_iteration if seed is not None else seed)#aka if seed is none, keep doing it the iteration with none
             # Create a starting matrix for the current entity type
-            starting_matrix = create_starting_matrix(entity_rules, num_rows, num_columns, seed_list, entity_type)#note to self. entity type defined in the for-loop 
+            starting_matrix = create_starting_matrix(entity_rules, seed_list, entity_type)#note to self. entity type defined in the for-loop 
             # Apply rules to the starting matrix
             matrix = apply_rules(starting_matrix, entity_rules, seed_list)
             
@@ -41,22 +41,33 @@ def create_matrix(num_rows, num_columns, rules, seed=None, alternatives = None, 
     if len(matrices) != len(entity_types):
         raise ValueError("Unable to generate valid matrices for all specified entity types after multiple attempts")
     
-    row_lengths = [(0, 3), (0, 3), (0,3)] 
+    
+    # Define the output directory
+    output_dir = "output"
+    os.makedirs(output_dir, exist_ok=True)  # Ensure the folder exists
+    
+    
+     
     rendered_solution_matrix = render_matrix (matrices,)
-    output_path_with_lines = "solution_matrix.png"
+    output_path_with_lines = os.path.join(output_dir, "solution_matrix.png")
+    cv2.imwrite(output_path_with_lines, rendered_solution_matrix)
+       
+    
+    rendered_solution_matrix = render_matrix (matrices, problem_matrix = True)
+    output_path_with_lines = os.path.join(output_dir, "problem_matrix.png")
     cv2.imwrite(output_path_with_lines, rendered_solution_matrix)
         
     if alternatives is not None:
        alternative_seed_list = seed_generator (alternative_seed)
        alternatives = generate_alternatives(matrices, entity_types, alternatives, alternative_seed_list, rules)
-       os.makedirs("alternatives", exist_ok=True)  # Create the folder if it doesn't exist
-
-       for idx, single_alternative in enumerate(alternatives['BigShape']):  # Loop over each alternative
-            rendered_alternative = render_alternatives([single_alternative])  # Wrap in list
-            
-            # Save each alternative separately in the "alternatives" folder
-            output_path = os.path.join("alternatives", f"alternative_BigShape_{idx}.png")
-            cv2.imwrite(output_path, rendered_alternative)
+       
+       
+       for key, values in alternatives.items():  # Loop over all keys and their values
+           for idx, single_alternative in enumerate(values):  # Loop over each alternative in the list
+               rendered_alternative = render_alternatives([single_alternative])  # Wrap in list           
+                # Save each alternative separately in the "alternatives" folder
+               output_path = os.path.join(output_dir, f"alternative_{idx}.png")
+               cv2.imwrite(output_path, rendered_alternative)
         
     
 
@@ -185,11 +196,11 @@ def check_rules(matrix, attribute):
     return True
     
         
-def create_starting_matrix(rules, n_rows=3, n_columns=3, seed_list=None, entity_type=["big-shape"]):
+def create_starting_matrix(rules, seed_list=None, entity_type=["big-shape"]):
     matrix = []
-    for i in range(n_rows):
+    for i in range(3):
         row = []
-        for j in range(n_columns):
+        for j in range(3):
             if not any(rule.attribute == AttributeType.POSITION for rule in rules):
                 entity, seed_list = create_random_entity(seed_list, entity_type)#  Default position
                 

@@ -29,13 +29,10 @@ def generate_alternatives_for_entity (entity, entity_type, n_alternatives, seed_
         
     elif entity_type == 'Line':
         init_signature = inspect.signature(Line.__init__)
-        attribute_list = [param for param in init_signature.parameters if param != "self"]
+        attribute_list = [param for param in init_signature.parameters if param != "self"]      
+    
+
         
-    
-
-    
-
-    
    #2: shuffle attribute list
     attribute_list, seed_list = random_shuffle(seed_list, attribute_list)
     
@@ -44,7 +41,8 @@ def generate_alternatives_for_entity (entity, entity_type, n_alternatives, seed_
     non_constant_attributes = []
     entity_rules = rules.get(entity_type, [])
     for rule in entity_rules:
-        if rule.rule_type != Ruletype.CONSTANT:
+        if rule.rule_type not in(Ruletype.CONSTANT, Ruletype.FULL_CONSTANT) :
+            print(rule.rule_type)
             non_constant_attributes.append(rule.attribute)  # Store attribute_type
             
     #4 reorder the attribute list so that the constant rules get put in last place
@@ -59,8 +57,7 @@ def generate_alternatives_for_entity (entity, entity_type, n_alternatives, seed_
     #5: Generate alternatives by change one attribute at time, then using the resulting entities as a new starting point untill number of needed alternatives is reached  
     iterations = math.ceil(math.log(n_alternatives, 2)) #calculate number of iterations
     alternative_list = [entity]
-    
-    
+       
     
     
     for i in range(iterations):  
@@ -70,7 +67,8 @@ def generate_alternatives_for_entity (entity, entity_type, n_alternatives, seed_
             new_alternative_list.extend (modify_attribute(alternative, attribute, seed_list))
             alternative_list = new_alternative_list
     
-    return(alternative_list)
+    selected_alternative_list, seed_list = sample_alternatives(alternative_list, n_alternatives,seed_list)
+    return(selected_alternative_list)
 
 
 
@@ -131,6 +129,22 @@ def get_new_random_value(attribute, seed_list, exclude=None):
 
 
 
-
+def sample_alternatives(alternative_list, n_alternatives, seed_list):
+    assert len(alternative_list) % 2 == 0, "alternative_list must contain an even number of elements"
+    assert n_alternatives > len(alternative_list) // 2, "n_alternatives must be more than half of the list size"
+    
+    half = len(alternative_list) // 2
+    first_half = alternative_list[:half]
+    second_half = alternative_list[half:]
+    
+    num_from_each = n_alternatives // 2
+    print('alternatives from each half:', num_from_each)
+    selected = first_half[:num_from_each] + second_half[:num_from_each]
+    
+    if n_alternatives % 2 == 1:
+        last_pick, seed_list = get_random_attribute(seed_list,  [first_half[num_from_each], second_half[num_from_each]])
+        selected.append(last_pick)
+    print('selected_alternatives', selected)
+    return selected, seed_list
    
         
