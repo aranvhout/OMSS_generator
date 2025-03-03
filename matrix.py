@@ -49,7 +49,7 @@ def create_matrix( rules, seed=None, alternatives = None, alternative_seed = Non
     
      
     rendered_solution_matrix = render_matrix (matrices,)
-    output_path_with_lines = os.path.join(output_dir, "solution_matrix.png")
+    output_path_with_lines = os.path.join(output_dir, "solution.png")
     cv2.imwrite(output_path_with_lines, rendered_solution_matrix)
        
     

@@ -8,29 +8,30 @@ from matrix import create_matrix
 # Define rules for each entity
 rules = {
     'BigShape': [
-        Rule(Ruletype.PROGRESSION, AttributeType.SHAPE),
-        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
-        Rule(Ruletype.PROGRESSION, AttributeType.ANGLE),
-       
-        Rule(Ruletype.CONSTANT, AttributeType.SIZE)],
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.SHAPE),
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium'),
+      ],
     
     
        'Line': [
-           Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE, value = 'ZERO'),
+           Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE, value ='zero'),
            Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.LINENUMBER),
-           Rule(Ruletype.FULL_CONSTANT, AttributeType.LINELENGTH, value = 'LONG'),
-           Rule(Ruletype.FULL_CONSTANT, AttributeType.LINEWIDTH, value = 'MEDIUM'),
-           Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium'),
-           Rule(Ruletype.FULL_CONSTANT, AttributeType.LINETYPE),
+           Rule(Ruletype.FULL_CONSTANT, AttributeType.LINELENGTH, value = 'Long'),
+           Rule(Ruletype.CONSTANT, AttributeType.LINEWIDTH),
+           Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE),
+           Rule(Ruletype.CONSTANT, AttributeType.LINETYPE),
        ],
        
        
        
        
        'LittleShape': [
-           Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.SHAPE),
-           Rule(Ruletype.CONSTANT, AttributeType.COLOR, value = 'lavender'),
-           Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE),
+   #   Rule(Ruletype.PROGRESSION, AttributeType.SHAPE),
+           Rule(Ruletype.FULL_CONSTANT, AttributeType.COLOR),
+           Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.ANGLE),
            Rule(Ruletype.PROGRESSION, AttributeType.POSITION),
            Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value ='medium')]}
 
@@ -38,7 +39,7 @@ rules = {
 
 # Generate matrix
 
-matrix = create_matrix(rules, alternatives=8, seed = None, alternative_seed = None, entity_types=['BigShape', 'LittleShape'])
+create_matrix(rules, alternatives=4, seed = None, alternative_seed = 4, entity_types=[ 'BigShape'])
 
 
-            
+

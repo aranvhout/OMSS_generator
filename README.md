@@ -32,3 +32,4 @@ also for example with the random rule, just by chance a colour might be really d
  -make sure a seed_list is returned in more functions!!
  -HOW DOES FULL CONSTANT RELATE TO ALTERNATIVES? SOLVED, just put it back at the splitting order
  -constant should always have different values for each row, FIXED
+ -splliting orde: put full constant behind constant, put colour as last split if constant

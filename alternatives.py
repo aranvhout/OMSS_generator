@@ -35,14 +35,13 @@ def generate_alternatives_for_entity (entity, entity_type, n_alternatives, seed_
         
    #2: shuffle attribute list
     attribute_list, seed_list = random_shuffle(seed_list, attribute_list)
-    
+    print(attribute_list)
     #3 save all the non-constant rules in a separate list
     # Get rules for this entity type
     non_constant_attributes = []
     entity_rules = rules.get(entity_type, [])
     for rule in entity_rules:
         if rule.rule_type not in(Ruletype.CONSTANT, Ruletype.FULL_CONSTANT) :
-            print(rule.rule_type)
             non_constant_attributes.append(rule.attribute)  # Store attribute_type
             
     #4 reorder the attribute list so that the constant rules get put in last place
