@@ -11,7 +11,7 @@ def update_seedlist (seed_list):
     updated_seed_list=seed_list[1:] + [seed_list[0]] #reshuffle the list, putting the first element in last place      
     return updated_seed_list
 
-def get_random_attribute(seed_list, choices, number=None):
+def random_choice(seed_list, choices, number=None):
     random.seed(seed_list[0])
     
     # Select multiple unique values if number is specified

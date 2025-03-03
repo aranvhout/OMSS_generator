@@ -8,7 +8,7 @@ from matrix import create_matrix
 # Define rules for each entity
 rules = {
     'BigShape': [
-        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.SHAPE),
+        Rule(Ruletype.PROGRESSION, AttributeType.SHAPE),
         Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
         Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
         
@@ -39,7 +39,7 @@ rules = {
 
 # Generate matrix
 
-create_matrix(rules, alternatives=4, seed = None, alternative_seed = 4, entity_types=[ 'BigShape'])
+create_matrix(rules, alternatives=5, seed = None, alternative_seed = 4, entity_types=[ 'BigShape', 'Line'])
 
 
 

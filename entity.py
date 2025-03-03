@@ -1,24 +1,8 @@
 from enum import Enum, auto
-import random
 import numpy as np
-from seed import update_seedlist, get_random_attribute
+from seed import random_choice
 
-class AttributeType(Enum):#probably move this somewhere else, this doesnt really refer to the entity but rather to what needs to be changed
-    SHAPE = auto()        #its more of a setting so probably should be moved to main or something
-    SIZE = auto()
-    COLOR = auto()
-    ANGLE = auto()
-    POSITION = auto ()
-    LINETYPE = auto ()
-    LINEWIDTH = auto ()
-    LINELENGTH = auto ()
-    LINENUMBER = auto ()
-    
-class Attribute:
 
-    def __init__(self, name: AttributeType, values):
-        self.name = name
-        self.values = np.array(values, dtype="object")
 
 
 class Shapes(Enum):
@@ -45,8 +29,7 @@ class Colors(Enum):
     BROWN = auto()
     ORANGE = auto ()#
   
-       
-    
+         
 
 class Angles(Enum):
     ZERO = auto()
@@ -125,13 +108,13 @@ class Line:
 def create_random_entity(seed_list, entity_type=['BigShape'], position = None):
     if entity_type == "BigShape":
         # Create random BigShape attributes
-        random_shape, seed_list = get_random_attribute(seed_list, list(Shapes)) 
-        random_size, seed_list = get_random_attribute(seed_list, list(Sizes))
-        random_color, seed_list = get_random_attribute(seed_list, list(Colors))    
-        random_angle, seed_list = get_random_attribute(seed_list, list(Angles))
+        random_shape, seed_list = random_choice(seed_list, list(Shapes)) 
+        random_size, seed_list = random_choice(seed_list, list(Sizes))
+        random_color, seed_list = random_choice(seed_list, list(Colors))    
+        random_angle, seed_list = random_choice(seed_list, list(Angles))
         
         if position == 'random':
-            entity_position, seed_list = get_random_attribute(seed_list, list(Positions))
+            entity_position, seed_list = random_choice(seed_list, list(Positions))
             
         else:
             entity_position = None
@@ -140,13 +123,13 @@ def create_random_entity(seed_list, entity_type=['BigShape'], position = None):
 
     elif entity_type == "Line":
         # Create random Line attributes
-        random_line_type, seed_list = get_random_attribute(seed_list, list(Linetypes))
-        random_line_width, seed_list = get_random_attribute(seed_list, list(Linewidths))
-        random_length, seed_list = get_random_attribute(seed_list, list(Linelengths))
-        random_number, seed_list = get_random_attribute(seed_list, list(Linenumbers))      
-        random_angle, seed_list = get_random_attribute(seed_list, list(Angles))
+        random_line_type, seed_list = random_choice(seed_list, list(Linetypes))
+        random_line_width, seed_list = random_choice(seed_list, list(Linewidths))
+        random_length, seed_list = random_choice(seed_list, list(Linelengths))
+        random_number, seed_list = random_choice(seed_list, list(Linenumbers))      
+        random_angle, seed_list = random_choice(seed_list, list(Angles))
         if position == 'random':
-            entity_position, seed_list = get_random_attribute(seed_list, list(Positions))
+            entity_position, seed_list = random_choice(seed_list, list(Positions))
             
         else:
             entity_position = None
@@ -157,13 +140,13 @@ def create_random_entity(seed_list, entity_type=['BigShape'], position = None):
     
     elif entity_type == "LittleShape":
         # Create random BigShape attributes
-        random_shape, seed_list = get_random_attribute(seed_list, list(Shapes)) 
-        random_size, seed_list = get_random_attribute(seed_list, list(Sizes))
-        random_color, seed_list = get_random_attribute(seed_list, list(Colors))    
-        random_angle, seed_list = get_random_attribute(seed_list, list(Angles))
+        random_shape, seed_list = random_choice(seed_list, list(Shapes)) 
+        random_size, seed_list = random_choice(seed_list, list(Sizes))
+        random_color, seed_list = random_choice(seed_list, list(Colors))    
+        random_angle, seed_list = random_choice(seed_list, list(Angles))
         
         if position == 'random':
-            entity_position, seed_list = get_random_attribute(seed_list, list(Positions))
+            entity_position, seed_list =random_choice(seed_list, list(Positions))
             
         else:
             entity_position = None

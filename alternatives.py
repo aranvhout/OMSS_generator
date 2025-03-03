@@ -1,9 +1,24 @@
 import math
-from seed import random_shuffle, get_random_attribute
+
+from seed import random_shuffle, random_choice
 from entity import BigShape, LittleShape, Line, Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linelengths, Linenumbers, Linewidths
 import inspect
 import copy
 from rules import Ruletype
+
+
+
+ATTRIBUTE_TO_ENUM = {
+    'color': Colors,
+    'shape': Shapes,
+    'size': Sizes,
+    'angle': Angles,
+    'position': Positions,
+    'linetype': Linetypes,
+    'linewidth': Linewidths,
+    'linelength': Linelengths,
+    'linenumber': Linenumbers,
+}
 
 def generate_alternatives(matrices, entity_types, n_alternatives, seed_list, rules):
     # 1. Make a dictionary of each entity and its latest entrances
@@ -35,14 +50,13 @@ def generate_alternatives_for_entity (entity, entity_type, n_alternatives, seed_
         
    #2: shuffle attribute list
     attribute_list, seed_list = random_shuffle(seed_list, attribute_list)
-    print(attribute_list)
-    #3 save all the non-constant rules in a separate list
+     #3 save all the non-constant rules in a separate list
     # Get rules for this entity type
     non_constant_attributes = []
     entity_rules = rules.get(entity_type, [])
     for rule in entity_rules:
         if rule.rule_type not in(Ruletype.CONSTANT, Ruletype.FULL_CONSTANT) :
-            non_constant_attributes.append(rule.attribute)  # Store attribute_type
+            non_constant_attributes.append(rule.attribute_type)  # Store attribute_type
             
     #4 reorder the attribute list so that the constant rules get put in last place
     attribute_list[:] = [
@@ -51,8 +65,7 @@ def generate_alternatives_for_entity (entity, entity_type, n_alternatives, seed_
     attribute for attribute in attribute_list if attribute.lower() not in [str(attr.name).lower() for attr in non_constant_attributes]
     ]
 
-   
-    
+      
     #5: Generate alternatives by change one attribute at time, then using the resulting entities as a new starting point untill number of needed alternatives is reached  
     iterations = math.ceil(math.log(n_alternatives, 2)) #calculate number of iterations
     alternative_list = [entity]
@@ -101,12 +114,8 @@ def modify_attribute(entity, attribute, seed_list):
 
 def get_new_random_value(attribute, seed_list, exclude=None):
     """Dynamically fetch a random value for the given attribute, ensuring it's not in 'exclude'."""
-    enum_class_name = attribute.capitalize() + "s"  # Example: "shape" -> "Shapes"
-    
-    if enum_class_name not in globals():  
-        raise ValueError(f"Unknown attribute: {attribute}")  # Handle invalid attributes
-
-    enum_class = globals()[enum_class_name]  # Retrieve the Enum class dynamically
+    enum_class = ATTRIBUTE_TO_ENUM.get(attribute)
+   
 
     # Ensure exclude is a list
     if exclude is None:
@@ -122,7 +131,7 @@ def get_new_random_value(attribute, seed_list, exclude=None):
         raise ValueError(f"No alternative values available for attribute: {attribute}")
 
     # Get a new random value
-    new_value, seed_list = get_random_attribute(seed_list, possible_values)
+    new_value, seed_list = random_choice(seed_list, possible_values)
 
     return new_value, seed_list
 
@@ -141,7 +150,7 @@ def sample_alternatives(alternative_list, n_alternatives, seed_list):
     selected = first_half[:num_from_each] + second_half[:num_from_each]
     
     if n_alternatives % 2 == 1:
-        last_pick, seed_list = get_random_attribute(seed_list,  [first_half[num_from_each], second_half[num_from_each]])
+        last_pick, seed_list = random_choice(seed_list,  [first_half[num_from_each], second_half[num_from_each]])
         selected.append(last_pick)
     print('selected_alternatives', selected)
     return selected, seed_list
