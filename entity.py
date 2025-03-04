@@ -1,9 +1,5 @@
 from enum import Enum, auto
-import numpy as np
 from seed import random_choice
-
-
-
 
 class Shapes(Enum):
     TRIANGLE = auto()
@@ -28,9 +24,7 @@ class Colors(Enum):
     LAVENDER = auto()
     BROWN = auto()
     ORANGE = auto ()#
-  
-         
-
+           
 class Angles(Enum):
     ZERO = auto()
     THIRTY_SIX = auto()
@@ -89,7 +83,7 @@ class LittleShape:
         self.color = color
         self.angle = angle
         self.position = position
-        
+       
 
 
 # Class for Line entity

@@ -39,7 +39,7 @@ rules = {
 
 # Generate matrix
 
-create_matrix(rules, alternatives=5, seed = None, alternative_seed = 4, entity_types=[ 'BigShape', 'Line'])
+create_matrix(rules, alternatives=4, seed = None, alternative_seed = None, entity_types=[ 'BigShape', 'LittleShape'])
 
 
 

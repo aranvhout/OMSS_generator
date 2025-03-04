@@ -3,7 +3,7 @@ from rules import  AttributeType, apply_rules
 from seed import seed_generator
 from entity import create_random_entity
 from alternatives import generate_alternatives
-from render import render_matrix, render_alternatives
+from render import render_matrix, render_entity
 import os
 import cv2
 
@@ -67,9 +67,19 @@ def generate_and_save_alternatives(matrices, entity_types, alternatives, alterna
     alternative_seed_list = seed_generator(alternative_seed)
     generated_alternatives = generate_alternatives(matrices, entity_types, alternatives, alternative_seed_list, rules)
     
-    for key, values in generated_alternatives.items():
-        for idx, single_alternative in enumerate(values):
-            rendered_alternative = render_alternatives([single_alternative])
-            cv2.imwrite(os.path.join(OUTPUT_DIR, f"alternative_{idx}.png"), rendered_alternative)
+    # Extract alternatives for all entity types
+    entity_alternatives = [generated_alternatives[key] for key in entity_types if key in generated_alternatives]
+
+    # Ensure all entity lists have the same number of alternatives
+    min_length = min(len(alts) for alts in entity_alternatives)
+
+    for idx in range(min_length):
+        combined_alternative = [alts[idx] for alts in entity_alternatives]  # Get corresponding alternatives from all entities
+        
+        
+        rendered_alternative = render_entity(combined_alternative)  # Render all together
+        cv2.imwrite(os.path.join(OUTPUT_DIR, f"alternative_{idx}.png"), rendered_alternative)
+
+
   
     

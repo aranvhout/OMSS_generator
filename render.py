@@ -1,55 +1,11 @@
+#imports
 import cv2
 import numpy as np
 import math
 from math import cos, sin, pi
 from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linelengths, Linewidths, Line, BigShape, LittleShape, Linenumbers
 
-def render_matrix(entity_dict, problem_matrix = False, panel_size=1500, background_color=(255, 255, 255), line_color=(0, 0, 0), line_thickness=5):
-    """
-    Render corresponding entities from multiple 3x3 matrices together in each grid cell.
-    
-    Args:
-        entity_dict: A dictionary where keys are entity types and values are 3x3 matrices of entities.
-        panel_size: Size of the entire grid panel in pixels (square).
-        background_color: Background color as an RGB tuple.
-        line_color: Color of the lines between cells in BGR format.
-        line_thickness: Thickness of the grid lines.
-    
-    Returns:
-        Composite grid image with lines as a NumPy array.
-    """
-    # Create a blank canvas with background color
-    img = np.ones((panel_size, panel_size, 3), dtype=np.uint8) * np.array(background_color, dtype=np.uint8)
-
-    # Cell size for each grid in the 3x3 matrix (e.g., 500x500 for a 1500x1500 panel)
-    cell_size = panel_size // 3
-
-    # Render the grid for all entities
-    for r in range(3):  # Loop over rows
-        for c in range(3):  # Loop over columns
-            if r == 2 and c == 2 and problem_matrix == True:
-                continue  
-            # Collect entities from each matrix at the current position
-            entities = [matrix[r][c] for matrix in entity_dict.values()]
-
-            # Render the entities together (fit within each cell of the grid)
-            entity_img = render_entity(entities, panel_size=cell_size, background_color=background_color)
-
-            # Calculate the position of the current cell
-            y_start, x_start = r * cell_size, c * cell_size
-
-            # Place the rendered entities on the main canvas
-            img[y_start:y_start + cell_size, x_start:x_start + cell_size] = entity_img
-
-    # Draw grid lines between the cells
-    for i in range(1, 3):
-        cv2.line(img, (0, i * cell_size), (panel_size, i * cell_size), line_color, line_thickness)
-        cv2.line(img, (i * cell_size, 0), (i * cell_size, panel_size), line_color, line_thickness)
-
-    # Return the composite image
-    return img
-
-# Global Maps
+# Global Mapping dictionaries. Basically here we couple the attributes of the enum classes to actual values
 ANGLE_MAP = {
     Angles.ZERO: 0,
     Angles.THIRTY_SIX: 36,
@@ -88,36 +44,60 @@ LINEWIDTH_MAP = {
     }
 LINE_SPACING = 30  # Distance between multiple lines
 
-def render_alternatives (entities, panel_size=500, background_color=(255, 255, 255)):
-    """
-    Render multiple entities together in a single grid and return the image.
+
+def render_matrix(entity_dict, problem_matrix = False):
     
-    Args:
-        entities: A list of entity objects to be drawn.
-        panel_size: Size of the square canvas.
-        background_color: Background color as an RGB tuple.
-    
-    Returns:
-        A NumPy array representing the image.
-    """
-    
-    # Create a blank canvas
+    #some settings
+    panel_size=1500
+    background_color=(255, 255, 255)
+    line_color=(0, 0, 0)
+    line_thickness=5
+  
+    # Create a blank canvas with background color
     img = np.ones((panel_size, panel_size, 3), dtype=np.uint8) * np.array(background_color, dtype=np.uint8)
 
-    # Use the existing function to render the entities
-    img = render_entity(entities, panel_size=panel_size, background_color=background_color)
+    # Cell size for each grid in the 3x3 matrix (e.g., 500x500 for a 1500x1500 panel)
+    cell_size = panel_size // 3
 
+    # Render the grid for all entities
+    for r in range(3):  # Loop over rows
+        for c in range(3):  # Loop over columns
+            if r == 2 and c == 2 and problem_matrix == True: #in case of a problem_matrix we simply don't fill in the last column
+                continue  
+            # Collect entities from each matrix at the current position
+            entities = [matrix[r][c] for matrix in entity_dict.values()]
+
+            # Render the entities together (fit within each cell of the grid)
+            entity_img = render_entity(entities)
+
+            # Calculate the position of the current cell
+            y_start, x_start = r * cell_size, c * cell_size
+
+            # Place the rendered entities on the main canvas
+            img[y_start:y_start + cell_size, x_start:x_start + cell_size] = entity_img
+
+    # Draw grid lines between the cells
+    for i in range(1, 3):
+        cv2.line(img, (0, i * cell_size), (panel_size, i * cell_size), line_color, line_thickness)
+        cv2.line(img, (i * cell_size, 0), (i * cell_size, panel_size), line_color, line_thickness)
+
+    # Return the composite image
     return img
 
 
-def render_entity(entities, panel_size=500, background_color=(255, 255, 255)):
+
+def render_entity(entities):
     """
     Render multiple entities on a square canvas and return the composite image.
     """
+    #some settings
+    panel_size=500
+    background_color=(255, 255, 255)
+      
     # Create a blank color canvas
     img = np.ones((panel_size, panel_size, 3), np.uint8) * np.array(background_color, dtype=np.uint8)
 
-    # Define size and position adjustments
+    # Define size and position adjustments for the entities (maybe at some point i can feed these as arguments of have a config file)
     size_factor = {
         Sizes.SMALL: 0.3,
         Sizes.MEDIUM: 0.5,
@@ -140,6 +120,7 @@ def render_entity(entities, panel_size=500, background_color=(255, 255, 255)):
         Positions.BOTTOM_RIGHT: (3 * panel_size // 4, 3 * panel_size // 4),
     }
 
+    # Dict that couples shape attributes/line attributes to the drawing function
     shape_renderers = {
         Shapes.TRIANGLE: render_triangle,
         Shapes.SQUARE: render_square,
@@ -154,23 +135,25 @@ def render_entity(entities, panel_size=500, background_color=(255, 255, 255)):
 
     for entity in entities:
         center = position_centers.get(entity.position, (panel_size // 2, panel_size // 2)) if entity.position else (panel_size // 2, panel_size // 2)
-             
+                    
+        # different position for different entity tyes
         
-
+        #line
         if isinstance(entity, Line):            
             length_multiplier = corner_length_multiplier if entity.position in {
                 Positions.TOP_LEFT, Positions.TOP_RIGHT, Positions.BOTTOM_LEFT, Positions.BOTTOM_RIGHT
             } else 1.0
             length = int(length_multiplier * length_factor.get(entity.linelength, 1) * panel_size / 2)
-            print(length_factor.get(entity.linelength, 1) )
-            shape_renderers.get(entity.linetype)(img, center, length, entity)
+            
+            shape_renderers.get(entity.linetype)(img, center, length, entity) #draw it!
 
+        #big shape/little shape
         elif isinstance(entity, BigShape) or isinstance (entity, LittleShape):
             size_multiplier = corner_size_multiplier if entity.position in {
                 Positions.TOP_LEFT, Positions.TOP_RIGHT, Positions.BOTTOM_LEFT, Positions.BOTTOM_RIGHT
             } else 1.0
             size = int(size_multiplier * size_factor.get(entity.size, 1) * panel_size / 2)
-            shape_renderers.get(entity.shape)(img, center, size, entity)
+            shape_renderers.get(entity.shape)(img, center, size, entity) #draw it!
 
     return img
 

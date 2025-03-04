@@ -15,22 +15,14 @@ class AttributeType(Enum):
     LINEWIDTH = auto ()
     LINELENGTH = auto ()
     LINENUMBER = auto ()
-    
-class Attribute: #maybe i dont even need this??
-
-    def __init__(self, name: AttributeType, values):
-        self.name = name
-        self.values = np.array(values, dtype="object")
         
 class Ruletype(Enum):
-    RANDOM = auto()
     CONSTANT = auto()
     FULL_CONSTANT = auto ()
     PROGRESSION = auto()
     DISTRIBUTE_THREE = auto()
     
-    
-
+#dict matching attributetypes (the stuff the user specifies) to classes (which contain the values etc)   
 ATTRIBUTETYPE_TO_ENUM = {
     AttributeType.COLOR: Colors,
     AttributeType.SHAPE: Shapes,
@@ -62,10 +54,7 @@ def apply_rules(matrix, rules, seed_list):
             
         elif rule == Ruletype.FULL_CONSTANT:
             full_constant_rule(matrix, attribute_type, value)
-                        
-        elif rule == Ruletype.RANDOM:            
-            pass  
-        
+              
         elif rule == Ruletype.PROGRESSION:
             progression_rule(matrix, attribute_type, seed_list)
             
@@ -120,8 +109,7 @@ def constant_rule(matrix, attribute_type, seed_list):
             setattr(entity, attribute_type.name.lower(), constant_value)
         
             
-#PROGRESSION    
-    
+#PROGRESSION        
 def progression_rule(matrix, attribute_type, seed_list):
     """Applies a progression rule across each row for a given attribute."""
     
@@ -234,13 +222,12 @@ def adjust_starting_entity(entity, attribute_type, start_value_list, seed_list):
         
     
     else:
-        print(enum_member)
         raise ValueError(f"No matching enum value found for {start_value}.")
        
     return start_value_list, seed_list
 
 
-       
+#distribute three       
 def distribute_three(matrix, attribute_type, binding_list, seed_list):
     # Get the total number of unique attribute values
     enum_class = ATTRIBUTETYPE_TO_ENUM.get(attribute_type)
