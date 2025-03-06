@@ -34,6 +34,7 @@ def create_matrix( rules, seed=None, alternatives = None, alternative_seed = Non
     if alternatives and alternatives > 1:
         generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, rules)
     
+    print('matrix created')
     return matrices                                      
      
         
