@@ -2,8 +2,8 @@
 import cv2
 import numpy as np
 import math
-from math import cos, sin, pi
-from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linelengths, Linewidths, Line, BigShape, LittleShape, Linenumbers
+from math import cos, sin, pi, radians
+from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Line, BigShape, LittleShape, Linenumbers
 
 # Global Mapping dictionaries. Basically here we couple the attributes of the enum classes to actual values
 ANGLE_MAP = {
@@ -34,47 +34,54 @@ COLOR_MAP = {
 NUMBER_MAP = {
     Linenumbers.ONE: 1,
     Linenumbers.TWO: 2,
-    Linenumbers.THREE: 3}
-
+    Linenumbers.THREE: 3,
+    Linenumbers.FOUR: 4,
+    Linenumbers.FIVE: 5}
     
-LINEWIDTH_MAP = {
-        Linewidths.THIN: 3,
-        Linewidths.MEDIUM: 5,
-        Linewidths.THICK: 7
-    }
+
 LINE_SPACING = 30  # Distance between multiple lines
 
 
-def render_matrix(entity_dict, problem_matrix = False):
-    
-    #some settings
-    panel_size=1500
-    background_color=(255, 255, 255)
-    line_color=(0, 0, 0)
-    line_thickness=5
-  
+def render_matrix(entity_dict, problem_matrix=False):
+    # Settings
+    panel_size = 1500
+    background_color = (255, 255, 255)
+    line_color = (0, 0, 0)
+    line_thickness = 5
+
     # Create a blank canvas with background color
     img = np.ones((panel_size, panel_size, 3), dtype=np.uint8) * np.array(background_color, dtype=np.uint8)
 
-    # Cell size for each grid in the 3x3 matrix (e.g., 500x500 for a 1500x1500 panel)
+    # Cell size for each grid in the 3x3 matrix
     cell_size = panel_size // 3
 
-    # Render the grid for all entities
-    for r in range(3):  # Loop over rows
-        for c in range(3):  # Loop over columns
-            if r == 2 and c == 2 and problem_matrix == True: #in case of a problem_matrix we simply don't fill in the last column
-                continue  
-            # Collect entities from each matrix at the current position
-            entities = [matrix[r][c] for matrix in entity_dict.values()]
+    # Dictionary to collect entities by grid position (row, column)
+    grouped_entities = {}
 
-            # Render the entities together (fit within each cell of the grid)
-            entity_img = render_entity(entities)
+    # Collect all entities based on their entity_index
+    for matrix in entity_dict.values():
+        for entity_list in matrix:  # entity_list is a list of entities in the same cell
+            for entity in entity_list:  # Iterate through each entity in the list
+                if entity.entity_index is None:  # Skip entities with None as entity_index
+                    continue
 
-            # Calculate the position of the current cell
-            y_start, x_start = r * cell_size, c * cell_size
+                r, c = entity.entity_index  # Extract row and column index
+                if problem_matrix and (r, c) == (2, 2):  # Skip last cell for problem_matrix
+                    continue
 
-            # Place the rendered entities on the main canvas
-            img[y_start:y_start + cell_size, x_start:x_start + cell_size] = entity_img
+                if (r, c) not in grouped_entities:
+                    grouped_entities[(r, c)] = []
+                grouped_entities[(r, c)].append(entity)  # Store entities in the correct grid cell
+
+    # Render the grouped entities into their respective grid cells
+    for (r, c), entities in grouped_entities.items():
+        entity_img = render_entity(entities)  # Render all entities in this cell
+
+        # Calculate the position of the current cell
+        y_start, x_start = r * cell_size, c * cell_size
+
+        # Place the rendered entities in the corresponding position on the main canvas
+        img[y_start:y_start + cell_size, x_start:x_start + cell_size] = entity_img
 
     # Draw grid lines between the cells
     for i in range(1, 3):
@@ -83,7 +90,6 @@ def render_matrix(entity_dict, problem_matrix = False):
 
     # Return the composite image
     return img
-
 
 
 def render_entity(entities):
@@ -104,14 +110,10 @@ def render_entity(entities):
         Sizes.LARGE: 0.9
     }
 
-    length_factor = {
-        Linelengths.SHORT: 0.6,
-        Linelengths.MEDIUM: 1.0,
-        Linelengths.LONG: 1.4
-    }
+    
 
     corner_size_multiplier = 0.45
-    corner_length_multiplier = 0.6
+    corner_length_multiplier = 0.4
 
     position_centers = {
         Positions.TOP_LEFT: (panel_size // 4, panel_size // 4),
@@ -128,9 +130,9 @@ def render_entity(entities):
         Shapes.SEPTAGON: render_septagon,
         Shapes.DECAGON: render_decagon,
         Shapes.CIRCLE: render_circle,
-        Linetypes.SOLID: render_solid_line,
-        Linetypes.DASHED: render_dashed_line,
-        Linetypes.LARGEDASHED: render_large_dashed_line
+        Linetypes.SOLID: render_straight_line,
+        Linetypes.CURVE: render_curved_line,
+        Linetypes.WAVE: render_wavy_line
     }
 
     for entity in entities:
@@ -139,16 +141,18 @@ def render_entity(entities):
         # different position for different entity tyes
         
         #line
-        if isinstance(entity, Line):            
+        if isinstance(entity, Line): 
+            
             length_multiplier = corner_length_multiplier if entity.position in {
                 Positions.TOP_LEFT, Positions.TOP_RIGHT, Positions.BOTTOM_LEFT, Positions.BOTTOM_RIGHT
             } else 1.0
-            length = int(length_multiplier * length_factor.get(entity.linelength, 1) * panel_size / 2)
+            length = 300 * length_multiplier
             
             shape_renderers.get(entity.linetype)(img, center, length, entity) #draw it!
 
         #big shape/little shape
         elif isinstance(entity, BigShape) or isinstance (entity, LittleShape):
+            print(entity.entity_index)
             size_multiplier = corner_size_multiplier if entity.position in {
                 Positions.TOP_LEFT, Positions.TOP_RIGHT, Positions.BOTTOM_LEFT, Positions.BOTTOM_RIGHT
             } else 1.0
@@ -443,95 +447,97 @@ def render_circle(img, center, length, entity):
 
 
 # Line Rendering Functions
-def rotate_point(point, center, angle):#needed for the lines
-    """
-    Rotates a point around a center by a given angle in radians.
-    """
-    px, py = point
+
+
+LINE_SPACING = 30  # Adjust line spacing if needed
+
+def rotate_point(point, center, angle):
+    """Rotates a point around a center by a given angle (in radians)."""
+    x, y = point
     cx, cy = center
-    s, c = sin(angle), cos(angle)
-    # Translate point back to origin:
-    px -= cx
-    py -= cy
-    # Rotate point:
-    x_new = px * c - py * s
-    y_new = px * s + py * c
-    # Translate point back:
-    px = x_new + cx
-    py = y_new + cy
-    return int(px), int(py)
+    cos_a, sin_a = cos(angle), sin(angle)
 
+    # Check for 180-degree multiples (to avoid floating-point drift)
+    if abs(angle % pi) < 1e-6:  
+        return round(2 * cx - x), round(2 * cy - y)
 
+    x_new = cos_a * (x - cx) - sin_a * (y - cy) + cx
+    y_new = sin_a * (x - cx) + cos_a * (y - cy) + cy
 
-def render_solid_line(img, center, length, entity):
-    """
-    Renders one or multiple solid lines with rotation based on entity.angle.
-    """
-    color = (0, 0, 0)  # Default black color
-    thickness = LINEWIDTH_MAP.get(entity.linewidth, 1)
-    angle = ANGLE_MAP[entity.angle] * pi / 180  # Convert to radians
-    number = NUMBER_MAP[entity.linenumber]  # Get the number of lines to draw
-    
-    # Calculate vertical offsets for multiple lines
-    total_offset = (number - 1) * LINE_SPACING // 2
-    
-    for i in range(number):
-        offset = -total_offset + i * LINE_SPACING
-        
-        # Adjust center for the current line
-        adjusted_center = (center[0], center[1] + offset)
-        
-        # Calculate unrotated start and end points
-        line_start = (adjusted_center[0] - length // 2, adjusted_center[1])
-        line_end = (adjusted_center[0] + length // 2, adjusted_center[1])
-        
-        # Rotate points around the center
-        line_start = rotate_point(line_start, center, angle)
-        line_end = rotate_point(line_end, center, angle)
-        
-        # Draw the rotated line
-        cv2.line(img, line_start, line_end, color, thickness)
+    return round(x_new), round(y_new)  # Use round() to minimize drift
 
-def render_dashed_line(img, center, length, entity, gap_multiplier=1):
-    """
-    Renders one or multiple dashed lines with rotation based on entity.angle.
-    """
-    color = (0, 0, 0)  # Default black color
-    thickness = LINEWIDTH_MAP.get(entity.linewidth, 1)
-    angle = ANGLE_MAP[entity.angle] * pi / 180  # Convert to radians
-    number = NUMBER_MAP[entity.linenumber]  # Get the number of lines to draw
-    dash_length = length // 10
-    gap_length = dash_length * gap_multiplier
-    
-    # Calculate vertical offsets for multiple lines
-    total_offset = (number - 1) * LINE_SPACING // 2
-    
+def render_straight_line(img, center, length, entity):
+    """Draws one or multiple straight lines."""
+    color = (0, 0, 0)  # Black color
+    thickness = 3  # Default thickness
+    angle = ANGLE_MAP[entity.angle] * pi / 180
+    number = NUMBER_MAP[entity.linenumber]  # Get number of lines
+
+    total_offset = (number - 1) * LINE_SPACING // 2  # Centering logic
+
     for i in range(number):
         offset = -total_offset + i * LINE_SPACING
         adjusted_center = (center[0], center[1] + offset)
         
-        # Generate dashes for the current line
-        line_start_x = adjusted_center[0] - length // 2
-        line_end_x = adjusted_center[0] + length // 2
-        dashes = []
-        
-        for start_x in range(line_start_x, line_end_x, dash_length + gap_length):
-            dash_end_x = min(start_x + dash_length, line_end_x)  # Ensure it doesn't overshoot
-            dash_start = (start_x, adjusted_center[1])
-            dash_end = (dash_end_x, adjusted_center[1])
-            dashes.append((dash_start, dash_end))
-        
-        # Rotate and draw each dash
-        for dash_start, dash_end in dashes:
-            dash_start = rotate_point(dash_start, center, angle)
-            dash_end = rotate_point(dash_end, center, angle)
-            cv2.line(img, dash_start, dash_end, color, thickness)
+        start = (adjusted_center[0] - length // 2, adjusted_center[1])
+        end = (adjusted_center[0] + length // 2, adjusted_center[1])
 
-def render_large_dashed_line(img, center, length, entity):
-    """
-    Renders one or multiple dashed lines with larger gaps and rotation based on entity.angle.
-    """
-    render_dashed_line(img, center, length, entity, gap_multiplier=3)
+        start = rotate_point(start, center, angle)
+        end = rotate_point(end, center, angle)
+
+        cv2.line(img, start, end, color, thickness)
+
+def render_curved_line(img, center, length, entity):
+    """Draws one or multiple smooth curved lines."""
+    color = (0, 0, 0)
+    thickness = 3
+    angle = ANGLE_MAP[entity.angle] * pi / 180
+    number = NUMBER_MAP[entity.linenumber]
+
+    total_offset = (number - 1) * LINE_SPACING // 2
+
+    for i in range(number):
+        offset = -total_offset + i * LINE_SPACING
+        adjusted_center = (center[0], center[1] + offset)
+
+        start = (adjusted_center[0] - length // 2, adjusted_center[1])
+        end = (adjusted_center[0] + length // 2, adjusted_center[1])
+        control = (adjusted_center[0], adjusted_center[1] - length // 3)
+
+        curve_points = []
+        for t in np.linspace(0, 1, 100):
+            x = int((1 - t) ** 2 * start[0] + 2 * (1 - t) * t * control[0] + t ** 2 * end[0])
+            y = int((1 - t) ** 2 * start[1] + 2 * (1 - t) * t * control[1] + t ** 2 * end[1])
+            curve_points.append((x, y))
+
+        curve_points = [rotate_point(pt, center, angle) for pt in curve_points]
+        cv2.polylines(img, [np.array(curve_points)], isClosed=False, color=color, thickness=thickness)
+
+def render_wavy_line(img, center, length, entity, amplitude=10, frequency=3):
+    """Draws one or multiple wavy lines."""
+    color = (0, 0, 0)
+    thickness = 3
+    angle = ANGLE_MAP[entity.angle] * pi / 180
+    number = NUMBER_MAP[entity.linenumber]
+
+    total_offset = (number - 1) * LINE_SPACING // 2
+
+    for i in range(number):
+        offset = -total_offset + i * LINE_SPACING
+        adjusted_center = (center[0], center[1] + offset)
+
+        start_x = adjusted_center[0] - length // 2
+        end_x = adjusted_center[0] + length // 2
+
+        wave_points = []
+        for x in np.linspace(start_x, end_x, 100):
+            y = adjusted_center[1] + amplitude * sin(frequency * (x - start_x) * 2 * pi / length)
+            wave_points.append((int(x), int(y)))
+
+        wave_points = [rotate_point(pt, center, angle) for pt in wave_points]
+        cv2.polylines(img, [np.array(wave_points)], isClosed=False, color=color, thickness=thickness)
+
+
 
 
 

@@ -1,6 +1,6 @@
 from enum import Enum, auto
 from typing import Optional
-from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linelengths, Linewidths,  Linenumbers
+from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes,  Linenumbers
 from seed import random_choice, update_seedlist, random_shuffle
 import numpy as np
 
@@ -21,6 +21,7 @@ class Ruletype(Enum):
     FULL_CONSTANT = auto ()
     PROGRESSION = auto()
     DISTRIBUTE_THREE = auto()
+    ARITHMETIC = auto ()
     
 #dict matching attributetypes (the stuff the user specifies) to classes (which contain the values etc)   
 ATTRIBUTETYPE_TO_ENUM = {
@@ -30,26 +31,41 @@ ATTRIBUTETYPE_TO_ENUM = {
     AttributeType.ANGLE: Angles,
     AttributeType.POSITION: Positions,
     AttributeType.LINETYPE: Linetypes,
-    AttributeType.LINEWIDTH: Linewidths,
-    AttributeType.LINELENGTH: Linelengths,
     AttributeType.LINENUMBER: Linenumbers,
 }
 
 class Rule:
-    def __init__(self, rule_type: Ruletype, attribute_type: AttributeType, value: Optional[str] = None): #value is only relevant for the full_constant rule
+    def __init__(self, rule_type: Ruletype, attribute_type: Optional[AttributeType] = None, value: Optional[str] = None, direction: Optional[str] = None, arithmetic_layout: Optional = None,  excluded: Optional = None): #value is only relevant for the full_constant rule
         self.rule_type = rule_type
         self.attribute_type = attribute_type
-        self.value = value  # Optional additional value    
-  
-def apply_rules(matrix, rules, seed_list):
-    binding_list = [] #for now this is only relevant for dist3, basically it checks whether is binding going on
+        self.value = value  
+        self.direction = direction #maybe relevant for progression as well
+        self.arithmetic_layout = arithmetic_layout
+        self.excluded = excluded #excluded instances (eg could be certain colours that can't used whatever)
+     
+    def __repr__(self):
+        return (f"Rule(rule_type={self.rule_type}, attribute_type={self.attribute_type}, value={self.value}, "
+                f"direction={self.direction}, arithmetic_layout={self.arithmetic_layout}, excluded={self.excluded})") 
+        
+def apply_rules(matrix, entity_rules, seed_list):
     
-    for rule_obj in rules:
-        rule = rule_obj.rule_type  # Accessing rule_type from Rule object
+    binding_list =[]
+   
+    for rule_obj in entity_rules:
+        
+        rule = rule_obj.rule_type  # Accessing rule_type from Rule object        
         attribute_type = rule_obj.attribute_type
         value = rule_obj.value  # Optional additional value
+        direction = rule_obj.direction
+        arithmetic_layout = rule_obj.arithmetic_layout
+        excluded = rule_obj.excluded
+        
+       
+        if rule == Ruletype.ARITHMETIC:                      
+            arithmetic_rule (matrix, arithmetic_layout)# basically most of the logic concerning this rules is goverened by the higher order configuration module
+                       
                 
-        if rule == Ruletype.CONSTANT:
+        elif rule == Ruletype.CONSTANT:
             constant_rule(matrix, attribute_type, seed_list)
             
         elif rule == Ruletype.FULL_CONSTANT:
@@ -63,6 +79,7 @@ def apply_rules(matrix, rules, seed_list):
         elif rule == Ruletype.DISTRIBUTE_THREE:
             distribute_three(matrix, attribute_type, binding_list, seed_list)
             seed_list = update_seedlist(seed_list)  # Update each time
+            
         
     dis3_binding = check_binding(binding_list)
     
@@ -282,4 +299,20 @@ def check_binding(binding_list):
     """
     unique_elements, counts = np.unique(binding_list, return_counts=True)
     return any(count >= 2 for count in counts)  # True if any element appears at least twice
+
+def arithmetic_rule(matrix, layout):
+       # Step 2: Iterate through the matrix and remove the entity at positions matching the layout indices
+        for r in range(len(matrix)):
+            for c in range(len(matrix[r])):
+                entity = matrix[r][c]  # Single entity (not a list)
+                
+                if entity.entity_index in layout:  # Check if the entity's index is in the rule's layout indices
+
+                    entity.entity_index = None  # Set the entity_index to None
+    
+
+
+
+
+
   

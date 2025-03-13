@@ -8,22 +8,22 @@ from matrix import create_matrix
 # Define rules for each entity
 rules = {
     'BigShape': [
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.SHAPE, value = 'Triangle'),
-        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE, value = 'Zero'),
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE, value = 'Triangle'),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE, value = 'Zero'),
+        Rule(Ruletype.ARITHMETIC, direction = 'addition'),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')],
         
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium'),
-      ],
     
     
        'Line': [
-           Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE, value ='zero'),
+           Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE, value = 'ONE_EIGHTY'),
            Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.LINENUMBER),
-           Rule(Ruletype.FULL_CONSTANT, AttributeType.LINELENGTH, value = 'Long'),
-           Rule(Ruletype.CONSTANT, AttributeType.LINEWIDTH),
-           Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE),
-           Rule(Ruletype.CONSTANT, AttributeType.LINETYPE),
+           Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.LINETYPE)
+       
        ],
+       
+       
        
        
        
@@ -31,15 +31,17 @@ rules = {
        'LittleShape': [
    #   Rule(Ruletype.PROGRESSION, AttributeType.SHAPE),
            Rule(Ruletype.FULL_CONSTANT, AttributeType.COLOR),
-           Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.ANGLE),
-           Rule(Ruletype.PROGRESSION, AttributeType.POSITION),
+       
+           Rule(Ruletype.FULL_CONSTANT, AttributeType.POSITION),
+           Rule(Ruletype.FULL_CONSTANT, AttributeType.SHAPE),
+          
            Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value ='medium')]}
 
   
 
 # Generate matrix
 
-create_matrix(rules, alternatives=4, seed = None, alternative_seed = 2, entity_types=[ 'BigShape', 'LittleShape'])
+create_matrix(rules, alternatives=0, seed =None, alternative_seed = 2, entity_types=['BigShape', 'Line'])
 
 
 

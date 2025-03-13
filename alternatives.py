@@ -1,7 +1,7 @@
 #imports
 from rules import Ruletype
 from seed import random_shuffle, random_choice
-from entity import BigShape, LittleShape, Line, Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linelengths, Linenumbers, Linewidths
+from entity import BigShape, LittleShape, Line, Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linenumbers
 import inspect
 import copy
 import math
@@ -14,8 +14,7 @@ ATTRIBUTE_TO_ENUM = {
     'angle': Angles,
     'position': Positions,
     'linetype': Linetypes,
-    'linewidth': Linewidths,
-    'linelength': Linelengths,
+    
     'linenumber': Linenumbers,
 }
 
@@ -90,7 +89,7 @@ def generate_alternatives_for_entity (entity, entity_type, n_alternatives, seed_
     
     selected_alternative_list, seed_list = sample_alternatives(alternative_list, n_alternatives,seed_list)
     return(selected_alternative_list)
-
+#REMOVE INDEX FROM SPLITTING ORDER
 
 def modify_attribute(entity, attribute, seed_list):
     """Modify the given attribute of an entity and return both original and modified versions."""

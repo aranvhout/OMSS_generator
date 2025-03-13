@@ -11,20 +11,31 @@ def update_seedlist (seed_list):
     updated_seed_list=seed_list[1:] + [seed_list[0]] #reshuffle the list, putting the first element in last place      
     return updated_seed_list
 
+
+
 def random_choice(seed_list, choices, number=None):
     random.seed(seed_list[0])
     
-    # Select multiple unique values if number is specified
-    if number:        
-        attribute = random.sample(choices, min(number, len(choices)))
+    if number:
+        # Get all unique choices first (up to the number requested)
+        unique_choices = random.sample(choices, min(number, len(choices)))
         
+        # If more choices are needed, repeat randomly from available choices
+        remaining_choices = random.choices(unique_choices, k=max(0, number - len(unique_choices)))
+       
+        # Combine unique and repeated choices
+        attribute = unique_choices + remaining_choices
+
     else:
-        # Otherwise, just select a single random value
+        # Select a single random choice
         attribute = random.choice(choices)
-    
+
     seed_list = update_seedlist(seed_list)
     random.seed(None)
+    
     return attribute, seed_list
+
+   
 
 def random_shuffle (seed_list, input_list):
     random.seed(seed_list[0])
