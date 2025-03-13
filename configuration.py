@@ -51,7 +51,8 @@ def arithmetic_parameters(all_rules, seed_list):
     # Step 2: Select the direction (subtraction, addition) and layout for the entities 
     all_rules, seed_list = arithmetic_direction(all_rules, arithmetic_number_entities, arithmetic_non_number_entities, seed_list)
                 
-    # Step 3: Assign layouts to non-number entities (in the future we i will also make this happen for number_entities)
+    
+    # Step 3: Assign layouts to non-number entities (for the number entities this is way less of a haz)
     all_rules, seed_list = assign_layouts(all_rules, arithmetic_non_number_entities,  seed_list)
     
     

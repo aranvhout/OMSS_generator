@@ -50,11 +50,11 @@ class Linetypes(Enum):
     WAVE = auto()
     
 class Linenumbers(Enum):
-    ONE = auto ()
-    TWO = auto ()
-    THREE = auto ()
-    FOUR = auto ()
-    FIVE = auto ()
+    ONE = 1
+    TWO = 2
+    THREE = 3
+    FOUR = 4
+    FIVE = 5
     
 
 
@@ -86,7 +86,7 @@ class Line:
     def __init__(self, linetype,  position,  angle, linenumber, entity_index):
         self.linetype = linetype        
         self.position = position      
-        self.linenumber = linenumber       
+        self.linenumber = linenumber.value       
         self.angle = angle
         self.entity_index = entity_index
         
