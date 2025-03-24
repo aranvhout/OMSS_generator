@@ -13,26 +13,36 @@ def update_seedlist (seed_list):
 
 
 
-def random_choice(seed_list, choices, number=None):
+def random_choice(seed_list, choices, number=None, exclude=None):
     random.seed(seed_list[0])
-    
+
+    # Ensure exclude is a set for quick lookup
+    exclude = set(exclude) if exclude else set()
+
+    # Remove excluded values
+    filtered_choices = [c for c in choices if c not in exclude]
+  
+
+    if not filtered_choices:  # If all choices are excluded, return empty result
+        return None, seed_list
+
     if number:
-        # Get all unique choices first (up to the number requested)
-        unique_choices = random.sample(choices, min(number, len(choices)))
-        
-        # If more choices are needed, repeat randomly from available choices
+        # Get unique choices first
+        unique_choices = random.sample(filtered_choices, min(number, len(filtered_choices)))
+
+        # If more choices are needed, repeat from available choices
         remaining_choices = random.choices(unique_choices, k=max(0, number - len(unique_choices)))
-       
+
         # Combine unique and repeated choices
         attribute = unique_choices + remaining_choices
-
     else:
         # Select a single random choice
-        attribute = random.choice(choices)
+        attribute = random.choice(filtered_choices)
 
     seed_list = update_seedlist(seed_list)
-    random.seed(None)
-    
+    random.seed(None)  # Reset randomness
+
+    return attribute, seed_list
     return attribute, seed_list
 
    

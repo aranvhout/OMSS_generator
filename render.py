@@ -32,6 +32,7 @@ COLOR_MAP = {
 
 
 NUMBER_MAP = {
+    
     Linenumbers.ONE: 1,
     Linenumbers.TWO: 2,
     Linenumbers.THREE: 3,
@@ -136,8 +137,13 @@ def render_entity(entities):
     }
 
     for entity in entities:
+        
+        if (hasattr(entity, 'linenumber') and entity.linenumber is None) or (hasattr(entity, 'number') and entity.number is None):
+   
+            continue  # Skip renderin
+        
         center = position_centers.get(entity.position, (panel_size // 2, panel_size // 2)) if entity.position else (panel_size // 2, panel_size // 2)
-                    
+                 
         # different position for different entity tyes
         
         #line
@@ -152,7 +158,7 @@ def render_entity(entities):
 
         #big shape/little shape
         elif isinstance(entity, BigShape) or isinstance (entity, LittleShape):
-            print(entity.entity_index)
+            
             size_multiplier = corner_size_multiplier if entity.position in {
                 Positions.TOP_LEFT, Positions.TOP_RIGHT, Positions.BOTTOM_LEFT, Positions.BOTTOM_RIGHT
             } else 1.0
@@ -471,6 +477,7 @@ def render_straight_line(img, center, length, entity):
     color = (0, 0, 0)  # Black color
     thickness = 3  # Default thickness
     angle = ANGLE_MAP[entity.angle] * pi / 180
+    
     number = NUMBER_MAP[entity.linenumber]  # Get number of lines
 
     total_offset = (number - 1) * LINE_SPACING // 2  # Centering logic

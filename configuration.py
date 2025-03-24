@@ -50,8 +50,7 @@ def arithmetic_parameters(all_rules, seed_list):
     
     # Step 2: Select the direction (subtraction, addition) and layout for the entities 
     all_rules, seed_list = arithmetic_direction(all_rules, arithmetic_number_entities, arithmetic_non_number_entities, seed_list)
-                
-    
+                    
     # Step 3: Assign layouts to non-number entities (for the number entities this is way less of a haz)
     all_rules, seed_list = assign_layouts(all_rules, arithmetic_non_number_entities,  seed_list)
     
@@ -83,8 +82,12 @@ def categorize_entities(all_rules):
        # Categorize based on rule type
         if has_arithmetic:
            if is_number_entity:
-               arithmetic_number_entities.append(entity)
-              
+               if not all(rt in {Ruletype.FULL_CONSTANT, Ruletype.CONSTANT, Ruletype.ARITHMETIC} for rt in rule_types):
+                   
+                   arithmetic_number_entities.append(entity)
+               else: #so if the user has set everything to constant, we can actually treat it as non-number entity and create cooler looking grid, however we need to actuallt save it in another list which we will collapse later...
+                   arithmetic_non_number_entities.append(entity) #apply constant rulei
+                   
            else:
                # Validate constant/full constant rules
                if not all(rt in {Ruletype.FULL_CONSTANT, Ruletype.CONSTANT, Ruletype.ARITHMETIC} for rt in rule_types):
@@ -158,11 +161,8 @@ def arithmetic_direction(all_rules, arithmetic_number_entities, arithmetic_non_n
 def assign_layouts(all_rules, arithmetic_non_number_entities, seed_list):
     """Assigns layouts to non-number entities based on their specified direction, with varied layouts for multiple entities."""
     # Define the layouts for addition and subtraction
-    addition_layouts = [
-        {(0, 0), (1, 1), (2, 0)},
-        {(0, 1), (1, 0), (2, 1)}
-    ]
-    subtraction_layouts = [
+    
+    available_layouts = [
         {(0, 2), (1, 1), (2, 2)},
         {(0, 1), (1, 2), (2, 1)}
     ]
@@ -172,20 +172,7 @@ def assign_layouts(all_rules, arithmetic_non_number_entities, seed_list):
 
     # Iterate through each entity in the arithmetic_non_number_entities list
     for entity in arithmetic_non_number_entities:
-        # Find the direction for this entity from the rules
-        direction = None
-        for rule in all_rules[entity]:
-            if rule.rule_type == Ruletype.ARITHMETIC:
-                direction = rule.direction
-                break  # We only need the first direction found
-
-        #
-
-        # Now we can just use the direction specified in the rule
-        if direction == "addition":
-            available_layouts = addition_layouts
-        elif direction == "subtraction":
-            available_layouts = subtraction_layouts
+   
         
         # If there are multiple entities, we should select different layouts for each
         if len(arithmetic_non_number_entities) > 1:

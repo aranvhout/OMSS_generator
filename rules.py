@@ -1,9 +1,9 @@
 from enum import Enum, auto
 from typing import Optional
-from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes,  Linenumbers
+from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes,  Linenumbers, Bigshapenumbers
 from seed import random_choice, update_seedlist, random_shuffle
 import numpy as np
-
+from itertools import combinations, product
 
 class AttributeType(Enum):
     SHAPE = auto()        
@@ -15,6 +15,7 @@ class AttributeType(Enum):
     LINEWIDTH = auto ()
     LINELENGTH = auto ()
     LINENUMBER = auto ()
+    NUMBER = auto ()
         
 class Ruletype(Enum):
     CONSTANT = auto()
@@ -32,6 +33,7 @@ ATTRIBUTETYPE_TO_ENUM = {
     AttributeType.POSITION: Positions,
     AttributeType.LINETYPE: Linetypes,
     AttributeType.LINENUMBER: Linenumbers,
+    AttributeType.NUMBER: Bigshapenumbers,
 }
 
 class Rule:
@@ -62,11 +64,11 @@ def apply_rules(matrix, entity_rules, seed_list):
         
        
         if rule == Ruletype.ARITHMETIC:                      
-            arithmetic_rule (matrix, arithmetic_layout)# basically most of the logic concerning this rules is goverened by the higher order configuration module
+            seed_list = arithmetic_rule (matrix, attribute_type, arithmetic_layout, direction, seed_list)# basically most of the logic concerning this rules is goverened by the higher order configuration module
                        
                 
         elif rule == Ruletype.CONSTANT:
-            constant_rule(matrix, attribute_type, seed_list)
+            matrix, seed_list = constant_rule(matrix, attribute_type, seed_list)
             
         elif rule == Ruletype.FULL_CONSTANT:
             full_constant_rule(matrix, attribute_type, value)
@@ -124,7 +126,7 @@ def constant_rule(matrix, attribute_type, seed_list):
         # Set this constant value for the specified attribute across all entities in the row
        for entity in row:
             setattr(entity, attribute_type.name.lower(), constant_value)
-        
+   return matrix, seed_list
             
 #PROGRESSION        
 def progression_rule(matrix, attribute_type, seed_list):
@@ -300,17 +302,331 @@ def check_binding(binding_list):
     unique_elements, counts = np.unique(binding_list, return_counts=True)
     return any(count >= 2 for count in counts)  # True if any element appears at least twice
 
-def arithmetic_rule(matrix, layout):
-       # Step 2: Iterate through the matrix and remove the entity at positions matching the layout indices
-        for r in range(len(matrix)):
-            for c in range(len(matrix[r])):
-                entity = matrix[r][c]  # Single entity (not a list)
-                
-                if entity.entity_index in layout:  # Check if the entity's index is in the rule's layout indices
 
-                    entity.entity_index = None  # Set the entity_index to None
+   #arithmetic
+
+def arithmetic_rule(matrix, attribute_type, layout, direction, seed_list):
+    
+    if layout is None: 
+        print('a')
+           
+        enum_class = ATTRIBUTETYPE_TO_ENUM.get(attribute_type)
+        max_value = len(enum_class)
+        potential_values = list(range(1, max_value + 1))        
+        arithmetic_matrix, seed_list = arithmetic_operation(potential_values, direction, layout, seed_list)
+        if arithmetic_matrix == False:
+            print ('check')
+            arithmetic_matrix, seed_list = arithmetic_operation(potential_values, direction, layout, seed_list)
+       
+        for row in matrix:
+            for entity in row:                
+                r,c = entity.entity_index
+                value_to_assign=arithmetic_matrix[r][c] 
+                if value_to_assign == 0:
+                    setattr(entity, attribute_type.name.lower(), None)
+                
+                for enum_member in enum_class:                   
+                    if enum_member.value == value_to_assign:
+                        setattr(entity, attribute_type.name.lower(), enum_member)
+                  
+        
+    if layout is not None:   
+        #ensure constant
+        enum_class = ATTRIBUTETYPE_TO_ENUM.get(attribute_type)
+        max_value = len(enum_class)
+        potential_values = list(range(1, max_value + 1))        
+        arithmetic_matrix, seed_list = arithmetic_operation(potential_values, direction, layout, seed_list)
+        if arithmetic_matrix == False:
+            print ('check')
+            arithmetic_matrix, seed_list = arithmetic_operation(potential_values, direction, layout, seed_list)
+       
+        for row in matrix:
+            for entity in row:                
+                r,c = entity.entity_index
+                value_to_assign=arithmetic_matrix[r][c] 
+                if value_to_assign == 0:
+                    setattr(entity, attribute_type.name.lower(), None)
+                
+                for enum_member in enum_class:                   
+                    if enum_member.value == value_to_assign:
+                        setattr(entity, attribute_type.name.lower(), enum_member)
+        
+        
+        
+      
+        
+        
+        
+        pass
+    
+    return seed_list
+        
+def arithmetic_operation(potential_values, direction, layout,  seed_list):
+    if layout is not None and len(potential_values) <=3:
+        min_value = 0
+        answer_excluded = 0 #aka no answer excluded
+    
+    elif layout is not None and len(potential_values)>3:#reduce the change of a '1' if there are other options since it results in forced zero values
+        change_number_list = [0,0,0,1,1,1,1,1,1,1] #70percent change of selecting 1 
+        answer_excluded, seed_list = random_choice(seed_list, change_number_list) #80 percent of the times 1 is excluded as an answer beforehand
+        min_value = 0
+        
+    else:#in case of no layout, we we will never allow an answer of 1 (we cant have zero values)
+        answer_excluded = 1
+        min_value = 1      
+                
+
+    # Calculate potential endings, keep them as different as possible while allowing addition to be possible
+   
+    answers, seed_list = random_choice(seed_list, potential_values, number=3, exclude=[answer_excluded])
+    
+    potential_operands = []
+        
+    
+        
+   
+    rows = [0, 1, 2]  
+    
+    # Generate potential operands
+    potential_operands = []
+    for answer_index, answer in enumerate(answers):  
+        row = rows[answer_index]  # Assign the correct row for this answer
+
+        for i in range(min_value, answer):
+            j = answer - i
+            if j >= i:  
+                pair = [row, answer, i, j]  
+                if pair not in potential_operands:
+                    potential_operands.append(pair)
+
+            if i != j:  
+                reversed_pair = [row, answer, j, i]
+                if reversed_pair not in potential_operands:
+                    potential_operands.append(reversed_pair)
+
+    
+    # Filter out invalid operands based on layout
+    filtered_operands = []
+    for operand in potential_operands:
+        row = operand[0]  # First value is the row index
+        values = operand[1:]  # Remaining values are the numbers in that row
+
+        valid = True
+        # Loop through each value in the operand
+        for col_index in range(len(values)):
+            value = values[col_index]
+           
+            # Check if this value is zero and if its position (row, col_index+1) is in layout
+            if value == 0 and (row, col_index) not in layout:
+                valid = False
+                
+                break  # No need to check further if it's invalid
+
+        if valid:
+            filtered_operands.append(operand)
+     
+    #
+
+        
+   
+    #add a shuffle here to get some randomness    
+    filtered_operands, seed_list =random_shuffle (seed_list, filtered_operands)   
+        
+    answers, seed_list =random_shuffle (seed_list, answers)
+    
+    #get the most unique selection
+    result= arithmetic_selection(filtered_operands, answers)
+    
+    if direction == 'addition':
+        #try except sstructure, we can have an error in case we dotn create a valid matrix, however this is adressed later on
+        try:
+            # Reverse each sublist in result
+            result = [sublist[::-1] for sublist in result]
+        except TypeError:
+            pass  # Ignore the error and continue
+
+        
+    return result, seed_list           
+        
+
+
+def arithmetic_selection(lst, answers):
+   
+    # step 1, reduce the number of the zero possibilities
+    row_groups = {}
+    for sublist in lst:
+        row_groups.setdefault(sublist[0], []).append(sublist)  # Use 1nd number for grouping (aka the row number)           
+      
+    zero = True # we use this to allow one row to contain zero values as long as there are enough options
+    for key in list(row_groups):  
+        if len(row_groups[key]) > 1 and not zero:
+            filtered = [operand for operand in row_groups[key] if 0 not in operand]
+        
+            # Ensure at least one value remains
+            if filtered:
+                row_groups[key] = filtered  
+            else:
+                row_groups[key] = [row_groups[key][0]]  # Keep one original value
+        else:
+            zero = False
+    
     
 
+     
+    selected_values = [value for sublist in row_groups.values() for value in sublist]
+   
+    # Step 2: Group lists by first index
+         
+    first_index_groups = {}
+    for sublist in selected_values:
+        first_index_groups.setdefault(sublist[1], []).append(sublist)  # Use 2nd number for grouping (aka the answer number)
+                             
+            
+       
+    best_selection = None
+    best_uniqueness_score = -1
+
+    # Step 2: Get all possible selections based on provided first indices
+    possible_selections = [first_index_groups[i] for i in answers if i in first_index_groups]
+    
+    if len(possible_selections) < 3:
+        return None  # Not enough valid groups to pick from
+
+    # Step 3: Try all combinations of picking one from each group
+    for choice in product(*possible_selections):
+        
+        row_set = {x[0] for x in choice}  # Get the unique row indices
+        
+        if len(row_set) < len(choice):  
+            
+            continue  # Skip selections with duplicate rows
+        
+        # Measure uniqueness in second and third indices
+        second_index_set = {x[2] for x in choice}
+        third_index_set = {x[3] for x in choice}
+
+        # Adjusted uniqueness scoring
+        uniqueness_score = (len(second_index_set) if len(second_index_set) > 1 else 0) + \
+                           (len(third_index_set) if len(third_index_set) > 1 else 0)
+        
+        # Keep the selection with the best uniqueness score
+        if uniqueness_score > best_uniqueness_score:
+            best_uniqueness_score = uniqueness_score
+            best_selection = choice
+            
+     
+    if best_selection:
+        best_selection = sorted(best_selection, key=lambda x: x[0])
+    
+    # **Remove the first value (row index) only after sorting**
+    best_selection_no_row_value = [selection[1:] for selection in best_selection] if best_selection else None
+    
+    #do some check to prevent accidental rules from happening
+    valid_matrix = check_for_rules(best_selection_no_row_value)
+    if valid_matrix is False: #some cool recursion
+        print ('check')
+        return False
+    print('new_selecton',best_selection_no_row_value)
+    
+      
+    
+    
+    
+    
+    
+    
+    
+    
+    return best_selection_no_row_value
+
+#
+
+
+
+
+
+def check_for_rules (rows):
+    
+    rows_cut = [row[:] for row in rows]  # Create a deep copy of the rows list
+    
+    rows_cut[-1].pop()
+    
+    valid_matrix = False
+ # Check downward progression       
+    downward_progression = True
+    for row in rows_cut:
+        
+        for i in range(len(row) - 1): 
+            if row[i] <= row[i + 1]:  
+                downward_progression = False
+                break  # Exit the inner loop if not progressing
+        if not downward_progression:
+            break  # Exit the outer loop if a non-progressing row is found 
+      
+
+# Check upward progression
+    upward_progression = True
+    for row in rows_cut:
+        for i in range(len(row) - 1): 
+            if row[i] >= row[i + 1]: #any upward progression, I'm for now ignoring stepsize 
+                upward_progression = False
+                break  # Exit the inner loop if not progressing
+        if not upward_progression:
+            break  # Exit the outer loop if a non-progressing row is found
+            
+            
+ #check distribute three
+    distribute_three = True
+    reference_row = rows_cut[0]
+
+    for row in rows_cut[1:]:
+        # Check if all values in row exist in reference_row and are unique in the row
+        if not all(value in reference_row for value in row) or len(row) != len(set(row)):
+            distribute_three = False
+            break
+        
+    if upward_progression or downward_progression or distribute_three:
+        print('l')
+        valid_matrix= False
+        
+    else:
+        valid_matrix = True
+        
+    return valid_matrix
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+       # for row in matrix:
+        #    for entity in row:
+        #        (r,c) = entity.entity_index
+                
+         #       entity = matrix[r][c]  # Single entity (not a list)
+         #       
+           #     if (r,c) in layout:  # Check if the entity's index is in the rule's layout indices
+            #        setattr(entity, attribute_type.name.lower(), None)
+        
+        
+        
+        
 
 
 

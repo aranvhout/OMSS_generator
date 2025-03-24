@@ -50,35 +50,40 @@ class Linetypes(Enum):
     WAVE = auto()
     
 class Linenumbers(Enum):
-    ONE = 1
-    TWO = 2
-    THREE = 3
-    FOUR = 4
-    FIVE = 5
+    ONE = auto ()
+    TWO = auto ()
+    THREE = auto ()
+    FOUR = auto ()
+    FIVE = auto ()
     
-
+class Bigshapenumbers(Enum):
+    ONE = auto ()
+   
+    
 
 
 # Class for BigShape entity
 class BigShape:
-    def __init__(self, shape, size, color, angle, position, entity_index):
+    def __init__(self, shape, size, color, angle, position, entity_index, number):
         self.shape = shape
         self.size = size 
         self.color = color
         self.angle = angle
         self.position = position
         self.entity_index = entity_index
+        self.number = number
+        
         
         
 class LittleShape:
-    def __init__(self, shape, size, color, angle, position, entity_index):
+    def __init__(self, shape, size, color, angle, position, entity_index, number):
         self.shape = shape
         self.size = size 
         self.color = color
         self.angle = angle
         self.position = position
         self.entity_index = entity_index
-       
+        self.number = number
 
 
 # Class for Line entity
@@ -86,7 +91,7 @@ class Line:
     def __init__(self, linetype,  position,  angle, linenumber, entity_index):
         self.linetype = linetype        
         self.position = position      
-        self.linenumber = linenumber.value       
+        self.linenumber = linenumber    
         self.angle = angle
         self.entity_index = entity_index
         
@@ -99,6 +104,8 @@ def create_random_entity(seed_list, entity_type, entity_index,  position = None)
         random_size, seed_list = random_choice(seed_list, list(Sizes))
         random_color, seed_list = random_choice(seed_list, list(Colors))    
         random_angle, seed_list = random_choice(seed_list, list(Angles))
+        random_number, seed_list = random_choice(seed_list, list(Bigshapenumbers))
+        
         
         if position == 'random':
             entity_position, seed_list = random_choice(seed_list, list(Positions))
@@ -106,12 +113,12 @@ def create_random_entity(seed_list, entity_type, entity_index,  position = None)
         else:
             entity_position = None
         
-        return BigShape(shape=random_shape, size=random_size, color=random_color, angle= random_angle, position= entity_position, entity_index =entity_index ), seed_list
+        return BigShape(shape=random_shape, size=random_size, color=random_color, angle= random_angle, position= entity_position, entity_index =entity_index, number = random_number ), seed_list
         
     elif entity_type == "Line":
         # Create random Line attributes
         random_line_type, seed_list = random_choice(seed_list, list(Linetypes))
-        random_number, seed_list = random_choice(seed_list, list(Linenumbers))      
+        random_number, seed_list = random_choice(seed_list, list(Linenumbers))#makes sure we don't create an empty grid as starting point
         random_angle, seed_list = random_choice(seed_list, list(Angles))
         if position == 'random':
             entity_position, seed_list = random_choice(seed_list, list(Positions))
@@ -129,14 +136,14 @@ def create_random_entity(seed_list, entity_type, entity_index,  position = None)
         random_size, seed_list = random_choice(seed_list, list(Sizes))
         random_color, seed_list = random_choice(seed_list, list(Colors))    
         random_angle, seed_list = random_choice(seed_list, list(Angles))
-        
+        random_number, seed_list = random_choice(seed_list, list(Bigshapenumbers))
         if position == 'random':
             entity_position, seed_list =random_choice(seed_list, list(Positions))
             
         else:
             entity_position = None
         
-        return LittleShape(shape=random_shape, size=random_size, color=random_color, angle=random_angle, position= entity_position, entity_index = entity_index), seed_list
+        return LittleShape(shape=random_shape, size=random_size, color=random_color, angle=random_angle, position= entity_position, entity_index = entity_index, number = random_number ), seed_list
 
     else:
         raise ValueError("Unknown entity type")
