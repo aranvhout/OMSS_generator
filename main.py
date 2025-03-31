@@ -11,14 +11,14 @@ rules = {
         Rule(Ruletype.CONSTANT, AttributeType.SHAPE, value = 'Triangle'),
         Rule(Ruletype.CONSTANT, AttributeType.COLOR),
         Rule(Ruletype.CONSTANT, AttributeType.ANGLE, value = 'Zero'),
-        Rule(Ruletype.ARITHMETIC, AttributeType.NUMBER, direction = 'addition'),
+        Rule(Ruletype.ARITHMETIC, AttributeType.NUMBER),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')],
         
     
     
        'Line': [
            Rule(Ruletype.CONSTANT, AttributeType.ANGLE, value = 'ONE_EIGHTY'),
-           Rule(Ruletype.ARITHMETIC, AttributeType.LINENUMBER, direction = 'addition'),
+           Rule(Ruletype.ARITHMETIC, AttributeType.LINENUMBER, direction = 'subtraction'),
            Rule(Ruletype.CONSTANT, AttributeType.LINETYPE)
        
        ],
@@ -32,14 +32,14 @@ rules = {
            Rule(Ruletype.FULL_CONSTANT, AttributeType.COLOR),
        
            Rule(Ruletype.FULL_CONSTANT, AttributeType.POSITION),
-           Rule(Ruletype.FULL_CONSTANT, AttributeType.SHAPE),
-          Rule(Ruletype.ARITHMETIC, AttributeType.NUMBER, direction = 'addition'),
+           Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+           Rule(Ruletype.ARITHMETIC, AttributeType.NUMBER),
            Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value ='medium')]}
 
   
 
 # Generate matrix
 
-create_matrix(rules, alternatives=0, seed =None, alternative_seed = None, entity_types=[  'BigShape', 'Line', 'LittleShape'])
+create_matrix(rules, alternatives=0, seed =None, alternative_seed = None, entity_types=['BigShape', 'Line'])
 
 

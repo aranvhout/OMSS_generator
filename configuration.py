@@ -46,120 +46,138 @@ def constrain (updated_rules, seed_list):
 def arithmetic_parameters(all_rules, seed_list):
     """Handles the arithmetic-related configuration, categorizing entities and assigning layouts."""
     # Step 1: Categorize entities to do some basic checks
-    arithmetic_number_entities, arithmetic_non_number_entities = categorize_entities(all_rules)
+    SNE_CON, MNE_CON, MNE_NCON, NA_en = categorize_entities(all_rules)
     
     # Step 2: Select the direction (subtraction, addition) and layout for the entities 
-    all_rules, seed_list = arithmetic_direction(all_rules, arithmetic_number_entities, arithmetic_non_number_entities, seed_list)
+    all_rules, seed_list = select_direction(SNE_CON, MNE_CON, MNE_NCON, all_rules, seed_list)
                     
     # Step 3: Assign layouts to non-number entities (for the number entities this is way less of a haz)
-    all_rules, seed_list = assign_layouts(all_rules, arithmetic_non_number_entities,  seed_list)
+    all_rules, seed_list = assign_layouts(all_rules, SNE_CON, MNE_CON, MNE_NCON, NA_en,  seed_list)
     
     
     return all_rules, seed_list
 
 def categorize_entities(all_rules):
-    """Categorizes entities based on their rules and entity-types (number of not number) into three categories and does some checking."""
-    number_entity_list = ['line']  # Define number entities
-    non_arithmetic_entities = []
-    arithmetic_number_entities = []
-    arithmetic_non_number_entities = []
-
+    NA_en = [] #non aritmetic entities
+    SNE_CON = [] #single number entities, all rules constant
+    SNE_NCON = [] #sinlge number entities, non constant rules
+    MNE_CON = [] #multiple numer entities, all rules constant
+    MNE_NCON = [] #mulriple number entities, non constant rules
+    
+    MNE_list = ['line']  # Define multiple number entities
+    
     for entity, entity_rules in all_rules.items():
-        #base assumptions for each entity
-        has_arithmetic = False
-        
-        is_number_entity = entity.lower() in number_entity_list
         rule_types = []
-        
+        has_arithmetic = False
+        is_MNE = entity.lower() in MNE_list
+        rules_constant = False
         for rule_obj in entity_rules:
             rule_types.append(rule_obj.rule_type)
             #in case of arithmetic
             if rule_obj.rule_type == Ruletype.ARITHMETIC:
-                has_arithmetic = True
-                
-
-
-       # Categorize based on rule type
-        if has_arithmetic:
-           if is_number_entity:
-               if not all(rt in {Ruletype.FULL_CONSTANT, Ruletype.CONSTANT, Ruletype.ARITHMETIC} for rt in rule_types):
+                has_arithmetic = True            
+        if all(rt in {Ruletype.FULL_CONSTANT, Ruletype.CONSTANT, Ruletype.ARITHMETIC} for rt in rule_types):
+            rules_constant = True
                    
-                   arithmetic_number_entities.append(entity)
-               else: #so if the user has set everything to constant, we can actually treat it as non-number entity and create cooler looking grid, however we need to actuallt save it in another list which we will collapse later...
-                   arithmetic_non_number_entities.append(entity) #apply constant rulei
-                   
-           else:
-               # Validate constant/full constant rules
-               if not all(rt in {Ruletype.FULL_CONSTANT, Ruletype.CONSTANT, Ruletype.ARITHMETIC} for rt in rule_types):
-                   raise ValueError(f"Entity '{entity}' has an arithmetic rule but contains non-constant rules.")
-               
-               arithmetic_non_number_entities.append(entity)
-               
-        else:
-           non_arithmetic_entities.append(entity)
     
-       
-    if  len(arithmetic_non_number_entities) == 1 and len(arithmetic_number_entities) == 0 and len(non_arithmetic_entities) == 0:
-          raise ValueError (f"Entity '{entity}' has an arithmetic rule but there a no other entities or to arithmetic over")
-    return arithmetic_number_entities, arithmetic_non_number_entities
-
-def arithmetic_direction(all_rules, arithmetic_number_entities, arithmetic_non_number_entities, seed_list):
-    """Selects a direction (addition or subtraction) for each arithmetic entity.
-       Ensures consistency for non-number entities."""
-    
-    non_number_directions = set()
-    
-    # Step 1: Check user-specified directions for non-number entities
-    for entity in arithmetic_non_number_entities:
-        direction_specified = False
+        if has_arithmetic and is_MNE and rules_constant:
+            MNE_CON.append (entity)
         
+        elif has_arithmetic and is_MNE and not rules_constant:
+            MNE_NCON.append (entity)
+            
+        elif has_arithmetic and not is_MNE and  rules_constant:
+            SNE_CON.append (entity)
+    
+        elif has_arithmetic and not is_MNE and not rules_constant:
+            SNE_NCON.append (entity)#at some point we might want to do something with this, for now we raise an error value
+            raise ValueError ('All rules should be set to either constant or full constant for an arimethic operation on an entity with only two number options (1 or o)')
+            
+        else:
+            NA_en.append (entity)
+            
+    All_E =  SNE_CON + MNE_CON + MNE_NCON + NA_en        
+    if len(SNE_CON) ==1 and len(All_E) ==1:
+        raise ValueError ('Not enough entities to perform an aritmetic operation')
+    return (SNE_CON, MNE_CON, MNE_NCON, NA_en)
+    
+def select_direction (SNE_CON, MNE_CON, MNE_NCON, all_rules, seed_list):
+    #combine valid aritmetic entities in a single list:
+    A_E = SNE_CON + MNE_CON  + MNE_NCON
+    MNE = MNE_CON + MNE_NCON
+    
+    #select directions
+    # step 1; check whether any direction has been specified
+    A_E_direction = set ()
+    SNE_CON_direction = set ()
+    MNE_direction= set ()
+    
+    for entity in A_E:        
         for rule in all_rules[entity]:
             if rule.rule_type == Ruletype.ARITHMETIC:
                 direction = rule.direction
                 if direction:  # If a direction is specified
                     if direction not in {"addition", "subtraction"}:
                         raise ValueError(f"Invalid direction '{direction}' for entity '{entity}'. Must be 'addition' or 'subtraction'.")
-                    non_number_directions.add(direction)
-                    direction_specified = True
-        
-        # Step 2: If no direction was specified for this entity, randomly assign a direction
-        if not direction_specified:
-            direction, seed_list = random_choice(seed_list, ["addition", "subtraction"])
-           
-            for rule in all_rules[entity]:
-                if rule.rule_type == Ruletype.ARITHMETIC:
-                    rule.direction = direction
+                    elif entity in SNE_CON:
+                        SNE_CON_direction.add(direction)
+                        A_E_direction.add(direction)
+                    elif entity in MNE_CON or entity in MNE_NCON:
+                        MNE_direction.add(direction)
+                        A_E_direction.add(direction)
                     
-    # Step 3: Handle conflicting directions for non-number entities
-    if len(non_number_directions) > 1:
-        raise ValueError(f"Conflicting directions found for non-number entities: {non_number_directions}")
+    if len(A_E_direction) == 1: #only direction specified, lets use that one for all entities
+        direction = next(iter(A_E_direction))
+        set_direction(A_E, all_rules, direction)
+        
+    elif len (A_E_direction) == 0: #not a single direction specified, lets select one for all entities
+        direction, seed_list = random_choice(seed_list, ["addition", "subtraction"])  
+        set_direction(A_E, all_rules, direction)
+        
+    elif len (A_E_direction) > 1 :#multiple directions specified, lets investigate    
+        if len(SNE_CON)>0: #if we have single numebr entities
+            
+            if len(SNE_CON_direction) == 0: #no direction specified for SNE
+                direction, seed_list = random_choice(seed_list, ["addition", "subtraction"])  
+                set_direction(SNE_CON, all_rules, direction)                
+            
+            elif len(SNE_CON_direction) == 1: #single direction specfied for SNE
+                direction = next(iter(SNE_CON_direction))
+                set_direction(SNE_CON, all_rules, direction)
+                   
+            elif len(SNE_CON_direction) >1 : #multiple diretions specified for SNE
+                raise ValueError ('Opposing directions specified for single number entities')
+                
+        if len (MNE) >1:#if we have 'multiple number' entities
+            
+            if len(MNE_direction) == 0: #no direction specified
+                direction, seed_list = random_choice(seed_list, ["addition", "subtraction"])  
+                set_direction(MNE, all_rules, direction)
+                
+            elif len(MNE_direction) ==1: #a single direction specfied
+                direction = next(iter(MNE_direction))  
+                set_direction(MNE, all_rules, direction)
+            elif len (MNE_direction) > 1: #
+                for entity in MNE_direction:
+                    direction, seed_list = random_choice(seed_list, ["addition", "subtraction"])  
+                    set_direction(entity, all_rules, direction)           
+              
+    return (all_rules, seed_list)
     
-    # If there's exactly one direction specified for non-number entities, apply it to all non-number entities
-    if len(non_number_directions) == 1:
-        selected_direction = non_number_directions.pop()
-        
-        for entity in arithmetic_non_number_entities:
-            for rule in all_rules[entity]:
-                if rule.rule_type == Ruletype.ARITHMETIC:
-                    rule.direction = selected_direction
-                    
-    # Step 4: Handle direction for number entities (e.g., 'line')
-    for entity in arithmetic_number_entities:
+      
+
+def set_direction (lst, all_rules, direction):
+    for entity in lst:
         for rule in all_rules[entity]:
-            if rule.rule_type == Ruletype.ARITHMETIC:
-                existing_direction = rule.direction
-                if existing_direction and existing_direction not in {"addition", "subtraction"}:
-                    raise ValueError(f"Invalid direction '{existing_direction}' for entity '{entity}'. Must be 'addition' or 'subtraction'.")
-                # If no direction is specified, assign randomly
-                if not existing_direction:
-                    rule.direction, seed_list = random_choice(seed_list, ["addition", "subtraction"])
-
+            if rule.rule_type == Ruletype.ARITHMETIC and rule.direction == None:
+                rule.direction = direction
+            
     
 
-    return all_rules, seed_list
-
-def assign_layouts(all_rules, arithmetic_non_number_entities, seed_list):
-    """Assigns layouts to non-number entities based on their specified direction, with varied layouts for multiple entities."""
+def assign_layouts(all_rules, SNE_CON, MNE_CON, MNE_NCON, NA_en, seed_list):
+    "we will assign a layout to SNE_CON and MNE_CON (only if there are other entities present), we won't assign a layout to MNE_NCON"
+    layout_entities = SNE_CON + MNE_CON
+    All_E = SNE_CON + MNE_CON + MNE_NCON + NA_en
     # Define the layouts for addition and subtraction
     
     available_layouts = [
@@ -171,26 +189,27 @@ def assign_layouts(all_rules, arithmetic_non_number_entities, seed_list):
     selected_layouts = []
 
     # Iterate through each entity in the arithmetic_non_number_entities list
-    for entity in arithmetic_non_number_entities:
-   
+    if len (All_E)>1:
         
-        # If there are multiple entities, we should select different layouts for each
-        if len(arithmetic_non_number_entities) > 1:
+        for entity in layout_entities:  
+        
+            # If there are multiple entities, we should select different layouts for each
+            if len(layout_entities) > 1:
             # Ensure that layouts differ as much as possible
-            selected_layouts_for_entity, seed_list = random_choice(seed_list, available_layouts, len(arithmetic_non_number_entities))
-        else:
-            # Just pick one layout if only one entity
-            selected_layouts_for_entity, seed_list = random_choice(seed_list, available_layouts, 1)
+                selected_layouts_for_entity, seed_list = random_choice(seed_list, available_layouts, len(layout_entities))
+            else:
+                # Just pick one layout if only one entity
+                selected_layouts_for_entity, seed_list = random_choice(seed_list, available_layouts, 1)
         
         # Loop through each entity again to assign its selected layout
-        for idx, entity in enumerate(arithmetic_non_number_entities):
-            selected_layout = selected_layouts_for_entity[idx]
-            selected_layouts.append(selected_layout)  # Store the layout for this entity
+            for idx, entity in enumerate(layout_entities):
+                selected_layout = selected_layouts_for_entity[idx]
+                selected_layouts.append(selected_layout)  # Store the layout for this entity
 
-            # Set the arithmetic layout for the entity
-            for rule in all_rules[entity]:
-                if rule.rule_type == Ruletype.ARITHMETIC:
-                    rule.arithmetic_layout = selected_layout  # Save the selected layout in the rule's arithmetic_layout attribute
+                # Set the arithmetic layout for the entity
+                for rule in all_rules[entity]:
+                    if rule.rule_type == Ruletype.ARITHMETIC:
+                        rule.arithmetic_layout = selected_layout  # Save the selected layout in the rule's arithmetic_layout attribute
 
     return all_rules, seed_list
 
