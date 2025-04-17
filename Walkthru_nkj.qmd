@@ -17,6 +17,8 @@ from matrix import create_matrix
 
 ### Things to consider
 - how & where does it output; is there a default, can it be an arg
+- there is an arg called "path"
+
 
 
 ### To walkthru
@@ -59,7 +61,7 @@ rules = {
 
 # Generate matrix
 
-create_matrix(rules, alternatives=4, seed = None, alternative_seed =None , entity_types=['BigShape', 'LittleShape'])
+create_matrix(rules, alternatives=4, seed = None, alternative_seed =None , entity_types=['BigShape', 'LittleShape'], path = '/Users/njudd/Desktop/hmmmm')
 
 
 #12345788912457
@@ -92,6 +94,12 @@ linetype:
 linenumber: 
 Angle:
 
+## 4. Rules you specify for an attribute
+One attribute has a rule.
+
+Full constant: Whole matrix has the same options
+Constant: Rowwise same options
+
 
 
 # The attribute options
@@ -119,12 +127,23 @@ rules = {
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SHAPE, value = 'square'),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.COLOR),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.NUMBER),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
 
 
 create_matrix(rules, alternatives=4, seed = None, alternative_seed =None , entity_types=['BigShape'])
 ```
+
+Now introduce how a problem seed makes the same problem with different alternativs
+
+Now introduce alt see
+
+And now we can contrain Bigshape to be a red medium sized sqaure.
+
+
+
+
+
+
 
 
 ```{python}
