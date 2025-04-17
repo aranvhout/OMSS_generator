@@ -11,7 +11,7 @@ rules = {
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SHAPE, value = 'square'),
         Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
         Rule(Ruletype.CONSTANT, AttributeType.COLOR),
-        Rule(Ruletype.ARITHMETIC, AttributeType.NUMBER, direction = 'subtraction'),
+        Rule(Ruletype.ARITHMETIC, AttributeType.NUMBER),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')],
         
     
@@ -40,6 +40,7 @@ rules = {
 
 # Generate matrix
 
-create_matrix(rules, alternatives=16, seed =12345788912457, alternative_seed =1 , entity_types=['BigShape', 'LittleShape'])
+create_matrix(rules, alternatives=4, seed = None, alternative_seed =None , entity_types=['BigShape', 'LittleShape'])
 
 
+#12345788912457
