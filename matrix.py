@@ -2,7 +2,7 @@
 from rules import  AttributeType, apply_rules
 from seed import seed_generator
 from entity import create_random_entity
-from alternatives import generate_alternatives
+
 from alternatives2 import create_alternatives
 from render import render_matrix, render_entity
 from configuration import configuration_settings

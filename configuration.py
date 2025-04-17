@@ -1,5 +1,5 @@
 from seed import random_choice
-from rules import Ruletype, Rule, Configuration
+from rules import Ruletype, Rule
 import numpy as np
 def configuration_settings(rules, entity_types, seed_list):
     """Ensures all Rule objects have the necessary attributes, setting missing ones to None."""
@@ -26,8 +26,7 @@ def configuration_settings(rules, entity_types, seed_list):
     if len(entity_types)>1: #aka multiple entities
         updated_rules, seed_list = constrain (updated_rules, seed_list) #add constraining settings (potentially)
         
-    #configuration for alternatives
-    updated_rules, seed_list = valid_alternatives(updated_rules, entity_types, seed_list)
+
 
     #check whether we need so set an arithmetic layout
     
@@ -39,9 +38,6 @@ def configuration_settings(rules, entity_types, seed_list):
     if  has_arithmetic_rule is True:
         updated_rules, seed_list = arithmetic_parameters (updated_rules, seed_list)
 
-    # alternatives, in case of multiple entities, we need to update the alternatives 
-   # Print the attributes of the object stored in updated_rules['BigShape']
-   
 
 
     return updated_rules, seed_list
@@ -52,47 +48,12 @@ def constrain (updated_rules, seed_list):
 
 
 
-def valid_alternatives(updated_rules, entity_types, seed_list):
-    "This determines in which order the entities might be split when it comes to alternatives"
-    
-    # Step 1: Create an alternative matrix
-    matrix = calculate_alternative_matrix(len(entity_types))
-
-    # Step 2: Shuffle the matrix over the rows (to be fixed using an alternative seed)
-    np.random.shuffle(matrix)
-    print('p', matrix)
-    # Step 3: Randomly assign a row for each entity
-    for i, entity in enumerate(entity_types):
-        # Remove NaNs and convert remaining values to integers
-        valid_indices = [int(x) for x in matrix[i] if not np.isnan(x)]
-        
-        config = Configuration(alternative_indices=valid_indices)
-        
-        # Ensure Configuration objects are wrapped in a list
-        updated_rules[entity].append([config])
-    
-    return updated_rules, seed_list
 
 
     
     
     
-    
-    
-
-def calculate_alternative_matrix(n_entities):
-    columns = 6
-    # Initialize the matrix with NaNs
-    matrix = np.full((n_entities, columns), np.nan)
-    
-    # For each column, place a valid integer value in a corresponding row
-    for col in range(columns):
-        row = col % n_entities  # Ensure we don't go out of bounds
-        matrix[row, col] = col + 1  # Place the column index + 1 as the valid value (or any integer)
-
-    return matrix
-
-    
+ 
     
     
 def arithmetic_parameters(all_rules, seed_list):
