@@ -9,6 +9,8 @@ jupyter: python3
 # Load packages and scripts
 
 ```{python}
+from rules import Ruletype, AttributeType, Rule
+from matrix import create_matrix
 
 
 ```
