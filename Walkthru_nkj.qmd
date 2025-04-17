@@ -1,27 +1,45 @@
 ---
-title: "Walkthru Easy Nick"
+title: "Open Matrices Stimuli Set: Getting Started"
+execute:
+  echo: true # for code folding
+  output: false # we don't wanna see all the stuff
 format:
   html:
     code-fold: true
 jupyter: python3
+author:
+  - name: Nicholas Judd
+    orcid: 0000-0002-0196-9871
+    degrees: PhD
+  - name: Aran van Hout
+    degrees: MSc
+
+
+# this is not working I think it is a weird mac issue
+# jupyter:
+#  kernelspec:
+#    name: "conda-env-OMSS-py"
+#    language: "python"
+#    display_name: "OMSS"
+
+    # https://thedatasavvycorner.com/blogs/08-quarto-conda-env
+    # follow that to manage your envs
+    # we will redo this with pip when we have this packaged
 ---
 
 
-# Load packages and scripts
+
+First we need to load packages and scripts, make sure to install numpy and opencv.
 
 ```{python}
 from rules import Ruletype, AttributeType, Rule
 from matrix import create_matrix
+import cv2
 ```
 
 
-### Things to consider
-- how & where does it output; is there a default, can it be an arg
-- there is an arg called "path"
 
-
-
-### To walkthru
+### To do for the walkthru
 - make a super basic full constant shape
 - make a constant shape
 - set a seed & explain problem answer seeds
@@ -30,6 +48,7 @@ from matrix import create_matrix
 
 
 ```{python}
+
 # Define rules for each entity
 rules = {
     'BigShape': [
@@ -71,10 +90,12 @@ create_matrix(rules, alternatives=4, seed = None, alternative_seed =None , entit
 
 # Structure of matricies
 
-## 1. Entity: An object/shape with contanies attributes
+#### 1) Entities
+An object/shape with contanies attributes
 - Big Shape, Little Shape, Line
 
-## 2. Attribute Types: Ways to change how matricies look. Classes of settings. This will depend on the Entity.
+#### 2) Attribute Types: 
+Ways to change how matricies look. Classes of settings. This will depend on the Entity.
 
 Big shape:
 - Color, Shape, Size, Angle
@@ -83,7 +104,7 @@ Little Shape:
 Line
 - linetype, linenumber, Angle
 
-## 3. Options
+#### 3) Options
 
 Color:
 Shape: 
@@ -94,7 +115,7 @@ linetype:
 linenumber: 
 Angle:
 
-## 4. Rules you specify for an attribute
+#### 4) Rules you specify for an attribute
 One attribute has a rule.
 
 Full constant: Whole matrix has the same options
@@ -105,32 +126,44 @@ Constant: Rowwise same options
 # The attribute options
 
 ```{python}
+#| output: true
 
 #from render import COLOR_MAP
 #print(COLOR_MAP)
 
 
-from entity import Colors
+from entity import Colors, Sizes
 Colors._member_names_
-
-
-
+Sizes._member_names_
 
 ```
 
 ## A super easy example 
-Here we make a medium sized square with four alternatives
+Here we make a big shape with four alternatives
 
 ```{python}
 rules = {
     'BigShape': [
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.SHAPE, value = 'square'),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SHAPE),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.COLOR),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE)]}
 
 
 create_matrix(rules, alternatives=4, seed = None, alternative_seed =None , entity_types=['BigShape'])
+```
+
+By default it outputs the matricies with alternativesl in a folder called "output". Yet, you can change this with the `path` arguement. Since we are not specifying a seed it will generate a different matrix (with different answer alternatives) each time.
+
+![Full Constant Example](output/problem_matrix.png){width=300}
+
+```{python}
+# img.load('output')
+
+
+img = cv2.imread("output/problem_matrix.png")
+
+cv2.imshow("Displayed Image", img)
 ```
 
 Now introduce how a problem seed makes the same problem with different alternativs
@@ -148,12 +181,12 @@ And now we can contrain Bigshape to be a red medium sized sqaure.
 
 ```{python}
 
-rules = {'Line': [
-           Rule(Ruletype.CONSTANT, AttributeType.ANGLE, value = 'ONE_EIGHTY'),
-           Rule(Ruletype.ARITHMETIC, AttributeType.LINENUMBE),
-           Rule(Ruletype.CONSTANT, AttributeType.LINETYPE)]}
+# rules = {'Line': [
+#            Rule(Ruletype.CONSTANT, AttributeType.ANGLE, value = 'ONE_EIGHTY'),
+#            Rule(Ruletype.ARITHMETIC, AttributeType.LINENUMBE),
+#            Rule(Ruletype.CONSTANT, AttributeType.LINETYPE)]}
 
 
-create_matrix(rules, alternatives=4, seed = None, alternative_seed =None , entity_types=['Line'])
+# create_matrix(rules, alternatives=4, seed = None, alternative_seed =None , entity_types=['Line'])
 
 ```
