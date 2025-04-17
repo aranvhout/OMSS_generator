@@ -10,11 +10,10 @@ from rules import Rule
 import os
 import cv2
 
-OUTPUT_DIR = "output"  # Define output directory
-
 # Function to create a matrix of entities 
-def create_matrix( rules, seed=None, alternatives = None, alternative_seed = None,  entity_types=["big-shape"]): 
+def create_matrix( rules, seed=None, alternatives = None, alternative_seed = None,  entity_types=["big-shape"], path ="output"): 
     
+
     matrices = {}  # dict to store valid matrices  
     seed_list = seed_generator(seed) # Generate seed list
     
@@ -34,10 +33,10 @@ def create_matrix( rules, seed=None, alternatives = None, alternative_seed = Non
             matrices[entity_type] = matrix  # Save the valid matrix
             
             
-    save_matrices(matrices)
+    save_matrices(matrices, path)
     
     if alternatives and alternatives > 1:
-        generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, updated_rules)
+        generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, updated_rules, path)
     
     print('matrix created')
     return matrices                                      
@@ -58,23 +57,23 @@ def initialise_matrix(rules, seed_list=None, entity_type=["big-shape"]):
     return matrix
 
 
-def save_matrices(matrices):
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
+def save_matrices(matrices, path):
+    os.makedirs(path, exist_ok=True)
     
     solution_matrix = render_matrix(matrices)
-    cv2.imwrite(os.path.join(OUTPUT_DIR, "solution.png"), solution_matrix)
+    cv2.imwrite(os.path.join(path, "solution.png"), solution_matrix)
     
     problem_matrix = render_matrix(matrices, problem_matrix=True)
-    cv2.imwrite(os.path.join(OUTPUT_DIR, "problem_matrix.png"), problem_matrix)
+    cv2.imwrite(os.path.join(path, "problem_matrix.png"), problem_matrix)
     
     
-def generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, rules):
+def generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, rules, path):
     alternative_seed_list = seed_generator(alternative_seed)
     generated_alternatives = create_alternatives(matrices, entity_types, alternatives, alternative_seed_list, rules)
     for idx, answer in enumerate(generated_alternatives):
         rendered_alternative = render_entity(list(answer.split_back().values()))
         
-        cv2.imwrite(os.path.join(OUTPUT_DIR, f"alternative_{idx}.png"), rendered_alternative)
+        cv2.imwrite(os.path.join(path, f"alternative_{idx}.png"), rendered_alternative)
 
 
 

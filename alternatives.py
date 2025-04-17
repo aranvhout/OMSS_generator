@@ -80,8 +80,7 @@ def create_alternatives(matrices, entity_types, n_alternatives, seed_list, updat
            
    
     
-    if number_entities: #if we have an arithmetic thing go
-        #
+    if number_entities: #if we have an arithmetic thing going on, the alternatives are created in the same way as before, but then modified a bit        # 
         alternative_list, seed_list = modify_alternatives_with_numbers(alternative_list, number_entities, entity_types, seed_list)     
         alternative_list, seed_list = perform_additional_splits(deleted_splits, entity_types, alternative_list, iterations, seed_list)    
         alternative_list = improve_alternatives (alternative_list, entity_types, deleted_splits, iterations, seed_list)
