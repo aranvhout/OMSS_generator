@@ -1,2 +1,5 @@
+.DS_Store
+.conda/
+.idea/
 output/
 __pycache__/
