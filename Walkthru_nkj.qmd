@@ -10,6 +10,131 @@ jupyter: python3
 # Load packages and scripts
 
 ```{python}
+from rules import Ruletype, AttributeType, Rule
+from matrix import create_matrix
+```
 
+
+### Things to consider
+- how & where does it output; is there a default, can it be an arg
+
+
+### To walkthru
+- make a super basic full constant shape
+- make a constant shape
+- set a seed & explain problem answer seeds
+- explain the rules
+- explain small & large entities
+
+
+```{python}
+# Define rules for each entity
+rules = {
+    'BigShape': [
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SHAPE, value = 'square'),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.ARITHMETIC, AttributeType.NUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')],
+        
+    
+       'Line': [
+           Rule(Ruletype.CONSTANT, AttributeType.ANGLE, value = 'ONE_EIGHTY'),
+           Rule(Ruletype.ARITHMETIC, AttributeType.LINENUMBER),
+           Rule(Ruletype.CONSTANT, AttributeType.LINETYPE)
+       
+       ],
+       
+       
+       'LittleShape': [
+   #   Rule(Ruletype.PROGRESSION, AttributeType.SHAPE),
+           Rule(Ruletype.CONSTANT, AttributeType.COLOR),
+       
+           Rule(Ruletype.CONSTANT, AttributeType.POSITION),
+           Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+           Rule(Ruletype.ARITHMETIC, AttributeType.NUMBER, direction = 'subtraction'),
+           Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value ='medium')]}
+
+  
+
+# Generate matrix
+
+create_matrix(rules, alternatives=4, seed = None, alternative_seed =None , entity_types=['BigShape', 'LittleShape'])
+
+
+#12345788912457
+
+```
+
+
+# Structure of matricies
+
+## 1. Entity: An object/shape with contanies attributes
+- Big Shape, Little Shape, Line
+
+## 2. Attribute Types: Ways to change how matricies look. Classes of settings. This will depend on the Entity.
+
+Big shape:
+- Color, Shape, Size, Angle
+Little Shape:
+- Color, Shape, Size, Angle, Position
+Line
+- linetype, linenumber, Angle
+
+## 3. Options
+
+Color:
+Shape: 
+Size:
+Angle:
+Position:
+linetype: 
+linenumber: 
+Angle:
+
+
+
+# The attribute options
+
+```{python}
+
+#from render import COLOR_MAP
+#print(COLOR_MAP)
+
+
+from entity import Colors
+Colors._member_names_
+
+
+
+
+```
+
+## A super easy example 
+Here we make a medium sized square with four alternatives
+
+```{python}
+rules = {
+    'BigShape': [
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SHAPE, value = 'square'),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.NUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
+
+
+create_matrix(rules, alternatives=4, seed = None, alternative_seed =None , entity_types=['BigShape'])
+```
+
+
+```{python}
+
+rules = {'Line': [
+           Rule(Ruletype.CONSTANT, AttributeType.ANGLE, value = 'ONE_EIGHTY'),
+           Rule(Ruletype.ARITHMETIC, AttributeType.LINENUMBE),
+           Rule(Ruletype.CONSTANT, AttributeType.LINETYPE)]}
+
+
+create_matrix(rules, alternatives=4, seed = None, alternative_seed =None , entity_types=['Line'])
 
 ```
