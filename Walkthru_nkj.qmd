@@ -1,5 +1,15 @@
 ---
 title: "Walkthru Easy Nick"
-format: html
+format:
+  html:
+    code-fold: true
+jupyter: python3
 ---
 
+
+# Load packages and scripts
+
+```{python}
+
+
+```
