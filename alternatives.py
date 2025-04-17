@@ -64,7 +64,7 @@ def create_alternatives(matrices, entity_types, n_alternatives, seed_list, updat
     iterations = math.ceil(math.log(n_alternatives, 2)) #calculate number of iterations
     
     
-    #create attribute list, with a preference for non-constant attributes
+    #create attribute list,1) with a preference for non-constant attributes 2) remove number attributes or attributes belong to none entities
     attribute_list, number_entities, deleted_splits = create_attribute_list (answer, entity_types, iterations, seed_list, updated_rules)
     
    
@@ -80,8 +80,8 @@ def create_alternatives(matrices, entity_types, n_alternatives, seed_list, updat
            
    
     
-    if number_entities:
-            
+    if number_entities: #if we have an arithmetic thing go
+        #
         alternative_list, seed_list = modify_alternatives_with_numbers(alternative_list, number_entities, entity_types, seed_list)     
         alternative_list, seed_list = perform_additional_splits(deleted_splits, entity_types, alternative_list, iterations, seed_list)    
         alternative_list = improve_alternatives (alternative_list, entity_types, deleted_splits, iterations, seed_list)
