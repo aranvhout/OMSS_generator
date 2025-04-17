@@ -3,8 +3,10 @@ from rules import  AttributeType, apply_rules
 from seed import seed_generator
 from entity import create_random_entity
 from alternatives import generate_alternatives
+from alternatives2 import create_alternatives
 from render import render_matrix, render_entity
 from configuration import configuration_settings
+from rules import Rule
 import os
 import cv2
 
@@ -35,7 +37,7 @@ def create_matrix( rules, seed=None, alternatives = None, alternative_seed = Non
     save_matrices(matrices)
     
     if alternatives and alternatives > 1:
-        generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, rules)
+        generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, updated_rules)
     
     print('matrix created')
     return matrices                                      
@@ -46,17 +48,15 @@ def initialise_matrix(rules, seed_list=None, entity_type=["big-shape"]):
     for r in range(3):
         row = []
         for c in range(3):
-            #another argument to remove the position thing, ask nick
-            if not any(rule.attribute_type == AttributeType.POSITION for rule in rules):
-               
-                entity, seed_list = create_random_entity(seed_list, entity_type, entity_index = (r,c))#  Default position
-                
-            else:                
-                entity, seed_list = create_random_entity(seed_list, entity_type, entity_index =(r ,c),  position = "random" ) # Random position
-                
+            # Check if the rule is an instance of Rule and has the POSITION attribute
+            if not any(isinstance(rule, Rule) and rule.attribute_type == AttributeType.POSITION for rule in rules):
+                entity, seed_list = create_random_entity(seed_list, entity_type, entity_index=(r, c))  # Default position
+            else:
+                entity, seed_list = create_random_entity(seed_list, entity_type, entity_index=(r, c), position="random")  # Random position
             row.append(entity)
         matrix.append(row)
-    return matrix 
+    return matrix
+
 
 def save_matrices(matrices):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -70,20 +70,12 @@ def save_matrices(matrices):
     
 def generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, rules):
     alternative_seed_list = seed_generator(alternative_seed)
-    generated_alternatives = generate_alternatives(matrices, entity_types, alternatives, alternative_seed_list, rules)
-    
-    # Extract alternatives for all entity types
-    entity_alternatives = [generated_alternatives[key] for key in entity_types if key in generated_alternatives]
-
-    # Ensure all entity lists have the same number of alternatives
-    min_length = min(len(alts) for alts in entity_alternatives)
-
-    for idx in range(min_length):
-        combined_alternative = [alts[idx] for alts in entity_alternatives]  # Get corresponding alternatives from all entities
+    generated_alternatives = create_alternatives(matrices, entity_types, alternatives, alternative_seed_list, rules)
+    for idx, answer in enumerate(generated_alternatives):
+        rendered_alternative = render_entity(list(answer.split_back().values()))
         
-        
-        rendered_alternative = render_entity(combined_alternative)  # Render all together
         cv2.imwrite(os.path.join(OUTPUT_DIR, f"alternative_{idx}.png"), rendered_alternative)
+
 
 
   

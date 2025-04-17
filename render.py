@@ -32,7 +32,7 @@ COLOR_MAP = {
 
 
 NUMBER_MAP = {
-    
+   
     Linenumbers.ONE: 1,
     Linenumbers.TWO: 2,
     Linenumbers.THREE: 3,
@@ -138,7 +138,8 @@ def render_entity(entities):
 
     for entity in entities:
         
-        if (hasattr(entity, 'linenumber') and entity.linenumber is None) or (hasattr(entity, 'number') and entity.number is None):
+        if (hasattr(entity, 'linenumber') and (entity.linenumber is None or entity.linenumber == 0)) or (hasattr(entity, 'number') and (entity.number is None or entity.number == 0)):
+
    
             continue  # Skip renderin
         

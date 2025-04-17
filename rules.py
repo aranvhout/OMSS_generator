@@ -48,42 +48,57 @@ class Rule:
     def __repr__(self):
         return (f"Rule(rule_type={self.rule_type}, attribute_type={self.attribute_type}, value={self.value}, "
                 f"direction={self.direction}, arithmetic_layout={self.arithmetic_layout}, excluded={self.excluded})") 
+class Configuration:
+    def __init__(self, alternative_indices):
+        self.alternative_indices = alternative_indices
+
+    def __repr__(self):
+        return f"Configuration(alternative_indices={self.alternative_indices})"
+
+        
+     
+
+
+
+
+
+
         
 def apply_rules(matrix, entity_rules, seed_list):
     
     binding_list =[]
    
     for rule_obj in entity_rules:
-        
-        rule = rule_obj.rule_type  # Accessing rule_type from Rule object        
-        attribute_type = rule_obj.attribute_type
-        value = rule_obj.value  # Optional additional value
-        direction = rule_obj.direction
-        arithmetic_layout = rule_obj.arithmetic_layout
-        excluded = rule_obj.excluded
+        if isinstance(rule_obj, Rule):
+            rule = rule_obj.rule_type  # Accessing rule_type from Rule object        
+            attribute_type = rule_obj.attribute_type
+            value = rule_obj.value  # Optional additional value
+            direction = rule_obj.direction
+            arithmetic_layout = rule_obj.arithmetic_layout
+            excluded = rule_obj.excluded
         
        
-        if rule == Ruletype.ARITHMETIC:                      
-            seed_list = arithmetic_rule (matrix, attribute_type, arithmetic_layout, direction, seed_list)# basically most of the logic concerning this rules is goverened by the higher order configuration module
+            if rule == Ruletype.ARITHMETIC:                      
+                seed_list = arithmetic_rule (matrix, attribute_type, arithmetic_layout, direction, seed_list)# basically most of the logic concerning this rules is goverened by the higher order configuration module
                        
                 
-        elif rule == Ruletype.CONSTANT:
-            matrix, seed_list = constant_rule(matrix, attribute_type, seed_list)
+            elif rule == Ruletype.CONSTANT:
+                matrix, seed_list = constant_rule(matrix, attribute_type, seed_list)
             
-        elif rule == Ruletype.FULL_CONSTANT:
-            full_constant_rule(matrix, attribute_type, value)
+            elif rule == Ruletype.FULL_CONSTANT:
+                full_constant_rule(matrix, attribute_type, value)
               
-        elif rule == Ruletype.PROGRESSION:
-            progression_rule(matrix, attribute_type, seed_list)
+            elif rule == Ruletype.PROGRESSION:
+                progression_rule(matrix, attribute_type, seed_list)
             
-            seed_list = update_seedlist(seed_list)  # Update each time
+                seed_list = update_seedlist(seed_list)  # Update each time
             
-        elif rule == Ruletype.DISTRIBUTE_THREE:
-            distribute_three(matrix, attribute_type, binding_list, seed_list)
-            seed_list = update_seedlist(seed_list)  # Update each time
+            elif rule == Ruletype.DISTRIBUTE_THREE:
+                distribute_three(matrix, attribute_type, binding_list, seed_list)
+                seed_list = update_seedlist(seed_list)  # Update each time
             
         
-    dis3_binding = check_binding(binding_list)
+        dis3_binding = check_binding(binding_list)
     
     return matrix
 
@@ -524,9 +539,9 @@ def arithmetic_selection(lst, answers):
     #do some check to prevent accidental rules from happening
     valid_matrix = check_for_rules(best_selection_no_row_value)
     if valid_matrix is False: #some cool recursion
-        print ('check')
+        
         return False
-    print('new_selecton',best_selection_no_row_value)
+ 
     
       
     
