@@ -14,6 +14,8 @@ author:
   - name: Aran van Hout
     degrees: MSc
 
+#### need to render in the terminal while in the OMSS conda env
+
 
 # this is not working I think it is a weird mac issue
 # jupyter:
