@@ -47,6 +47,7 @@ import cv2
 - set a seed & explain problem answer seeds
 - explain the rules
 - explain small & large entities
+- install, and make 100 items
 
 
 ```{python}
