@@ -2,7 +2,7 @@
 title: "Open Matrices Stimuli Set: Getting Started"
 execute:
   echo: true # for code folding
-  output: false # we don't wanna see all the stuff
+  output: true # we don't wanna see all the stuff
 format:
   html:
     code-fold: true
@@ -14,7 +14,7 @@ author:
   - name: Aran van Hout
     degrees: MSc
 
-#### need to render in the terminal while in the OMSS conda env
+#### need to render in the terminal while in the OMSS conda env, at some point we should list env requirements?
 
 
 # this is not working I think it is a weird mac issue
@@ -82,7 +82,7 @@ rules = {
 
 # Generate matrix
 
-create_matrix(rules, alternatives=4, seed = None, alternative_seed =None , entity_types=['BigShape', 'LittleShape'], path = '/Users/njudd/Desktop/hmmmm')
+create_matrix(rules, alternatives=4, seed = None, alternative_seed =None , entity_types=['BigShape', 'LittleShape'], save = False)
 
 
 #12345788912457
@@ -152,7 +152,7 @@ rules = {
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE)]}
 
 
-create_matrix(rules, alternatives=4, seed = None, alternative_seed =None , entity_types=['BigShape'])
+create_matrix(rules, alternatives=4, seed = None, alternative_seed =None , entity_types=['BigShape'], save = False)
 ```
 
 By default it outputs the matricies with alternativesl in a folder called "output". Yet, you can change this with the `path` arguement. Since we are not specifying a seed it will generate a different matrix (with different answer alternatives) each time.

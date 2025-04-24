@@ -5,6 +5,7 @@ import math
 from math import cos, sin, pi, radians
 from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Line, BigShape, LittleShape, Linenumbers
 
+import matplotlib.pyplot as plt
 # Global Mapping dictionaries. Basically here we couple the attributes of the enum classes to actual values
 ANGLE_MAP = {
     Angles.ZERO: 0,
@@ -43,7 +44,7 @@ NUMBER_MAP = {
 LINE_SPACING = 30  # Distance between multiple lines
 
 
-def render_matrix(entity_dict, problem_matrix=False):
+def render_matrix(entity_dict, save, problem_matrix=False):
     # Settings
     panel_size = 1500
     background_color = (255, 255, 255)
@@ -90,10 +91,20 @@ def render_matrix(entity_dict, problem_matrix=False):
         cv2.line(img, (i * cell_size, 0), (i * cell_size, panel_size), line_color, line_thickness)
 
     # Return the composite image
-    return img
+    if save is False:
+        plt.close('all') 
+        
+        if problem_matrix:
+            title = 'problem_matrix'
+        
+        else:
+            title = 'solution_matrix'
+        plot_in_python(img, title)
+    if save is True:
+        return img
+    
 
-
-def render_entity(entities):
+def render_entity(entities, save = True, idx = None):
     """
     Render multiple entities on a square canvas and return the composite image.
     """
@@ -165,10 +176,12 @@ def render_entity(entities):
             } else 1.0
             size = int(size_multiplier * size_factor.get(entity.size, 1) * panel_size / 2)
             shape_renderers.get(entity.shape)(img, center, size, entity) #draw it!
+    if save is True:
+        return img
 
-    return img
-
-    
+    if save is False:
+        title = 'alternative ' + str(idx+1)
+        plot_in_python(img, title)
 
 def render_triangle(img, center, size, entity):
     angle = ANGLE_MAP[entity.angle] * pi / 180  # Convert angle to radians
@@ -473,20 +486,37 @@ def rotate_point(point, center, angle):
 
     return round(x_new), round(y_new)  # Use round() to minimize drift
 
-def render_straight_line(img, center, length, entity):
-    """Draws one or multiple straight lines."""
-    color = (0, 0, 0)  # Black color
-    thickness = 3  # Default thickness
-    angle = ANGLE_MAP[entity.angle] * pi / 180
-    
-    number = NUMBER_MAP[entity.linenumber]  # Get number of lines
+def draw_arrowhead(img, start, end, color=(0, 0, 0), thickness=3, size=16, forward_offset=6):
+    """Draws a clean triangle arrowhead pointing from start to end, slightly ahead of the endpoint."""
+    angle = np.arctan2(end[1] - start[1], end[0] - start[0])
 
-    total_offset = (number - 1) * LINE_SPACING // 2  # Centering logic
+    # Shift the whole arrowhead forward
+    dx = forward_offset * cos(angle)
+    dy = forward_offset * sin(angle)
+
+    tip = (int(end[0] + dx), int(end[1] + dy))
+    left = (int(tip[0] - size * cos(angle - pi / 6)),
+            int(tip[1] - size * sin(angle - pi / 6)))
+    right = (int(tip[0] - size * cos(angle + pi / 6)),
+             int(tip[1] - size * sin(angle + pi / 6)))
+
+    pts = np.array([tip, left, right], np.int32)
+    cv2.fillConvexPoly(img, pts, color)
+
+
+
+
+def render_straight_line(img, center, length, entity):
+    """Draws one or multiple straight lines with arrowheads."""
+    color = (0, 0, 0)
+    thickness = 3
+    angle = ANGLE_MAP[entity.angle] * pi / 180
+    number = NUMBER_MAP[entity.linenumber]
+    total_offset = (number - 1) * LINE_SPACING // 2
 
     for i in range(number):
         offset = -total_offset + i * LINE_SPACING
         adjusted_center = (center[0], center[1] + offset)
-        
         start = (adjusted_center[0] - length // 2, adjusted_center[1])
         end = (adjusted_center[0] + length // 2, adjusted_center[1])
 
@@ -494,20 +524,20 @@ def render_straight_line(img, center, length, entity):
         end = rotate_point(end, center, angle)
 
         cv2.line(img, start, end, color, thickness)
+        draw_arrowhead(img, start, end, color, thickness)
+
 
 def render_curved_line(img, center, length, entity):
-    """Draws one or multiple smooth curved lines."""
+    """Draws one or multiple curved lines with arrowheads."""
     color = (0, 0, 0)
     thickness = 3
     angle = ANGLE_MAP[entity.angle] * pi / 180
     number = NUMBER_MAP[entity.linenumber]
-
     total_offset = (number - 1) * LINE_SPACING // 2
 
     for i in range(number):
         offset = -total_offset + i * LINE_SPACING
         adjusted_center = (center[0], center[1] + offset)
-
         start = (adjusted_center[0] - length // 2, adjusted_center[1])
         end = (adjusted_center[0] + length // 2, adjusted_center[1])
         control = (adjusted_center[0], adjusted_center[1] - length // 3)
@@ -521,19 +551,21 @@ def render_curved_line(img, center, length, entity):
         curve_points = [rotate_point(pt, center, angle) for pt in curve_points]
         cv2.polylines(img, [np.array(curve_points)], isClosed=False, color=color, thickness=thickness)
 
+        if len(curve_points) >= 2:
+            draw_arrowhead(img, curve_points[-2], curve_points[-1], color, thickness)
+
+
 def render_wavy_line(img, center, length, entity, amplitude=10, frequency=3):
-    """Draws one or multiple wavy lines."""
+    """Draws one or multiple wavy lines with arrowheads."""
     color = (0, 0, 0)
     thickness = 3
     angle = ANGLE_MAP[entity.angle] * pi / 180
     number = NUMBER_MAP[entity.linenumber]
-
     total_offset = (number - 1) * LINE_SPACING // 2
 
     for i in range(number):
         offset = -total_offset + i * LINE_SPACING
         adjusted_center = (center[0], center[1] + offset)
-
         start_x = adjusted_center[0] - length // 2
         end_x = adjusted_center[0] + length // 2
 
@@ -545,7 +577,22 @@ def render_wavy_line(img, center, length, entity, amplitude=10, frequency=3):
         wave_points = [rotate_point(pt, center, angle) for pt in wave_points]
         cv2.polylines(img, [np.array(wave_points)], isClosed=False, color=color, thickness=thickness)
 
+        if len(wave_points) >= 2:
+            draw_arrowhead(img, wave_points[-2], wave_points[-1], color, thickness)
 
 
-
-
+def plot_in_python(img, title):
+    """
+    Plots the first matrix from the matrices dictionary.
+    """
+    
+    matrix_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)        
+    plt.figure(figsize=(8, 8)) 
+    plt.imshow(matrix_rgb)
+    
+    
+    
+    plt.title(title)
+    plt.axis('off')
+   # plt.show()
+  

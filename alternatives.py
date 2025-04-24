@@ -64,7 +64,7 @@ def create_alternatives(matrices, entity_types, n_alternatives, seed_list, updat
     iterations = math.ceil(math.log(n_alternatives, 2)) #calculate number of iterations
     
     
-    #create attribute list,1) with a preference for non-constant attributes 2) remove number attributes or attributes belong to none entities
+    #create attribute list,1) with a preference for non-constant attributes 
     attribute_list, number_entities, deleted_splits = create_attribute_list (answer, entity_types, iterations, seed_list, updated_rules)
     
    
@@ -78,13 +78,13 @@ def create_alternatives(matrices, entity_types, n_alternatives, seed_list, updat
             new_alternative_list.extend (modify_attribute(alternative, entity_type, attribute, seed_list))
             alternative_list = new_alternative_list
            
-   
+    print(number_entities)
     
-    if number_entities: #if we have an arithmetic thing going on, the alternatives are created in the same way as before, but then modified a bit        # 
+    if number_entities: #if we have an arithmetic thing going on, the alternatives are created in the same way as before, but then modified a bit  
         alternative_list, seed_list = modify_alternatives_with_numbers(alternative_list, number_entities, entity_types, seed_list)     
         alternative_list, seed_list = perform_additional_splits(deleted_splits, entity_types, alternative_list, iterations, seed_list)    
         alternative_list = improve_alternatives (alternative_list, entity_types, deleted_splits, iterations, seed_list)
-    
+        
     #sample
     selected_alternative_list, seed_list = sample_alternatives(alternative_list, n_alternatives,seed_list)
     
@@ -257,11 +257,15 @@ def modify_attribute(alternative, entity_type, attribute, seed_list):
     return alternative_list
     
 
-def get_new_random_value(attribute, seed_list, exclude=None):
+def get_new_random_value(attribute, seed_list, arithmetic = False, exclude=None):
     """ fetch a random value for the given attribute, ensuring it's not in 'exclude'."""
     enum_class = ATTRIBUTE_TO_ENUM.get(attribute)
-    number_enum_classes = [Linenumbers,Bigshapenumbers]
-   
+    print (enum_class, exclude)
+    if arithmetic == True:
+        number_enum_classes = [Bigshapenumbers, Linenumbers]
+    else:
+        number_enum_classes = []
+    print('X',number_enum_classes)
     # Ensure exclude is a list
     if exclude is None:
         exclude = []
@@ -272,6 +276,7 @@ def get_new_random_value(attribute, seed_list, exclude=None):
     # Get all possible values, excluding any in the exclude list
     possible_values = [val for val in list(enum_class) if val not in exclude]
     if 0 not in exclude and enum_class in number_enum_classes:
+        print('xx')
         possible_values.append (0)
     # Ensure there's at least one option left (eg lets say we have an attribute with only one option)
     if not possible_values:
@@ -366,7 +371,7 @@ def modify_alternatives_with_numbers(alternative_list, number_entities, entity_t
                 continue
 
             current_value = getattr(entity_obj, key_to_modify)
-            new_value, seed_list = get_new_random_value(key_to_modify, seed_list, exclude=current_value)
+            new_value, seed_list = get_new_random_value(key_to_modify, seed_list, arithmetic = True, exclude=current_value)
           
             setattr(entity_obj, key_to_modify, new_value)
 
@@ -511,7 +516,7 @@ def perform_additional_splits(deleted_splits, entity_types, alternative_list, n_
     "this function is not complete yet, if the number of splits increases however in practice it works for almost 99.99 percent of the cases"
     number_of_splits = n_iterations // len(entity_types)
     deleted_split_index = 0
-    print('x', number_of_splits)
+    
 
     for split_round in range(number_of_splits):
         if deleted_split_index >= len(deleted_splits):
@@ -535,7 +540,7 @@ def perform_additional_splits(deleted_splits, entity_types, alternative_list, n_
            
 
             # Generate a new random value for the attribute (avoiding the old value)
-            new_value, seed_value = get_new_random_value(attribute_name, seed_list, exclude=old_value)
+            new_value, seed_value = get_new_random_value(attribute_name, seed_list, arithmetic = True, exclude=old_value)
             
 
             # Modify the attribute on the copied entity

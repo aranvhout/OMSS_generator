@@ -1,3 +1,4 @@
+
 from seed import random_choice
 from rules import Ruletype, Rule
 import numpy as np
@@ -232,6 +233,3 @@ def assign_layouts(all_rules, SNE_CON, MNE_CON, All_E, seed_list):
                             rule.arithmetic_layout = selected_layout  # Save the selected layout in the rule's arithmetic_layout attribute
 
     return all_rules, seed_list
-
-
-
