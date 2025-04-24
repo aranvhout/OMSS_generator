@@ -66,7 +66,7 @@ def create_alternatives(matrices, entity_types, n_alternatives, seed_list, updat
     
     #create attribute list,1) with a preference for non-constant attributes 
     attribute_list, number_entities, deleted_splits = create_attribute_list (answer, entity_types, iterations, seed_list, updated_rules)
-    print('l', number_entities)
+   
    
     #alternatives
     alternative_list = [answer]
@@ -78,7 +78,7 @@ def create_alternatives(matrices, entity_types, n_alternatives, seed_list, updat
             new_alternative_list.extend (modify_attribute(alternative, entity_type, attribute, seed_list))
             alternative_list = new_alternative_list
            
-    print(number_entities)
+   
     
     if number_entities: #if we have an arithmetic thing going on, the alternatives are created in the same way as before, but then modified a bit  , this doesnt work properly number entities only contains entities with none values
         alternative_list, seed_list = modify_alternatives_with_numbers(alternative_list, number_entities, entity_types, seed_list)     
@@ -260,12 +260,12 @@ def modify_attribute(alternative, entity_type, attribute, seed_list):
 def get_new_random_value(attribute, seed_list, arithmetic = False, exclude=None):
     """ fetch a random value for the given attribute, ensuring it's not in 'exclude'."""
     enum_class = ATTRIBUTE_TO_ENUM.get(attribute)
-    print (enum_class, exclude, arithmetic)
+  
     if arithmetic == True:
         number_enum_classes = [Bigshapenumbers, Linenumbers]
     else:
         number_enum_classes = []
-    print('X',number_enum_classes)
+    
     # Ensure exclude is a list
     if exclude is None:
         exclude = []
@@ -276,7 +276,7 @@ def get_new_random_value(attribute, seed_list, arithmetic = False, exclude=None)
     # Get all possible values, excluding any in the exclude list
     possible_values = [val for val in list(enum_class) if val not in exclude]
     if 0 not in exclude and enum_class in number_enum_classes:
-        print('xx')
+        
         possible_values.append (0)
     # Ensure there's at least one option left (eg lets say we have an attribute with only one option)
     if not possible_values:
