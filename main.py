@@ -18,7 +18,7 @@ rules = {
     
        'Line': [
            Rule(Ruletype.CONSTANT, AttributeType.ANGLE, value = 'ONE_EIGHTY'),
-           Rule(Ruletype.ARITHMETIC, AttributeType.LINENUMBER, direction = 'subtraction'),
+           Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.LINENUMBER),
            Rule(Ruletype.CONSTANT, AttributeType.LINETYPE)
        
        ],
@@ -40,6 +40,7 @@ rules = {
 
 # Generate matrix
 
-create_matrix(rules, alternatives=4, seed = 111245511123, alternative_seed =None ,save =True, entity_types=['Line', 'LittleShape'])
+create_matrix(rules, alternatives=4, seed = None,  alternative_seed =None ,save =True, entity_types=[ 'BigShape','LittleShape', 'Line', ])
 
 #12345788912457
+#111245511123,

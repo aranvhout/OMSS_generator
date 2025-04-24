@@ -66,7 +66,7 @@ def create_alternatives(matrices, entity_types, n_alternatives, seed_list, updat
     
     #create attribute list,1) with a preference for non-constant attributes 
     attribute_list, number_entities, deleted_splits = create_attribute_list (answer, entity_types, iterations, seed_list, updated_rules)
-    
+    print('l', number_entities)
    
     #alternatives
     alternative_list = [answer]
@@ -80,7 +80,7 @@ def create_alternatives(matrices, entity_types, n_alternatives, seed_list, updat
            
     print(number_entities)
     
-    if number_entities: #if we have an arithmetic thing going on, the alternatives are created in the same way as before, but then modified a bit  
+    if number_entities: #if we have an arithmetic thing going on, the alternatives are created in the same way as before, but then modified a bit  , this doesnt work properly number entities only contains entities with none values
         alternative_list, seed_list = modify_alternatives_with_numbers(alternative_list, number_entities, entity_types, seed_list)     
         alternative_list, seed_list = perform_additional_splits(deleted_splits, entity_types, alternative_list, iterations, seed_list)    
         alternative_list = improve_alternatives (alternative_list, entity_types, deleted_splits, iterations, seed_list)
@@ -260,7 +260,7 @@ def modify_attribute(alternative, entity_type, attribute, seed_list):
 def get_new_random_value(attribute, seed_list, arithmetic = False, exclude=None):
     """ fetch a random value for the given attribute, ensuring it's not in 'exclude'."""
     enum_class = ATTRIBUTE_TO_ENUM.get(attribute)
-    print (enum_class, exclude)
+    print (enum_class, exclude, arithmetic)
     if arithmetic == True:
         number_enum_classes = [Bigshapenumbers, Linenumbers]
     else:
@@ -317,14 +317,14 @@ def sample_alternatives(alternative_list, n_alternatives, seed_list):
 def modify_alternatives_with_numbers(alternative_list, number_entities, entity_types, seed_list):
     """
     Modifies up to half of the alternative answers by changing number/linenumber fields
-    in the entities listed in number_entities. The process uses `get_safe_candidates` to
+    in the entities listed in entity types The process uses `get_safe_candidates` to
     ensure valid modifications and uniqueness.
     """
 
-    # Step 1: Convert None to 0 for number/linenumber fields
+    # Step 1: Convert None to 0 for removed number/linenumber fields
  
     for ans in alternative_list:
-        for entity_type in number_entities:
+        for entity_type in number_entities: 
             entity_obj = getattr(ans, entity_type, None)
             if entity_obj:
                 for key in ['number', 'linenumber']:
@@ -352,7 +352,7 @@ def modify_alternatives_with_numbers(alternative_list, number_entities, entity_t
     # Step 2: Process entities one by one
     while len(modified_indices) < max_modifications:
         made_progress = False 
-        for entity_type in number_entities:
+        for entity_type in entity_types: #i had the idea that this should be arimethic entity types, but actually it does work better now, men this code is so complex i will have to recheck it
             
             # 2.1: Get safe candidates for modification
             candidates = get_safe_candidates(entity_type, modified_entities_per_index, alternative_list, entity_types)
