@@ -63,11 +63,12 @@ def save_matrices(matrices, save, path):
         os.makedirs(path, exist_ok=True)
         
         solution_matrix = render_matrix(matrices, save)
+        print(solution_matrix)
         cv2.imwrite(os.path.join(path, "solution.png"), solution_matrix)
     
         problem_matrix = render_matrix(matrices, save, problem_matrix=True)
         cv2.imwrite(os.path.join(path, "problem_matrix.png"), problem_matrix)
-        
+        print(problem_matrix)
     if save is False:
         solution_matrix = render_matrix(matrices, save)
         problem_matrix = render_matrix(matrices,save, problem_matrix=True)
