@@ -274,7 +274,7 @@ rules = {
         Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
         Rule(Ruletype.CONSTANT, AttributeType.COLOR),
         Rule(Ruletype.CONSTANT, AttributeType.SIZE),
-        Rule(Ruletype.POSITION, AttributeType.POSITION)]}
+        Rule(Ruletype.PROGRESSION, AttributeType.POSITION)]}
 
 create_matrix(rules, alternatives=4, alternative_seed=1, seed = 42, entity_types=['LittleShape'], save = False)
 ```
