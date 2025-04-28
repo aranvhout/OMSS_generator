@@ -33,14 +33,20 @@ def create_matrix( rules, seed=None, alternatives = None, alternative_seed = Non
             matrix = apply_rules(starting_matrix, entity_rules, seed_list)                       
             matrices[entity_type] = matrix  # Save the valid matrix
             
-         
-    save_matrices(matrices, save, path)
+    if save == True :
+        save_matrices(matrices, path)
+        if alternatives and alternatives > 1:
+            generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, updated_rules, path)
     
-    if alternatives and alternatives > 1:
-        generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, updated_rules, save, path)
+    if save == False:
+        solution_matrix = render_matrix(matrices)
+        problem_matrix = render_matrix(matrices, problem_matrix=True)
+        return solution_matrix, problem_matrix    
+    
+    
     
     print('matrix created')
-    return matrices                                      
+                                    
      
         
 def initialise_matrix(rules, seed_list=None, entity_type=["big-shape"]):
@@ -58,30 +64,25 @@ def initialise_matrix(rules, seed_list=None, entity_type=["big-shape"]):
     return matrix
 
 
-def save_matrices(matrices, save, path):
-    if save is True:
+def save_matrices(matrices,  path):
+    
         os.makedirs(path, exist_ok=True)
         
-        solution_matrix = render_matrix(matrices, save)
-        print(solution_matrix)
+        solution_matrix = render_matrix(matrices)
+        
         cv2.imwrite(os.path.join(path, "solution.png"), solution_matrix)
     
-        problem_matrix = render_matrix(matrices, save, problem_matrix=True)
+        problem_matrix = render_matrix(matrices,  problem_matrix=True)
         cv2.imwrite(os.path.join(path, "problem_matrix.png"), problem_matrix)
-        print(problem_matrix)
-    if save is False:
-        solution_matrix = render_matrix(matrices, save)
-        problem_matrix = render_matrix(matrices,save, problem_matrix=True)
+      
     
-def generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, rules, save, path):
+def generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, rules, path):
     alternative_seed_list = seed_generator(alternative_seed)
     generated_alternatives = create_alternatives(matrices, entity_types, alternatives, alternative_seed_list, rules)
     for idx, answer in enumerate(generated_alternatives):        
-        rendered_alternative = render_entity(list(answer.split_back().values()), save, idx)
-        
-        if save is True:
-            cv2.imwrite(os.path.join(path, f"alternative_{idx}.png"), rendered_alternative)
-            plt.show()
+        rendered_alternative = render_entity(list(answer.split_back().values()), idx)
+        cv2.imwrite(os.path.join(path, f"alternative_{idx}.png"), rendered_alternative)
+        plt.show()
 
 
 

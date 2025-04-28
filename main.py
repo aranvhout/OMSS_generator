@@ -40,7 +40,7 @@ rules = {
 
 # Generate matrix
 
-mat = create_matrix(rules, alternatives=4, seed = None,  alternative_seed =None ,save =True, entity_types=[ 'BigShape','LittleShape', 'Line', ])
+a,b = create_matrix(rules, alternatives=4, seed = None,  alternative_seed =None ,save =False, entity_types=[ 'BigShape','LittleShape', 'Line', ])
 
 #12345788912457
 #111245511123,

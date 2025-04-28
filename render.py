@@ -5,7 +5,7 @@ import math
 from math import cos, sin, pi, radians
 from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Line, BigShape, LittleShape, Linenumbers
 
-import matplotlib.pyplot as plt
+
 # Global Mapping dictionaries. Basically here we couple the attributes of the enum classes to actual values
 ANGLE_MAP = {
     Angles.ZERO: 0,
@@ -44,7 +44,7 @@ NUMBER_MAP = {
 LINE_SPACING = 30  # Distance between multiple lines
 
 
-def render_matrix(entity_dict, save, problem_matrix=False):
+def render_matrix(entity_dict,  problem_matrix=False):
     # Settings
     panel_size = 1500
     background_color = (255, 255, 255)
@@ -90,21 +90,12 @@ def render_matrix(entity_dict, save, problem_matrix=False):
         cv2.line(img, (0, i * cell_size), (panel_size, i * cell_size), line_color, line_thickness)
         cv2.line(img, (i * cell_size, 0), (i * cell_size, panel_size), line_color, line_thickness)
 
-    # Return the composite image
-    if save is False:
-        plt.close('all') 
-        
-        if problem_matrix:
-            title = 'problem_matrix'
-        
-        else:
-            title = 'solution_matrix'
-        plot_in_python(img, title)
-    if save is True:
-        return img
+  
+ 
+    return img
     
 
-def render_entity(entities, save = True, idx = None):
+def render_entity(entities,  idx = None):
     """
     Render multiple entities on a square canvas and return the composite image.
     """
@@ -176,12 +167,10 @@ def render_entity(entities, save = True, idx = None):
             } else 1.0
             size = int(size_multiplier * size_factor.get(entity.size, 1) * panel_size / 2)
             shape_renderers.get(entity.shape)(img, center, size, entity) #draw it!
-    if save is True:
-        return img
+  
+    return img
 
-    if save is False:
-        title = 'alternative ' + str(idx+1)
-        plot_in_python(img, title)
+    
 
 def render_triangle(img, center, size, entity):
     angle = ANGLE_MAP[entity.angle] * pi / 180  # Convert angle to radians
@@ -581,18 +570,5 @@ def render_wavy_line(img, center, length, entity, amplitude=10, frequency=3):
             draw_arrowhead(img, wave_points[-2], wave_points[-1], color, thickness)
 
 
-def plot_in_python(img, title):
-    """
-    Plots the first matrix from the matrices dictionary.
-    """
-    
-    matrix_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)        
-    plt.figure(figsize=(8, 8)) 
-    plt.imshow(matrix_rgb)
-    
-    
-    
-    plt.title(title)
-    plt.axis('off')
-   # plt.show()
+
   
