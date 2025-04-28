@@ -36,12 +36,15 @@ def create_matrix( rules, seed=None, alternatives = None, alternative_seed = Non
     if save == True :
         save_matrices(matrices, path)
         if alternatives and alternatives > 1:
-            generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, updated_rules, path)
+            generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, updated_rules, path, save = False)
     
     if save == False:
         solution_matrix = render_matrix(matrices)
         problem_matrix = render_matrix(matrices, problem_matrix=True)
-        return solution_matrix, problem_matrix    
+        if alternatives and alternatives > 1:
+            rendered_alternative_list = generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, updated_rules, path, save = True)
+            
+        return solution_matrix, problem_matrix, rendered_alternative_list    
     
     
     
@@ -76,16 +79,21 @@ def save_matrices(matrices,  path):
         cv2.imwrite(os.path.join(path, "problem_matrix.png"), problem_matrix)
       
     
-def generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, rules, path):
+def generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, rules, path, save):
     alternative_seed_list = seed_generator(alternative_seed)
     generated_alternatives = create_alternatives(matrices, entity_types, alternatives, alternative_seed_list, rules)
-    for idx, answer in enumerate(generated_alternatives):        
-        rendered_alternative = render_entity(list(answer.split_back().values()), idx)
-        cv2.imwrite(os.path.join(path, f"alternative_{idx}.png"), rendered_alternative)
-        plt.show()
-
-
-
+    
+    if save is True:
+        for idx, answer in enumerate(generated_alternatives):        
+            rendered_alternative = render_entity(list(answer.split_back().values()), idx)
+            cv2.imwrite(os.path.join(path, f"alternative_{idx}.png"), rendered_alternative)
+       
+    if save is True:
+        rendered_alternative_list = []
+        for idx, answer in enumerate(generated_alternatives):        
+            rendered_alternative = render_entity(list(answer.split_back().values()), idx)
+            rendered_alternative_list.append(rendered_alternative)
+        return rendered_alternative_list
 
   
     
