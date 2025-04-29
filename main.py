@@ -1,8 +1,7 @@
 # main.py
 # a minimal example of the generator
 
-# files needed:
-
+# files needed: matrix.py, render.py, alternatives.py, rules.py, configuration.py, entities
 
 from rules import Ruletype, AttributeType, Rule
 from matrix import create_matrix
@@ -15,7 +14,7 @@ r1 = {
     'BigShape': [
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SHAPE, value = 'square'),
         Rule(Ruletype.PROGRESSION, AttributeType.ANGLE),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.COLOR, value = 'blue'),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.NUMBER),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE)]}
 
@@ -37,7 +36,7 @@ rules = {
     'BigShape': [
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SHAPE, value = 'square'),
         Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
-        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR, value = 'red'),
         Rule(Ruletype.ARITHMETIC, AttributeType.NUMBER),
         Rule(Ruletype.CONSTANT, AttributeType.SIZE)],
 
@@ -61,7 +60,7 @@ rules = {
 
 # Generate matrix
 
-solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternatives=4, seed = None,  alternative_seed =None ,save =False, entity_types=[ 'BigShape','LittleShape', 'Line', ])
+#solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternatives=4, seed = None,  alternative_seed =None ,save =False, entity_types=[ 'BigShape','LittleShape', 'Line', ])
 
 #12345788912457
 #111245511123,

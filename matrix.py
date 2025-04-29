@@ -39,11 +39,17 @@ def create_matrix( rules, seed=None, alternatives = None, alternative_seed = Non
             generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, updated_rules, path, save = False)
     
     if save == False:
-        solution_matrix = render_matrix(matrices)
-        problem_matrix = render_matrix(matrices, problem_matrix=True)
+        solution_matrix_bgr = render_matrix(matrices)
+        solution_matrix = cv2.cvtColor(solution_matrix_bgr, cv2.COLOR_BGR2RGB)
+        problem_matrix_bgr = render_matrix(matrices, problem_matrix=True)
+        problem_matrix = cv2.cvtColor(problem_matrix_bgr, cv2.COLOR_BGR2RGB)
+        
         if alternatives and alternatives > 1:
-            rendered_alternative_list = generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, updated_rules, path, save = True)
-            
+            rendered_alternative_list_bgr = generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, updated_rules, path, save = True)
+            rendered_alternative_list = []
+            for alternative_bgr in rendered_alternative_list_bgr:
+                alternative = cv2.cvtColor(alternative_bgr, cv2.COLOR_BGR2RGB)
+                rendered_alternative_list.append(alternative)
         return solution_matrix, problem_matrix, rendered_alternative_list    
     
     
