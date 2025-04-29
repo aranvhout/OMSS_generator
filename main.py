@@ -1,7 +1,7 @@
 # main.py
 # a minimal example of the generator
 
-# files needed: matrix.py, render.py, alternatives.py, rules.py, configuration.py, entities
+# files needed: matrix.py, render.py, alternatives.py, rules.py, configuration.py, entity.py, seed.py
 
 from rules import Ruletype, AttributeType, Rule
 from matrix import create_matrix
