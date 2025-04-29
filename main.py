@@ -1,6 +1,33 @@
 # main.py
+# a minimal example of the generator
+
+# files needed:
+
+
 from rules import Ruletype, AttributeType, Rule
 from matrix import create_matrix
+import matplotlib.pyplot as plt
+from PIL import Image
+
+
+# Simple example, everything constant but progressing angle
+r1 = {
+    'BigShape': [
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SHAPE, value = 'square'),
+        Rule(Ruletype.PROGRESSION, AttributeType.ANGLE),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.NUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE)]}
+
+
+solution_matrix, problem_matrix, alternatives = create_matrix(r1, alternatives=4, seed = None,  alternative_seed =None ,save = False, entity_types=[ 'BigShape',])
+
+
+# solution_matrix is a bit map
+
+plt.imshow(Image.fromarray(solution_matrix), cmap='gray')
+plt.axis('off')
+plt.show()
 
 
 
@@ -13,20 +40,14 @@ rules = {
         Rule(Ruletype.CONSTANT, AttributeType.COLOR),
         Rule(Ruletype.ARITHMETIC, AttributeType.NUMBER),
         Rule(Ruletype.CONSTANT, AttributeType.SIZE)],
-        
-    
-    
+
        'Line': [
            Rule(Ruletype.CONSTANT, AttributeType.ANGLE, value = 'ONE_EIGHTY'),
            Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.LINENUMBER),
            Rule(Ruletype.CONSTANT, AttributeType.LINETYPE)
        
        ],
-       
-            
-       
-       
-       
+
        'LittleShape': [
    #   Rule(Ruletype.PROGRESSION, AttributeType.SHAPE),
            Rule(Ruletype.CONSTANT, AttributeType.COLOR),
