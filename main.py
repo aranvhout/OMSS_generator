@@ -5,7 +5,7 @@
 
 from rules import Ruletype, AttributeType, Rule
 from matrix import create_matrix
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from PIL import Image
 
 
@@ -21,12 +21,12 @@ r1 = {
 
 solution_matrix, problem_matrix, alternatives = create_matrix(r1, alternatives=4, seed = None,  alternative_seed =None ,save = False, entity_types=[ 'BigShape',])
 
-
+print(alternatives)
 # solution_matrix is a bit map
 
-plt.imshow(Image.fromarray(solution_matrix), cmap='gray')
-plt.axis('off')
-plt.show()
+# plt.imshow(Image.fromarray(solution_matrix), cmap='gray')
+# plt.axis('off')
+# plt.show()
 
 
 
