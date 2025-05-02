@@ -11,10 +11,11 @@ from PIL import Image
 app = Flask(__name__)
 
 def toPng(arr):
-    i1 = Image.fromarray(arr)
+    img = Image.fromarray(arr)
     membuf = io.BytesIO()
-    i1.save(membuf, format="png") 
-    return i1
+    img.save(membuf, format="png") 
+    # membuf.seek(0)
+    return membuf
 
 @app.route("/")
 def home():
