@@ -1,8 +1,12 @@
 # python -m flask run --host=0.0.0.0 --port=5002
 
-from flask import Flask, send_file
+from flask import Flask, send_file, Response
+import zipfile
+import io
+from werkzeug.wsgi import FileWrapper
 from matrix import create_matrix
 from rules import AttributeType, Rule, Ruletype
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -17,7 +21,21 @@ def home():
 
 
     solution_matrix, problem_matrix, alternatives = create_matrix(r1, alternatives=4, seed = None,  alternative_seed =None ,save = False, entity_types=[ 'BigShape',])
-    filename = "file.gif"
-    return "OK!"
-    # return send_file(filename, mimetype='image/gif')
+
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
+        zip_file.writestr("alternatives.png", alternatives)
+        zip_file.writestr("problem_matrix.png", problem_matrix)
+    zip_buffer.seek(0)
+
+    file_wrapper = FileWrapper(zip_buffer)
+    headers = {
+        'Content-Disposition': 'attachment; filename="{}"'.format('file.zip')
+    }
+    response = Response(file_wrapper,
+                        mimetype='application/zip',
+                        direct_passthrough=True,
+                        headers=headers)
+    return response
+    # return send_file("problem.zip", mimetype='image/gif')
     
