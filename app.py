@@ -6,8 +6,15 @@ import io
 from werkzeug.wsgi import FileWrapper
 from matrix import create_matrix
 from rules import AttributeType, Rule, Ruletype
+from PIL import Image
 
 app = Flask(__name__)
+
+def toPng(arr):
+    i1 = Image.fromarray(arr)
+    membuf = io.BytesIO()
+    i1.save(membuf, format="png") 
+    return i1
 
 @app.route("/")
 def home():
@@ -24,8 +31,8 @@ def home():
 
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
-        zip_file.writestr("alternatives.png", alternatives)
-        zip_file.writestr("problem_matrix.png", problem_matrix)
+        zip_file.writestr("alternative_01.png", toPng(alternatives[0]))
+        zip_file.writestr("problem_matrix.png", toPng(problem_matrix))
     zip_buffer.seek(0)
 
     file_wrapper = FileWrapper(zip_buffer)
