@@ -14,8 +14,8 @@ def toPng(arr):
     img = Image.fromarray(arr)
     membuf = io.BytesIO()
     img.save(membuf, format="png") 
-    # membuf.seek(0)
-    return membuf
+    membuf.seek(0)
+    return membuf.getvalue()
 
 @app.route("/")
 def home():
@@ -32,8 +32,9 @@ def home():
 
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
-        zip_file.writestr("alternative_01.png", toPng(alternatives[0]))
         zip_file.writestr("problem_matrix.png", toPng(problem_matrix))
+        for idx, alternative in enumerate(alternatives):
+             zip_file.writestr('alternative_0{}.png'.format(idx), toPng(alternative))
     zip_buffer.seek(0)
 
     file_wrapper = FileWrapper(zip_buffer)
