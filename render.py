@@ -20,16 +20,18 @@ ANGLE_MAP = {
     Angles.THREE_TWENTY_FOUR: 324,
 }
 
+
 COLOR_MAP = {
-    Colors.RED: (100, 60, 180),       # Softer Red V
-    Colors.PINK: (180, 140, 255),     # Pink V
-    Colors.GREEN: (90, 200, 100),     # Soft Green V
-    Colors.YELLOW: (0, 230, 255),     # Mellow Yellow V
-    Colors.BLUE: (180, 160, 120),     # Blue
-    Colors.LAVENDER: (230, 130, 190),     # Lavender
-    Colors.BROWN: (100, 180, 180),     # brown
-    Colors.ORANGE: (100, 160, 255)   #teal
+    Colors.BLUE: (184, 126, 55),      #377eb8 
+    Colors.ORANGE: (0, 127, 255),     #ff7f00
+    Colors.GREEN: (74, 175, 77),     #4daf4a
+    Colors.BROWN: (40, 86, 166),     #a65628
+    Colors.PURPLE: (163, 78, 152),     #984ea3
+    Colors.GRAY: (153, 153, 153),     #999999
+    Colors.RED: (28, 26, 228),     #999999
+    Colors.YELLOW: (0, 222, 222)   #dede00
 }
+
 
 
 NUMBER_MAP = {
@@ -570,5 +572,14 @@ def render_wavy_line(img, center, length, entity, amplitude=10, frequency=3):
             draw_arrowhead(img, wave_points[-2], wave_points[-1], color, thickness)
 
 
-
-  
+#this map is no longer used but the colours looked so damn good
+#ORIGINAL_COLOR_MAP = {
+  #    Colors.RED: (100, 60, 180),       # Softer Red V
+  #    Colors.PINK: (180, 140, 255),     # Pink V
+   #   Colors.GREEN: (90, 200, 100),     # Soft Green V
+   #   Colors.YELLOW: (0, 230, 255),     # Mellow Yellow V
+   #   Colors.BLUE: (180, 160, 120),     # Blue
+   #   Colors.LAVENDER: (230, 130, 190),     # Lavender
+   #   Colors.BROWN: (100, 180, 180),     # brown
+   #   Colors.ORANGE: (100, 160, 255)   #teal
+#  }

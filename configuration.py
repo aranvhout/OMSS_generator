@@ -1,7 +1,7 @@
 
 from seed import random_choice
 from rules import Ruletype, Rule
-import numpy as np
+
 def configuration_settings(rules, entity_types, seed_list):
     """Ensures all Rule objects have the necessary attributes, setting missing ones to None."""
     

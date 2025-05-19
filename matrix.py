@@ -30,13 +30,14 @@ def create_matrix( rules, seed=None, alternatives = None, alternative_seed = Non
            # Create a starting matrix for the current entity type
             starting_matrix = initialise_matrix(entity_rules, seed_list, entity_type)#note to self. entity type defined in the for-loop 
             # Apply rules to the starting matrix
-            matrix = apply_rules(starting_matrix, entity_rules, seed_list)                       
-            matrices[entity_type] = matrix  # Save the valid matrix
+            matrix, seed_list = apply_rules(starting_matrix, entity_rules, seed_list)   
             
+            matrices[entity_type] = matrix  # Save the valid matrix
+        
     if save == True :
         save_matrices(matrices, path)
         if alternatives and alternatives > 1:
-            generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, updated_rules, path, save = False)
+            generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, updated_rules, path, save =True)
     
     if save == False:
         solution_matrix_bgr = render_matrix(matrices)
