@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "OMSS"
+version = "0.1.0"
+description = "Creates matrices for assessing fluid reasoning"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Aran van Hout", email = "aranvanhout@hotmail.com" },
+  { name = "Nicholas Judd", email = "nicholas.judd@radboudumc.nl" }
+]
+requires-python = ">=3.7"
+dependencies = [
+    "numpy==2.2.3",
+    "opencv-python==4.11.0.86",
+    "Pillow==11.2.1"
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/your-package-name"
+BugTracker = "https://github.com/yourusername/your-package-name/issues"

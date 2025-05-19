@@ -1,6 +1,6 @@
 
-from seed import random_choice
-from rules import Ruletype, Rule
+from .seed import random_choice
+from .rules import Ruletype, Rule
 
 def configuration_settings(rules, entity_types, seed_list):
     """Ensures all Rule objects have the necessary attributes, setting missing ones to None."""

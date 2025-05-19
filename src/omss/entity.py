@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from seed import random_choice
+from .seed import random_choice
 
 class Shapes(Enum):
     TRIANGLE = auto()

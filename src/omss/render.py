@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import math
 from math import cos, sin, pi, radians
-from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Line, BigShape, LittleShape, Linenumbers
+from .entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Line, BigShape, LittleShape, Linenumbers
 
 
 # Global Mapping dictionaries. Basically here we couple the attributes of the enum classes to actual values

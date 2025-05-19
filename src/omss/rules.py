@@ -1,7 +1,7 @@
 from enum import Enum, auto
 from typing import Optional
-from entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes,  Linenumbers, Bigshapenumbers
-from seed import random_choice, update_seedlist, random_shuffle
+from .entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes,  Linenumbers, Bigshapenumbers
+from .seed import random_choice, update_seedlist, random_shuffle
 import numpy as np
 from itertools import combinations, product
 

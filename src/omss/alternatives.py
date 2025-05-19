@@ -1,6 +1,6 @@
-from rules import Ruletype, Rule, AttributeType, ATTRIBUTETYPE_TO_ENUM
-from seed import random_shuffle, random_choice
-from entity import BigShape, LittleShape, Line, Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linenumbers,Bigshapenumbers
+from .rules import Ruletype, Rule, AttributeType, ATTRIBUTETYPE_TO_ENUM
+from .seed import random_shuffle, random_choice
+from .entity import BigShape, LittleShape, Line, Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linenumbers,Bigshapenumbers
 
 import copy
 import math
