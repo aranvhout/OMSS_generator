@@ -80,11 +80,11 @@ def apply_rules(matrix, entity_rules, seed_list):
        
             if rule == Ruletype.ARITHMETIC:                      
                 seed_list = arithmetic_rule (matrix, attribute_type, arithmetic_layout, direction, seed_list)# basically most of the logic concerning this rules is goverened by the higher order configuration module
-                       
+                seed_list = update_seedlist(seed_list)        
                 
             elif rule == Ruletype.CONSTANT:
                 matrix, seed_list = constant_rule(matrix, attribute_type, seed_list)
-            
+                seed_list = update_seedlist(seed_list)
             elif rule == Ruletype.FULL_CONSTANT:
                 full_constant_rule(matrix, attribute_type, value)
               
@@ -100,7 +100,7 @@ def apply_rules(matrix, entity_rules, seed_list):
         
         dis3_binding = check_binding(binding_list)
     
-    return matrix
+    return matrix, seed_list
 
 def full_constant_rule(matrix, attribute_type, value):
     if value is not None:

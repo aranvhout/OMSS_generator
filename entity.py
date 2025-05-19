@@ -16,15 +16,16 @@ class Sizes(Enum):
 
 
 class Colors(Enum):
-    RED = auto()
-    PINK = auto()
-    GREEN = auto()
-    YELLOW = auto()
     BLUE = auto()
-    LAVENDER = auto()
+    ORANGE = auto()
+    GREEN = auto()
     BROWN = auto()
-    ORANGE = auto ()#
-           
+    PURPLE = auto()
+    GRAY = auto()
+    RED = auto()
+    YELLOW = auto ()#
+
+      
 class Angles(Enum):
     ZERO = auto()
     THIRTY_SIX = auto()
