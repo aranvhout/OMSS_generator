@@ -9,7 +9,7 @@ Created on Mon May 19 15:37:42 2025
 import omss
 from omss import Ruletype, AttributeType, Rule, create_matrix
 
-
+#normal code
 rules = {
     'BigShape': [
         Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
@@ -39,3 +39,10 @@ rules = {
 
 
 create_matrix(rules, alternatives=4, seed = 13,  alternative_seed =None ,save =True, entity_types=[ 'BigShape', 'LittleShape' ])
+
+
+#bitmap thing
+#solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternatives=4, seed = 13,  alternative_seed =None ,save =False, entity_types=[ 'BigShape', 'LittleShape' ])
+#array = np.array(solution_matrix, dtype=np.uint8)
+#image = Image.fromarray(array, mode='RGB')
+#image.save("solution_matrix.png")
