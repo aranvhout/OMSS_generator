@@ -4,6 +4,7 @@ from .entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes,  Linenu
 from .seed import random_choice, update_seedlist, random_shuffle
 import numpy as np
 from itertools import combinations, product
+import sys
 
 class AttributeType(Enum):
     SHAPE = auto()        
@@ -80,6 +81,7 @@ def apply_rules(matrix, entity_rules, seed_list):
        
             if rule == Ruletype.ARITHMETIC:                      
                 seed_list = arithmetic_rule (matrix, attribute_type, arithmetic_layout, direction, seed_list)# basically most of the logic concerning this rules is goverened by the higher order configuration module
+                
                 seed_list = update_seedlist(seed_list)        
                 
             elif rule == Ruletype.CONSTANT:
@@ -323,20 +325,30 @@ def check_binding(binding_list):
 def arithmetic_rule(matrix, attribute_type, layout, direction, seed_list):
     
     if layout is None: 
-        print('a')
+        
            
         enum_class = ATTRIBUTETYPE_TO_ENUM.get(attribute_type)
         max_value = len(enum_class)
         potential_values = list(range(1, max_value + 1))        
         arithmetic_matrix, seed_list = arithmetic_operation(potential_values, direction, layout, seed_list)
-        if arithmetic_matrix == False:
-            print ('check')
+        
+        
+        i = 0
+        while arithmetic_matrix == False and i <10:
+            seed_list = update_seedlist(seed_list)
             arithmetic_matrix, seed_list = arithmetic_operation(potential_values, direction, layout, seed_list)
-       
+            i+=1
+        if not arithmetic_matrix:
+            print("Failed to generate a arithmetic matrix without unintended rules after 10 attempts.")
+            sys.exit(1)
+            
+    
         for row in matrix:
             for entity in row:                
                 r,c = entity.entity_index
+                
                 value_to_assign=arithmetic_matrix[r][c] 
+                
                 if value_to_assign == 0:
                     setattr(entity, attribute_type.name.lower(), None)
                 
@@ -351,10 +363,15 @@ def arithmetic_rule(matrix, attribute_type, layout, direction, seed_list):
         max_value = len(enum_class)
         potential_values = list(range(1, max_value + 1))        
         arithmetic_matrix, seed_list = arithmetic_operation(potential_values, direction, layout, seed_list)
-        if arithmetic_matrix == False:
-            print ('check')
+        while arithmetic_matrix == False and i <10:
+            seed_list = update_seedlist(seed_list)
             arithmetic_matrix, seed_list = arithmetic_operation(potential_values, direction, layout, seed_list)
-       
+            i+=1
+        if not arithmetic_matrix:
+           print("Failed to generate a arithmetic matrix without unintended rules after 10 attempts.")
+           sys.exit(1)
+           
+   
         for row in matrix:
             for entity in row:                
                 r,c = entity.entity_index
@@ -601,7 +618,7 @@ def check_for_rules (rows):
             break
         
     if upward_progression or downward_progression or distribute_three:
-        print('l')
+        print('unintended rule found, recreating')
         valid_matrix= False
         
     else:
