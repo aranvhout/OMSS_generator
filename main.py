@@ -16,11 +16,11 @@ start = time.time()
 #normal code
 rules = {
     'BigShape': [
-        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
-        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
-        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
-        Rule(Ruletype.ARITHMETIC, AttributeType.NUMBER),
-        Rule(Ruletype.CONSTANT, AttributeType.SIZE)],
+       
+        Rule(Ruletype.PROGRESSION, AttributeType.ANGLE),
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')],
 
        'Line': [
            Rule(Ruletype.PROGRESSION, AttributeType.ANGLE, value = 'ONE_EIGHTY'),
@@ -40,11 +40,11 @@ rules = {
 
   
 #image.save("color_bitmap_output.png")
-for i in range (0,999):
+for i in range (0,1):
 
-    create_matrix(rules, alternatives=4, seed =i,  alternative_seed =None ,save =True, entity_types=[ 'BigShape', 'LittleShape' , 'Line'])
+ create_matrix(rules, alternatives=8, seed =None,  alternative_seed =None ,save =True, output_file = True, entity_types=[ 'Line'])
 
-    print(i)
+ 
 end = time.time()
 
 print(f"Execution time: {end - start:.4f} seconds")

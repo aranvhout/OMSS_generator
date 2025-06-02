@@ -56,6 +56,7 @@ class Answer:
 
 
 def create_alternatives(matrices, entity_types, n_alternatives, seed_list, updated_rules):
+    
     # combine the matrices in a starting entity called answer
     alternative_dict = {entity_type: matrices[entity_type][-1][-1] for entity_type in matrices}
     answer = Answer(**alternative_dict)
@@ -86,9 +87,18 @@ def create_alternatives(matrices, entity_types, n_alternatives, seed_list, updat
         alternative_list = improve_alternatives (alternative_list, entity_types, deleted_splits, iterations, seed_list)
         
     #sample
-    selected_alternative_list, seed_list = sample_alternatives(alternative_list, n_alternatives,seed_list)
+    selected_alternative_list, seed_list = sample_alternatives(alternative_list, n_alternatives,seed_list) 
+    dis_scores = calculate_dissimilarity_score(selected_alternative_list)
     
-    return selected_alternative_list
+    
+    return selected_alternative_list, dis_scores
+   
+
+
+
+
+
+
 
 def create_attribute_list(answer, entity_types, iterations, seed_list, updated_rules):
     non_constant_attributes = []
@@ -559,3 +569,51 @@ def perform_additional_splits(deleted_splits, entity_types, alternative_list, n_
 
 
 
+def calculate_dissimilarity_score(selected_alternatives_list):
+    compare_to = selected_alternatives_list[0]
+    number_keys = {'number', 'linenumber'}
+    scores = []
+
+    def normalize(v):
+        """Extract enum value if it's an enum, otherwise return as-is."""
+        try:
+            return v.value
+        except AttributeError:
+            return v
+
+    def compare_entities(ent1, ent2):
+        # Apply the "0 vs non-zero" logic for number keys
+        for key in number_keys:
+            v1 = normalize(getattr(ent1, key, None))
+            v2 = normalize(getattr(ent2, key, None))
+            if (v1 == 0 and v2 not in [0, None]) or (v2 == 0 and v1 not in [0, None]):
+                return 1  # Early exit: entity treated as 1 diff
+
+        # Normal attribute comparison
+        diff = 0
+        all_attrs = set(vars(ent1).keys()).union(vars(ent2).keys())
+        for attr in all_attrs:
+            v1 = normalize(getattr(ent1, attr, None))
+            v2 = normalize(getattr(ent2, attr, None))
+            if v1 is None and v2 is None:
+                continue
+            if v1 != v2:
+                diff += 1
+        return diff
+
+    for alt in selected_alternatives_list:
+        total_diff = 0
+        # Compare all matching fields: BigShape, Line, LittleShape, etc.
+        subentities = set(vars(compare_to).keys()).union(vars(alt).keys())
+        for key in subentities:
+            ent1 = getattr(compare_to, key, None)
+            ent2 = getattr(alt, key, None)
+            if ent1 is None and ent2 is None:
+                continue
+            elif ent1 is None or ent2 is None:
+                total_diff += 1
+            else:
+                total_diff += compare_entities(ent1, ent2)
+        scores.append(total_diff)
+
+    return scores
