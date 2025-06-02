@@ -42,7 +42,7 @@ rules = {
 #image.save("color_bitmap_output.png")
 for i in range (0,1):
 
- create_matrix(rules, alternatives=8, seed =None,  alternative_seed =None ,save =True, output_file = True, entity_types=[ 'Line'])
+ create_matrix(rules, alternatives=16, seed =None,  alternative_seed =None ,save =True, output_file = True, entity_types=[ 'Line'])
 
  
 end = time.time()

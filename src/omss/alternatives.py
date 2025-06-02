@@ -71,7 +71,9 @@ def create_alternatives(matrices, entity_types, n_alternatives, seed_list, updat
    
     #alternatives
     alternative_list = [answer]
-    
+    if iterations > len(attribute_list):
+        raise ValueError("Too many alternatives for the specific setting. Please lower the number of alternatives.")
+
     for i in range(iterations):  
         entity_type, attribute=attribute_list[i]
         new_alternative_list = []
