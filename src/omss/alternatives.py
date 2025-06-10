@@ -4,7 +4,7 @@ from .entity import BigShape, LittleShape, Line, Shapes, Sizes, Colors, Angles, 
 
 import copy
 import math
-import random
+
 
 
 #dict matching class atributes (eg color of big shape) to classes containing the values (Colors)

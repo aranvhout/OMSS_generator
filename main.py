@@ -20,6 +20,7 @@ rules = {
         Rule(Ruletype.PROGRESSION, AttributeType.ANGLE),
         Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
         Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
+        Rule(Ruletype.CONSTANT, AttributeType.POSITION),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')],
 
        'Line': [
@@ -42,7 +43,7 @@ rules = {
 #image.save("color_bitmap_output.png")
 for i in range (0,1):
 
- create_matrix(rules, alternatives=16, seed =None,  alternative_seed =None ,save =True, output_file = True, entity_types=[ 'Line'])
+ create_matrix(rules, alternatives=16, seed =None,  alternative_seed =None ,save =False, output_file = False, entity_types=[ 'BigShape','Line'])
 
  
 end = time.time()
