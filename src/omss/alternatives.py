@@ -1,7 +1,9 @@
-from .rules import Ruletype, Rule, AttributeType, ATTRIBUTETYPE_TO_ENUM
+# OMSS imports
+from .rules import Ruletype, Rule, AttributeType
 from .seed import random_shuffle, random_choice
-from .entity import BigShape, LittleShape, Line, Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linenumbers,Bigshapenumbers
+from .entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linenumbers,Bigshapenumbers
 
+#general imports
 import copy
 import math
 
@@ -63,11 +65,9 @@ def create_alternatives(matrices, entity_types, n_alternatives, seed_list, updat
    
     #calculate how many iterations (splits in the tree) we need
     iterations = math.ceil(math.log(n_alternatives, 2)) #calculate number of iterations
-    
-    
+        
     #create attribute list,1) with a preference for non-constant attributes 
     attribute_list, number_entities, deleted_splits = create_attribute_list (answer, entity_types, iterations, seed_list, updated_rules)
-   
    
     #alternatives
     alternative_list = [answer]
@@ -79,8 +79,7 @@ def create_alternatives(matrices, entity_types, n_alternatives, seed_list, updat
         new_alternative_list = []
         for alternative in alternative_list:            
             new_alternative_list.extend (modify_attribute(alternative, entity_type, attribute, seed_list))
-            alternative_list = new_alternative_list
-           
+            alternative_list = new_alternative_list          
    
     
     if number_entities: #if we have an arithmetic thing going on, the alternatives are created in the same way as before, but then modified a bit  , this doesnt work properly number entities only contains entities with none values
@@ -95,11 +94,6 @@ def create_alternatives(matrices, entity_types, n_alternatives, seed_list, updat
     
     return selected_alternative_list, dis_scores
    
-
-
-
-
-
 
 
 def create_attribute_list(answer, entity_types, iterations, seed_list, updated_rules):
@@ -182,7 +176,7 @@ def modify_attribute_list(ordered_attributes, n_iterations, answer, entity_list)
                         
                         for etype, attr in ordered_attributes:
                             if etype==entity_type:
-                                if attr.name.lower() not in ['number', 'linenumber']: #for now i disregard linenumbers, since maybe we dont need additional splits for this (the linenumber can already vary)
+                                if attr.name.lower() not in ['number', 'linenumber']: 
                                     deleted_splits.append((etype, attr))
                         
                         
@@ -229,10 +223,6 @@ def modify_attribute_list(ordered_attributes, n_iterations, answer, entity_list)
     ]
 
     return ordered_attributes, number_entities_ordered, deleted_splits
-
-
-
-
 
 
 

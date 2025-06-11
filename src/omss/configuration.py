@@ -1,4 +1,4 @@
-
+#OMSS imports
 from .seed import random_choice
 from .rules import Ruletype, Rule
 
@@ -29,8 +29,7 @@ def configuration_settings(rules, entity_types, seed_list):
         
 
 
-    #check whether we need so set an arithmetic layout
-    
+    #check whether we need so set an arithmetic layout    
     has_arithmetic_rule = any(
     any(isinstance(rule, Rule) and rule.rule_type == Ruletype.ARITHMETIC for rule in rule_list)
     for rule_list in updated_rules.values()
@@ -44,23 +43,16 @@ def configuration_settings(rules, entity_types, seed_list):
     return updated_rules, seed_list
 
 
-def constrain (updated_rules, seed_list):
-    return updated_rules, seed_list
-
-
-
-
-
-    
-    
+def constrain (updated_rules, seed_list):#placeholder for if we want to add constraining possibilities in the future
+    return updated_rules, seed_list  
     
  
     
     
 def arithmetic_parameters(all_rules, seed_list):
     """Handles the arithmetic-related configuration, categorizing entities and assigning layouts."""
-    # Step 1: Categorize entities to do some basic checks
     
+    # Step 1: Categorize entities to do some basic checks    
     SNE_CON, MNE_CON, MNE_NCON, NA_en, All_E = categorize_entities(all_rules)
     
     # Step 2: Select the direction (subtraction, addition) and layout for the entities 
@@ -114,7 +106,7 @@ def categorize_entities(all_rules):
             
     All_E =  SNE_CON + MNE_CON + MNE_NCON + NA_en        
     if len(SNE_CON) ==1 and len(All_E) ==1:
-        raise ValueError ('Not enough entities to perform an aritmetic operation')
+        raise ValueError ('Not enough entities to perform an arithmetic operation')
     return (SNE_CON, MNE_CON, MNE_NCON, NA_en, All_E)
     
 def select_direction (SNE_CON, MNE_CON, MNE_NCON, all_rules, seed_list):
@@ -175,7 +167,7 @@ def select_direction (SNE_CON, MNE_CON, MNE_NCON, all_rules, seed_list):
             elif len(MNE_direction) ==1: #a single direction specfied
                 direction = next(iter(MNE_direction))  
                 set_direction(MNE, all_rules, direction)
-            elif len (MNE_direction) > 1: #
+            elif len (MNE_direction) > 1: 
                 for entity in MNE_direction:
                     direction, seed_list = random_choice(seed_list, ["addition", "subtraction"])  
                     set_direction(entity, all_rules, direction)           

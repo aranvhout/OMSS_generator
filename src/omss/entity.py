@@ -1,5 +1,8 @@
-from enum import Enum, auto
+#OMSS imports
 from .seed import random_choice
+
+#general imports
+from enum import Enum, auto
 
 class Shapes(Enum):
     TRIANGLE = auto()
@@ -44,7 +47,7 @@ class Positions (Enum):
     BOTTOM_RIGHT = auto()
     BOTTOM_LEFT = auto()
        
-# Enum for line types
+
 class Linetypes(Enum):
     SOLID = auto()
     CURVE= auto()
@@ -65,12 +68,11 @@ class Bigshapenumbers(Enum):
 
 # Class for BigShape entity
 class BigShape:
-    def __init__(self, shape, size, color, angle, position, entity_index, number):
+    def __init__(self, shape, size, color, angle, entity_index, number):
         self.shape = shape
         self.size = size 
         self.color = color
-        self.angle = angle
-        self.position = position
+        self.angle = angle        
         self.entity_index = entity_index
         self.number = number
         
@@ -108,19 +110,15 @@ def create_random_entity(seed_list, entity_type, entity_index,  position = None)
         random_number, seed_list = random_choice(seed_list, list(Bigshapenumbers))
         
         
-        if position == 'random':
-            entity_position, seed_list = random_choice(seed_list, list(Positions))
-            
-        else:
-            entity_position = None
         
-        return BigShape(shape=random_shape, size=random_size, color=random_color, angle= random_angle, position= entity_position, entity_index =entity_index, number = random_number ), seed_list
+        return BigShape(shape=random_shape, size=random_size, color=random_color, angle= random_angle, entity_index =entity_index, number = random_number ), seed_list
         
     elif entity_type == "Line":
         # Create random Line attributes
         random_line_type, seed_list = random_choice(seed_list, list(Linetypes))
         random_number, seed_list = random_choice(seed_list, list(Linenumbers))#makes sure we don't create an empty grid as starting point
         random_angle, seed_list = random_choice(seed_list, list(Angles))
+       
         if position == 'random':
             entity_position, seed_list = random_choice(seed_list, list(Positions))
             
@@ -132,12 +130,13 @@ def create_random_entity(seed_list, entity_type, entity_index,  position = None)
     
     
     elif entity_type == "LittleShape":
-        # Create random BigShape attributes
+        # Create random littleshape attributes
         random_shape, seed_list = random_choice(seed_list, list(Shapes)) 
         random_size, seed_list = random_choice(seed_list, list(Sizes))
         random_color, seed_list = random_choice(seed_list, list(Colors))    
         random_angle, seed_list = random_choice(seed_list, list(Angles))
         random_number, seed_list = random_choice(seed_list, list(Bigshapenumbers))
+        
         if position == 'random':
             entity_position, seed_list =random_choice(seed_list, list(Positions))
             

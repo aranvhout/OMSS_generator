@@ -1,6 +1,7 @@
 import random
 
 def seed_generator (seed_value):    
+    """creates a seed list based upon a seed value"""
     random.seed(seed_value)
     vector = list(range(99))
     seed_list=random.choices(vector, k=500)#based on the seed,  250 random seeds are drawn from the vector and saved in the seed_list
@@ -8,12 +9,14 @@ def seed_generator (seed_value):
     return seed_list
 
 def update_seedlist (seed_list):
+    """updates the seed list"""
     updated_seed_list=seed_list[1:] + [seed_list[0]] #reshuffle the list, putting the first element in last place      
     return updated_seed_list
 
 
 
 def random_choice(seed_list, choices, number=None, exclude=None):
+    """randomly selects a choice or multiple choices based upon the seed, allows for excluding options"""
     random.seed(seed_list[0])
 
     # Ensure exclude is a set for quick lookup
@@ -48,6 +51,7 @@ def random_choice(seed_list, choices, number=None, exclude=None):
    
 
 def random_shuffle (seed_list, input_list):
+    """randomly shuffles the input list based upon the seed_list"""
     random.seed(seed_list[0])
     
     random.shuffle(input_list)

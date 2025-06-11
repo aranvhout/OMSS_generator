@@ -1,9 +1,13 @@
-from enum import Enum, auto
-from typing import Optional
+#OMSS imports
 from .entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes,  Linenumbers, Bigshapenumbers
 from .seed import random_choice, update_seedlist, random_shuffle
+
+#general imports
+from enum import Enum, auto
+from typing import Optional
+
 import numpy as np
-from itertools import combinations, product
+from itertools import product
 import sys
 
 class AttributeType(Enum):
@@ -55,14 +59,8 @@ class Configuration:
 
     def __repr__(self):
         return f"Configuration(alternative_indices={self.alternative_indices})"
-
-        
+       
      
-
-
-
-
-
 
         
 def apply_rules(matrix, entity_rules, seed_list):
@@ -80,19 +78,18 @@ def apply_rules(matrix, entity_rules, seed_list):
         
        
             if rule == Ruletype.ARITHMETIC:                      
-                seed_list = arithmetic_rule (matrix, attribute_type, arithmetic_layout, direction, seed_list)# basically most of the logic concerning this rules is goverened by the higher order configuration module
-                
+                seed_list = arithmetic_rule (matrix, attribute_type, arithmetic_layout, direction, seed_list)
                 seed_list = update_seedlist(seed_list)        
                 
             elif rule == Ruletype.CONSTANT:
                 matrix, seed_list = constant_rule(matrix, attribute_type, seed_list)
                 seed_list = update_seedlist(seed_list)
+                
             elif rule == Ruletype.FULL_CONSTANT:
                 full_constant_rule(matrix, attribute_type, value)
               
             elif rule == Ruletype.PROGRESSION:
-                progression_rule(matrix, attribute_type, seed_list)
-            
+                progression_rule(matrix, attribute_type, seed_list)            
                 seed_list = update_seedlist(seed_list)  # Update each time
             
             elif rule == Ruletype.DISTRIBUTE_THREE:
@@ -100,10 +97,11 @@ def apply_rules(matrix, entity_rules, seed_list):
                 seed_list = update_seedlist(seed_list)  # Update each time
             
         
-        dis3_binding = check_binding(binding_list)
+        dis3_binding = check_binding(binding_list)#might be relecant for a later stage
     
     return matrix, seed_list
 
+#FULL_CONSTANT
 def full_constant_rule(matrix, attribute_type, value):
     if value is not None:
         enum_class = ATTRIBUTETYPE_TO_ENUM.get(attribute_type)#use the mapping dict to get the match the attribute to the class
@@ -155,10 +153,8 @@ def progression_rule(matrix, attribute_type, seed_list):
                    
         
     for row in matrix:            
-            
         start_values, seed_list = adjust_starting_entity(row[0], attribute_type, start_values, seed_list)#adjusts the entity and updates the start values
-        
-        
+                
         # Get the starting value and apply progression across the row
         current_value = getattr(row[0], attribute_type.name.lower()).value
        
@@ -263,7 +259,7 @@ def adjust_starting_entity(entity, attribute_type, start_value_list, seed_list):
     return start_value_list, seed_list
 
 
-#distribute three       
+#DISTRIBUTE_THREE     
 def distribute_three(matrix, attribute_type, binding_list, seed_list):
     # Get the total number of unique attribute values
     enum_class = ATTRIBUTETYPE_TO_ENUM.get(attribute_type)
@@ -309,23 +305,14 @@ def distribute_three(matrix, attribute_type, binding_list, seed_list):
 
     return binding_list  
 
-def check_binding(binding_list):
-    """
-    Checks the binding list for dist3. If at least two elements are the same ('upper' or 'lower'),
-    it indicates binding.
-
-   
-    """
-    unique_elements, counts = np.unique(binding_list, return_counts=True)
-    return any(count >= 2 for count in counts)  # True if any element appears at least twice
 
 
-   #arithmetic
+
+#ARITHMETIC
 
 def arithmetic_rule(matrix, attribute_type, layout, direction, seed_list):
     
-    if layout is None: 
-        
+    if layout is None: #layout is goverend by the configuration module      
            
         enum_class = ATTRIBUTETYPE_TO_ENUM.get(attribute_type)
         max_value = len(enum_class)
@@ -358,7 +345,6 @@ def arithmetic_rule(matrix, attribute_type, layout, direction, seed_list):
                   
         
     if layout is not None:   
-        #ensure constant
         enum_class = ATTRIBUTETYPE_TO_ENUM.get(attribute_type)
         max_value = len(enum_class)
         potential_values = list(range(1, max_value + 1))        
@@ -381,8 +367,7 @@ def arithmetic_rule(matrix, attribute_type, layout, direction, seed_list):
                 
                 for enum_member in enum_class:                   
                     if enum_member.value == value_to_assign:
-                        setattr(entity, attribute_type.name.lower(), enum_member)
-        
+                        setattr(entity, attribute_type.name.lower(), enum_member)      
         
         
       
@@ -400,7 +385,7 @@ def arithmetic_operation(potential_values, direction, layout,  seed_list):
     
     elif layout is not None and len(potential_values)>3:#reduce the change of a '1' if there are other options since it results in forced zero values
         change_number_list = [0,0,0,1,1,1,1,1,1,1] #70percent change of selecting 1 
-        answer_excluded, seed_list = random_choice(seed_list, change_number_list) #80 percent of the times 1 is excluded as an answer beforehand
+        answer_excluded, seed_list = random_choice(seed_list, change_number_list) #70 percent of the times 1 is excluded as an answer beforehand
         min_value = 0
         
     else:#in case of no layout, we we will never allow an answer of 1 (we cant have zero values)
@@ -413,8 +398,7 @@ def arithmetic_operation(potential_values, direction, layout,  seed_list):
     answers, seed_list = random_choice(seed_list, potential_values, number=3, exclude=[answer_excluded])
     
     potential_operands = []
-        
-    
+           
         
    
     rows = [0, 1, 2]  
@@ -630,6 +614,15 @@ def check_for_rules (rows):
         
         
         
+def check_binding(binding_list):
+    """
+    Checks the binding list for dist3. If at least two elements are the same ('upper' or 'lower'),
+    it indicates binding.
+
+   
+    """
+    unique_elements, counts = np.unique(binding_list, return_counts=True)
+    return any(count >= 2 for count in counts)  # True if any element appears at least twice        
         
         
         
@@ -643,18 +636,6 @@ def check_for_rules (rows):
         
         
         
-        
-        
-        
-        
-       # for row in matrix:
-        #    for entity in row:
-        #        (r,c) = entity.entity_index
-                
-         #       entity = matrix[r][c]  # Single entity (not a list)
-         #       
-           #     if (r,c) in layout:  # Check if the entity's index is in the rule's layout indices
-            #        setattr(entity, attribute_type.name.lower(), None)
         
         
         
