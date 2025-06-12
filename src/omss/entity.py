@@ -68,14 +68,14 @@ class Bigshapenumbers(Enum):
 
 # Class for BigShape entity
 class BigShape:
-    def __init__(self, shape, size, color, angle, entity_index, number):
+    def __init__(self, shape, size, position, color, angle, entity_index, number):
         self.shape = shape
         self.size = size 
         self.color = color
         self.angle = angle        
         self.entity_index = entity_index
         self.number = number
-        
+        self.position = position  
         
         
 class LittleShape:
@@ -111,7 +111,7 @@ def create_random_entity(seed_list, entity_type, entity_index,  position = None)
         
         
         
-        return BigShape(shape=random_shape, size=random_size, color=random_color, angle= random_angle, entity_index =entity_index, number = random_number ), seed_list
+        return BigShape(shape=random_shape, size=random_size, color=random_color, angle= random_angle, entity_index =entity_index, number = random_number, position =None ), seed_list
         
     elif entity_type == "Line":
         # Create random Line attributes

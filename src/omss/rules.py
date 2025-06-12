@@ -235,7 +235,7 @@ def determine_starting_values ( attribute_type, max_value, step_size, direction)
         while len(start_value_list) < 3:
             start_value_list.append(start_value_list[i]) #no need for randomness since we randomly sample later
             i += 1
-            print('increase by', i, 'values')
+            
               
     return start_value_list
     
