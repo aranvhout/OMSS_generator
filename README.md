@@ -10,7 +10,7 @@ The package was inspired in part by [`raven-gen`](https://github.com/shlomenu/ra
 
 ## Features
 
-- Fully customizable puzzle generation, including difficulty and visual elements
+- Fully customizable puzzle generation, including ways to manipulate difficulty and combine visual elements
 - Believable distractors generated using a tree-based transformation system
 - Reproducibility via seed values for both puzzles and distractors
 - Colorblind-friendly visual design
