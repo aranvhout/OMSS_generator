@@ -37,4 +37,4 @@ rules = {
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
 
 
-create_matrix(rules, alternatives=8, entity_types=[ 'BigShape'])
+create_matrix(rules, alternatives=8, entity_types=[ 'BigShape'], path = "/Users/njudd/Desktop/NewStimuli/")
