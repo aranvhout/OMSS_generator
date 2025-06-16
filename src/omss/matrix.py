@@ -11,9 +11,9 @@ from .rules import Rule
 import os
 import cv2
 import random
-
+from pathlib import Path
  
-def create_matrix( rules, seed=None, alternatives = None, alternative_seed = None, save = True, output_file = False, entity_types=["big-shape"], path ="output"): 
+def create_matrix( rules, seed=None, alternatives = None, alternative_seed = None, save = True, output_file = False, entity_types=["big-shape"], path =None): 
     """Wrapping function that creates the matrix and alternatives"""
        
     # Generate seeds
@@ -29,6 +29,15 @@ def create_matrix( rules, seed=None, alternatives = None, alternative_seed = Non
     updated_rules, seed_list = configuration_settings (rules, entity_types, seed_list)
     
     matrices = {}  # dict to store valid matrices to be created
+    
+    # Path
+    if path is None:
+        path = Path.home() / "Documents" / "OMSS_output"
+    else:
+        path = Path(path)
+
+    # Create the directory if it doesn't exist
+    path.mkdir(parents=True, exist_ok=True)
     
     #for loop that creates the matrix
     for entity_type in entity_types:

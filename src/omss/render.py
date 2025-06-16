@@ -113,7 +113,7 @@ def render_entity(entities,  idx = None):
 
     # Define size and position adjustments for the entities (maybe at some point i can feed these as arguments of have a config file)
     size_factor = {
-        Sizes.SMALL: 0.3,
+        Sizes.SMALL: 0.2,
         Sizes.MEDIUM: 0.5,
         Sizes.LARGE: 0.9
     }
@@ -181,7 +181,7 @@ def render_triangle(img, center, size, entity):
     angle = ANGLE_MAP[entity.angle] * pi / 180  # Convert angle to radians
     color = COLOR_MAP[entity.color]
 
-    scale_factor = 1.7
+    scale_factor = 1.8
     adjusted_size = size * scale_factor
     half_size = adjusted_size / 2
     height = adjusted_size * np.sqrt(3) / 2
@@ -233,7 +233,7 @@ def render_square(img, center, size, entity):
     angle = ANGLE_MAP[entity.angle] * pi / 180  # Convert angle to radians
     color = COLOR_MAP[entity.color]
     
-    scale_factor = 1.3
+    scale_factor = 1.5
     adjusted_size = size * scale_factor
     half_size = adjusted_size / 2
     
