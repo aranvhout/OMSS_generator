@@ -100,25 +100,23 @@ def render_matrix(entity_dict,  problem_matrix=False):
     return img
     
 
-def render_entity(entities,  idx = None):
+def render_entity(entities, idx=None):
     """
     Render multiple entities on a square canvas and return the composite image.
     """
-    #some settings
-    panel_size=500
-    background_color=(255, 255, 255)
-      
+    # some settings
+    panel_size = 500
+    background_color = (255, 255, 255)
+    
     # Create a blank color canvas
     img = np.ones((panel_size, panel_size, 3), np.uint8) * np.array(background_color, dtype=np.uint8)
 
-    # Define size and position adjustments for the entities (maybe at some point i can feed these as arguments of have a config file)
+    # Define size and position adjustments for the entities
     size_factor = {
         Sizes.SMALL: 0.2,
         Sizes.MEDIUM: 0.5,
         Sizes.LARGE: 0.9
     }
-
-    
 
     corner_size_multiplier = 0.45
     corner_length_multiplier = 0.4
@@ -144,36 +142,34 @@ def render_entity(entities,  idx = None):
     }
 
     for entity in entities:
-        
-        if (hasattr(entity, 'linenumber') and (entity.linenumber is None or entity.linenumber == 0)) or (hasattr(entity, 'number') and (entity.number is None or entity.number == 0)):
+        if (hasattr(entity, 'linenumber') and (entity.linenumber is None or entity.linenumber == 0)) or \
+           (hasattr(entity, 'number') and (entity.number is None or entity.number == 0)):
+            continue  # Skip rendering
 
-   
-            continue  # Skip renderin
-        
-        center = position_centers.get(entity.position, (panel_size // 2, panel_size // 2)) if entity.position else (panel_size // 2, panel_size // 2)
-                 
-        # different position for different entity tyes
-        
-        #line
-        if isinstance(entity, Line): 
-            
-            length_multiplier = corner_length_multiplier if entity.position in {
-                Positions.TOP_LEFT, Positions.TOP_RIGHT, Positions.BOTTOM_LEFT, Positions.BOTTOM_RIGHT
-            } else 1.0
-            length = 300 * length_multiplier
-            
-            shape_renderers.get(entity.linetype)(img, center, length, entity) #draw it!
+        # Handle multiple positions
+        positions = entity.position if isinstance(entity.position, list) else [entity.position]
 
-        #big shape/little shape
-        elif isinstance(entity, BigShape) or isinstance (entity, LittleShape):
-            
-            size_multiplier = corner_size_multiplier if entity.position in {
-                Positions.TOP_LEFT, Positions.TOP_RIGHT, Positions.BOTTOM_LEFT, Positions.BOTTOM_RIGHT
-            } else 1.0
-            size = int(size_multiplier * size_factor.get(entity.size, 1) * panel_size / 2)
-            shape_renderers.get(entity.shape)(img, center, size, entity) #draw it!
-  
+        for pos in positions:
+            center = position_centers.get(pos, (panel_size // 2, panel_size // 2))
+
+            # line
+            if isinstance(entity, Line):
+                length_multiplier = corner_length_multiplier if pos in {
+                    Positions.TOP_LEFT, Positions.TOP_RIGHT, Positions.BOTTOM_LEFT, Positions.BOTTOM_RIGHT
+                } else 1.0
+                length = 300 * length_multiplier
+                shape_renderers.get(entity.linetype)(img, center, length, entity)
+
+            # big shape / little shape
+            elif isinstance(entity, BigShape) or isinstance(entity, LittleShape):
+                size_multiplier = corner_size_multiplier if pos in {
+                    Positions.TOP_LEFT, Positions.TOP_RIGHT, Positions.BOTTOM_LEFT, Positions.BOTTOM_RIGHT
+                } else 1.0
+                size = int(size_multiplier * size_factor.get(entity.size, 1) * panel_size / 2)
+                shape_renderers.get(entity.shape)(img, center, size, entity)
+
     return img
+
 
     
 

@@ -1,7 +1,7 @@
 #OMSS imports
 from .rules import  AttributeType, apply_rules
 from .seed import seed_generator
-from .entity import create_random_entity
+from .entity import create_random_entity, LittleShape
 from .alternatives import create_alternatives
 from .render import render_matrix, render_entity
 from .configuration import configuration_settings
@@ -13,7 +13,7 @@ import cv2
 import random
 from pathlib import Path
  
-def create_matrix( rules, seed=None, alternatives = None, alternative_seed = None, save = True, output_file = False, entity_types=["big-shape"], path =None): 
+def create_matrix( rules, seed=None, alternatives = None, alternative_seed = None, save = True, output_file = False, entity_types=None, path =None): 
     """Wrapping function that creates the matrix and alternatives"""
        
     # Generate seeds
@@ -25,16 +25,24 @@ def create_matrix( rules, seed=None, alternatives = None, alternative_seed = Non
     
     seed_list = seed_generator(seed) #use the seed to generate a seed list 
     
+    # If entity_types is not provided, infer from rules
+    if entity_types is None:
+        entity_types = list(rules.keys())
+        
+        
+     # Path
+    if path is None:
+         path = Path.home() / "Documents" / "OMSS_output"
+    else:
+         path = Path(path)
+    
+    
     #This reviews the rules/matrices at the group settings. Allowing constraints in for entity-type based upon another. For now this is only used for arithmetic
     updated_rules, seed_list = configuration_settings (rules, entity_types, seed_list)
     
     matrices = {}  # dict to store valid matrices to be created
     
-    # Path
-    if path is None:
-        path = Path.home() / "Documents" / "OMSS_output"
-    else:
-        path = Path(path)
+   
 
     # Create the directory if it doesn't exist
     path.mkdir(parents=True, exist_ok=True)
@@ -56,9 +64,13 @@ def create_matrix( rules, seed=None, alternatives = None, alternative_seed = Non
             matrices[entity_type] = matrix  # Save the valid matrix
     
     #we distuingish between saving and not saving. Saving will output the matrices in a folder, whereas not saving output the matrices and alternatives as variables the user can catch
+    
     if save == True :
         save_matrices(matrices, path)
         if alternatives and alternatives > 1:
+            LittleShape.reset_seed()
+            LittleShape.set_seed(alternative_seed)#this is very ugly, we need to set a separate global seed for the position of little shape
+
             #create the alternatives and save the dissimilarity scores of the alternatives in a list
             dis_scores = generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, updated_rules, path, save =True)
             
@@ -75,6 +87,8 @@ def create_matrix( rules, seed=None, alternatives = None, alternative_seed = Non
         
         #save the matrices and output file in a list
         if alternatives and alternatives > 1:
+            LittleShape.reset_seed()
+            LittleShape.set_seed(alternative_seed)#this is very ugly, we need to set a separate global seed for the position of little shape
             rendered_alternative_list_bgr, dis_scores = generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, updated_rules, path, save =False)
             rendered_alternative_list = []
             for alternative_bgr in rendered_alternative_list_bgr:

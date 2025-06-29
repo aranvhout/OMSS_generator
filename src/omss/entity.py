@@ -3,6 +3,7 @@ from .seed import random_choice
 
 #general imports
 from enum import Enum, auto
+import random
 
 class Shapes(Enum):
     TRIANGLE = auto()
@@ -63,8 +64,11 @@ class Linenumbers(Enum):
 class Bigshapenumbers(Enum):
     ONE = auto ()
    
-    
-
+class Littleshapenumbers (Enum):
+     ONE = auto ()
+     TWO = auto ()
+     THREE = auto ()
+     FOUR = auto ()
 
 # Class for BigShape entity
 class BigShape:
@@ -78,15 +82,65 @@ class BigShape:
         self.position = position  
         
         
+
 class LittleShape:
-    def __init__(self, shape, size, color, angle, position, entity_index, number):
+    _seed = None
+    _random_instance = None
+
+    @classmethod
+    def set_seed(cls, seed):
+        if cls._seed is not None:
+            raise RuntimeError("Seed has already been set and cannot be changed.")
+        cls._seed = seed
+        cls._random_instance = random.Random(seed)
+        
+    @classmethod
+    def reset_seed(cls): 
+        cls._seed = None
+        cls._random_instance = None
+    def __init__(self, shape, size, color, angle, position, entity_index, littleshapenumber):
         self.shape = shape
         self.size = size 
         self.color = color
         self.angle = angle
         self.position = position
         self.entity_index = entity_index
-        self.number = number
+        self._littleshapenumber = None
+        self.littleshapenumber = littleshapenumber  # triggers setter
+
+    @property
+    def littleshapenumber(self):
+        return self._littleshapenumber
+
+    @littleshapenumber.setter
+    def littleshapenumber(self, value):
+        if value is None:
+            self._littleshapenumber = None
+            self.entity_index = None
+            return
+
+        if not hasattr(value, "name"):
+            raise TypeError("littleshapenumber must be a Littleshapenumbers enum")
+
+        name_to_int = {
+            "ONE": 1,
+            "TWO": 2,
+            "THREE": 3,
+            "FOUR": 4
+        }
+
+        count = name_to_int.get(value.name.upper())
+        if count is None:
+            raise ValueError(f"Unsupported littleshapenumber: {value.name}")
+
+        self._littleshapenumber = value
+        positions_list = sorted(Positions, key=lambda p: p.name)
+
+        # Use seeded randomness if available, otherwise fallback to unseeded
+        rnd = LittleShape._random_instance or random
+        self.position = rnd.sample(positions_list, count)
+
+        
 
 
 # Class for Line entity
@@ -135,7 +189,7 @@ def create_random_entity(seed_list, entity_type, entity_index,  position = None)
         random_size, seed_list = random_choice(seed_list, list(Sizes))
         random_color, seed_list = random_choice(seed_list, list(Colors))    
         random_angle, seed_list = random_choice(seed_list, list(Angles))
-        random_number, seed_list = random_choice(seed_list, list(Bigshapenumbers))
+        random_number, seed_list = random_choice(seed_list, list(Littleshapenumbers))
         
         if position == 'random':
             entity_position, seed_list =random_choice(seed_list, list(Positions))
@@ -143,7 +197,7 @@ def create_random_entity(seed_list, entity_type, entity_index,  position = None)
         else:
             entity_position = None
         
-        return LittleShape(shape=random_shape, size=random_size, color=random_color, angle=random_angle, position= entity_position, entity_index = entity_index, number = random_number ), seed_list
+        return LittleShape(shape=random_shape, size=random_size, color=random_color, angle=random_angle, position= entity_position, entity_index = entity_index, littleshapenumber = random_number ), seed_list
 
     else:
         raise ValueError("Unknown entity type")

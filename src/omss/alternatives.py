@@ -1,7 +1,7 @@
 # OMSS imports
 from .rules import Ruletype, Rule, AttributeType
 from .seed import random_shuffle, random_choice
-from .entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linenumbers,Bigshapenumbers
+from .entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linenumbers,Bigshapenumbers, Littleshapenumbers
 
 #general imports
 import copy
@@ -19,6 +19,8 @@ ATTRIBUTE_TO_ENUM = {
     'linetype': Linetypes,
     'number'  : Bigshapenumbers,
     'linenumber': Linenumbers,
+    'littleshapenumber'  : Littleshapenumbers,
+    
 }
 
 class Answer:
@@ -139,7 +141,7 @@ def create_attribute_list(answer, entity_types, iterations, seed_list, updated_r
     ##modify attribute list, dealing with number attributes
     
     modified_attribute_list, number_entities, deleted_splits = modify_attribute_list (ordered_attributes, iterations, answer, entity_types)
-   
+    
    
     return modified_attribute_list, number_entities, deleted_splits
 
@@ -234,7 +236,6 @@ def modify_attribute(alternative, entity_type, attribute, seed_list):
     attribute= str(attribute).split('.')[-1].lower()  # Get the name of the enum value, e.g., "NUMBER" from AttributeType.NUMBER, normally I don't like stringmanupulation, 
     #since it can reduce flexibility (eg name that doesnt follow this patern), however in this case both names are totally abritrary so there is no downside
 
-   
     # Store the original entity
     starting_entity = copy.deepcopy(alternative)  # Ensure original stays unchanged      
     # Get the correct entity from the alternative (Answer)
@@ -242,9 +243,11 @@ def modify_attribute(alternative, entity_type, attribute, seed_list):
 
     # Get the original value from that entity
     original_value = getattr(entity, attribute)         
-  
+    
     # Get a new random value that is different from the original
-    new_value, seed_list = get_new_random_value(attribute, seed_list, exclude=original_value)        
+    new_value, seed_list = get_new_random_value(attribute, seed_list, exclude=original_value)  
+
+   
     #    Create a modified entity with the new attribute value
     new_entity_obj = copy.deepcopy(entity)
     setattr(new_entity_obj, attribute, new_value)
@@ -276,6 +279,7 @@ def get_new_random_value(attribute, seed_list, arithmetic = False, exclude=None)
 
     
     # Get all possible values, excluding any in the exclude list
+    
     possible_values = [val for val in list(enum_class) if val not in exclude]
     if 0 not in exclude and enum_class in number_enum_classes:
         

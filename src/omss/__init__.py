@@ -29,7 +29,7 @@ Arguments:
         Whether to save output as images (default: True).
     - output_file: bool, optional
         Save metadata (solution, rules, etc.) (default: False).
-    - entity_types: list
+    - entity_types: list, optional (defaults to entity_types listed in the rules)
         Which entities to include (e.g., ["BigShape"]).
     - path: str, optional
         Output directory (default: ~/Documents/OMSS_output).

@@ -71,7 +71,7 @@ def categorize_entities(all_rules):
     MNE_CON = [] #multiple numer entities, all rules constant
     MNE_NCON = [] #mulriple number entities, non constant rules
     
-    MNE_list = ['line']  # Define multiple number entities
+    MNE_list = ['line', 'littleshape']  # Define multiple number entities
     
     for entity, entity_rules in all_rules.items():
         rule_types = []

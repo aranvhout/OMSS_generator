@@ -37,4 +37,24 @@ rules = {
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
 
 
-create_matrix(rules, alternatives=8, entity_types=[ 'BigShape'], path = "/Users/njudd/Desktop/NewStimuli/")
+create_matrix(rules, alternatives=8, path = "/Users/njudd/Desktop/NewStimuli/")
+```
+
+## Arguments
+Arguments:
+    - rules: dict
+        Rules that govern entity transformations.
+    - seed: int, optional
+        Seed for puzzle generation (default: None).
+    - alternatives: int, optional
+        Number of distractor options (default: None).
+    - alternative_seed: int, optional
+        Seed for generating alternatives (default: None).
+    - save: bool, optional
+        Whether to save output as images (default: True).
+    - output_file: bool, optional
+        Save metadata (solution, rules, etc.) (default: False).
+    - entity_types: list, optional 
+        Which entities to include (e.g., ["BigShape"]).(defaults to entity_types listed in the rules)
+    - path: str, optional
+        Output directory (default: ~/Documents/OMSS_output).

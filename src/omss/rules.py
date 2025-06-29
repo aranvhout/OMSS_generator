@@ -1,5 +1,5 @@
 #OMSS imports
-from .entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes,  Linenumbers, Bigshapenumbers
+from .entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes,  Linenumbers, Bigshapenumbers, Littleshapenumbers, LittleShape
 from .seed import random_choice, update_seedlist, random_shuffle
 
 #general imports
@@ -21,6 +21,7 @@ class AttributeType(Enum):
     LINELENGTH = auto ()
     LINENUMBER = auto ()
     NUMBER = auto ()
+    LITTLESHAPENUMBER = auto ()
         
 class Ruletype(Enum):
     CONSTANT = auto()
@@ -39,6 +40,7 @@ ATTRIBUTETYPE_TO_ENUM = {
     AttributeType.LINETYPE: Linetypes,
     AttributeType.LINENUMBER: Linenumbers,
     AttributeType.NUMBER: Bigshapenumbers,
+    AttributeType.LITTLESHAPENUMBER: Littleshapenumbers,
 }
 
 class Rule:
@@ -66,7 +68,7 @@ class Configuration:
 def apply_rules(matrix, entity_rules, seed_list):
     
     binding_list =[]
-   
+    
     for rule_obj in entity_rules:
         if isinstance(rule_obj, Rule):
             rule = rule_obj.rule_type  # Accessing rule_type from Rule object        
@@ -75,7 +77,7 @@ def apply_rules(matrix, entity_rules, seed_list):
             direction = rule_obj.direction
             arithmetic_layout = rule_obj.arithmetic_layout
             excluded = rule_obj.excluded
-        
+            
        
             if rule == Ruletype.ARITHMETIC:                      
                 seed_list = arithmetic_rule (matrix, attribute_type, arithmetic_layout, direction, seed_list)
@@ -98,9 +100,106 @@ def apply_rules(matrix, entity_rules, seed_list):
             
         
         dis3_binding = check_binding(binding_list)#might be relecant for a later stage
-    
+        # Only apply if matrix contains LittleShape objects
+        if isinstance(matrix[0][0], LittleShape):
+            seed_list = number2position(entity_rules, matrix, seed_list)
+  
     return matrix, seed_list
 
+
+def number2position(entity_rules, matrix, seed_list):
+    'this function matches number entities (eg line and littleshape) to positions within the grid'
+
+    # Decide direction once: randomly pick clockwise or counterclockwise
+    direction, seed_list = random_choice(seed_list,['clockwise', 'counterclockwise'])
+
+    for row in matrix:
+        
+        numbers = [
+            entity.littleshapenumber.value
+            for entity in row
+            if entity.littleshapenumber is not None
+            ]
+   
+       
+        rule = next(
+            (rule.rule_type for rule in entity_rules if rule.attribute_type == AttributeType.LITTLESHAPENUMBER),
+            None
+        )
+
+        positions, seed_list = coupling(rule, numbers, direction, seed_list)
+
+        for entity, pos in zip(row, positions):
+            setattr(entity, 'position', pos)
+
+        
+
+    return seed_list
+
+
+def coupling(rule, numbers, direction, seed_list):
+    'matches the numbers to a specific position'
+
+
+    max_number = max(numbers)
+    max_indices = [i for i, n in enumerate(numbers) if n == max_number]
+
+    position_values = list(Positions)  # enum members
+
+    cycle_positions = [
+        Positions.TOP_LEFT,
+        Positions.TOP_RIGHT,
+        Positions.BOTTOM_RIGHT,
+        Positions.BOTTOM_LEFT,
+    ]
+
+    # Reverse cycle if direction is counterclockwise
+    if direction == 'counterclockwise':
+        cycle_positions = list(reversed(cycle_positions))
+
+    def get_contiguous_positions(cycle, start_pos, length, seed_list):
+        start_idx = cycle.index(start_pos)
+        return [cycle[(start_idx + i) % len(cycle)] for i in range(length)], seed_list
+
+    if rule == Ruletype.CONSTANT:
+        if len(set(numbers)) != 1:
+            raise ValueError("All numbers must be the same for CONSTANT rule.")
+        shared, seed_list = random_choice(seed_list, position_values, numbers[0])
+        return [shared for _ in numbers], seed_list
+
+    if rule == Ruletype.DISTRIBUTE_THREE or len(max_indices) > 1:
+        result = []
+        for num in numbers:
+            position, seed_list =random_choice(seed_list, position_values, num)
+            result.append(position)
+        return result, seed_list
+
+    result = [None] * 3
+    max_idx = max_indices[0]
+
+    start_pos, seed_list = random_choice(seed_list, cycle_positions)
+    max_pos, seed_list = get_contiguous_positions(cycle_positions, start_pos, max_number, seed_list)
+    result[max_idx] = max_pos
+
+    rest = [i for i in range(3) if i != max_idx]
+    n1, n2 = numbers[rest[0]], numbers[rest[1]]
+
+    if rule == Ruletype.ARITHMETIC:
+        sorted_pos = sorted(max_pos, key=lambda p: p.value)
+        result[rest[0]] = sorted_pos[:n1]
+        result[rest[1]] = sorted_pos[-n2:]
+
+    elif rule == Ruletype.PROGRESSION:
+        result[rest[0]], seed_list = get_contiguous_positions(cycle_positions, start_pos, n1, seed_list)
+        result[rest[1]], seed_list = get_contiguous_positions(cycle_positions, start_pos, n2, seed_list)
+
+    return result, seed_list
+
+
+
+
+    
+    
 #FULL_CONSTANT
 def full_constant_rule(matrix, attribute_type, value):
     if value is not None:
@@ -345,6 +444,7 @@ def arithmetic_rule(matrix, attribute_type, layout, direction, seed_list):
                   
         
     if layout is not None:   
+        i=0
         enum_class = ATTRIBUTETYPE_TO_ENUM.get(attribute_type)
         max_value = len(enum_class)
         potential_values = list(range(1, max_value + 1))        

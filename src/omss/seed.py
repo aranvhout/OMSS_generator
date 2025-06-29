@@ -46,7 +46,6 @@ def random_choice(seed_list, choices, number=None, exclude=None):
     random.seed(None)  # Reset randomness
 
     return attribute, seed_list
-    return attribute, seed_list
 
    
 
