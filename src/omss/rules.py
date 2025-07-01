@@ -1,11 +1,12 @@
 #OMSS imports
-from .entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes,  Linenumbers, Bigshapenumbers, Littleshapenumbers, LittleShape
+from .element import Shapes, Sizes, Colors, Angles, Positions, Linetypes,  Linenumbers, Bigshapenumbers, Littleshapenumbers, LittleShape
 from .seed import random_choice, update_seedlist, random_shuffle
 
 #general imports
 from enum import Enum, auto
 from typing import Optional
 
+from copy import deepcopy
 import numpy as np
 from itertools import product
 import sys
@@ -65,11 +66,11 @@ class Configuration:
      
 
         
-def apply_rules(matrix, entity_rules, seed_list):
+def apply_rules(matrix, element_rules, seed_list):
     
     binding_list =[]
     
-    for rule_obj in entity_rules:
+    for rule_obj in element_rules:
         if isinstance(rule_obj, Rule):
             rule = rule_obj.rule_type  # Accessing rule_type from Rule object        
             attribute_type = rule_obj.attribute_type
@@ -101,36 +102,39 @@ def apply_rules(matrix, entity_rules, seed_list):
         
         dis3_binding = check_binding(binding_list)#might be relecant for a later stage
         # Only apply if matrix contains LittleShape objects
-        if isinstance(matrix[0][0], LittleShape):
-            seed_list = number2position(entity_rules, matrix, seed_list)
+    if isinstance(matrix[0][0], LittleShape):
+       seed_list = number2position(element_rules, matrix, seed_list)
   
     return matrix, seed_list
 
 
-def number2position(entity_rules, matrix, seed_list):
-    'this function matches number entities (eg line and littleshape) to positions within the grid'
+def number2position(element_rules, matrix, seed_list):
+    'this function matches number elements (eg line and littleshape) to positions within the grid'
 
     # Decide direction once: randomly pick clockwise or counterclockwise
-    direction, seed_list = random_choice(seed_list,['clockwise', 'counterclockwise'])
+    direction, seed_list = random_choice(seed_list, ['clockwise', 'counterclockwise'])
 
     for row in matrix:
-        
-        numbers = [
-            entity.littleshapenumber.value
-            for entity in row
-            if entity.littleshapenumber is not None
-            ]
-   
-       
+        numbered_elements = [
+            element for element in row
+            if element.littleshapenumber is not None
+        ]
+
+        numbers = [element.littleshapenumber.value for element in numbered_elements]
+
         rule = next(
-            (rule.rule_type for rule in entity_rules if rule.attribute_type == AttributeType.LITTLESHAPENUMBER),
+            (rule.rule_type for rule in element_rules if rule.attribute_type == AttributeType.LITTLESHAPENUMBER),
             None
         )
 
         positions, seed_list = coupling(rule, numbers, direction, seed_list)
 
-        for entity, pos in zip(row, positions):
-            setattr(entity, 'position', pos)
+        # Only assign positions to numbered elements
+        for element, pos in zip(numbered_elements, positions):
+            setattr(element, 'position', pos)
+
+    return seed_list
+
 
         
 
@@ -139,7 +143,6 @@ def number2position(entity_rules, matrix, seed_list):
 
 def coupling(rule, numbers, direction, seed_list):
     'matches the numbers to a specific position'
-
 
     max_number = max(numbers)
     max_indices = [i for i, n in enumerate(numbers) if n == max_number]
@@ -167,33 +170,45 @@ def coupling(rule, numbers, direction, seed_list):
         shared, seed_list = random_choice(seed_list, position_values, numbers[0])
         return [shared for _ in numbers], seed_list
 
-    if rule == Ruletype.DISTRIBUTE_THREE or len(max_indices) > 1:
+    if rule == Ruletype.DISTRIBUTE_THREE:
+        
         result = []
         for num in numbers:
-            position, seed_list =random_choice(seed_list, position_values, num)
+            position, seed_list = random_choice(seed_list, position_values, num)
             result.append(position)
         return result, seed_list
 
-    result = [None] * 3
+    # Now handle ARITHMETIC with 2 or 3 numbers
+
     max_idx = max_indices[0]
+    result = [None] * len(numbers)
 
     start_pos, seed_list = random_choice(seed_list, cycle_positions)
     max_pos, seed_list = get_contiguous_positions(cycle_positions, start_pos, max_number, seed_list)
     result[max_idx] = max_pos
 
-    rest = [i for i in range(3) if i != max_idx]
-    n1, n2 = numbers[rest[0]], numbers[rest[1]]
+    rest = [i for i in range(len(numbers)) if i != max_idx]
 
     if rule == Ruletype.ARITHMETIC:
-        sorted_pos = sorted(max_pos, key=lambda p: p.value)
-        result[rest[0]] = sorted_pos[:n1]
-        result[rest[1]] = sorted_pos[-n2:]
+        if len(numbers) == 2:
+            result[0] = max_pos
+            result[1] = result[0] 
+            
+
+        elif len(numbers) == 3:
+            n1, n2 = numbers[rest[0]], numbers[rest[1]]
+            sorted_pos = sorted(max_pos, key=lambda p: p.value)
+            result[rest[0]] = sorted_pos[:n1]
+            result[rest[1]] = sorted_pos[-n2:]
 
     elif rule == Ruletype.PROGRESSION:
-        result[rest[0]], seed_list = get_contiguous_positions(cycle_positions, start_pos, n1, seed_list)
-        result[rest[1]], seed_list = get_contiguous_positions(cycle_positions, start_pos, n2, seed_list)
+        # Your original progression logic remains untouched here
+        result[rest[0]], seed_list = get_contiguous_positions(cycle_positions, start_pos, numbers[rest[0]], seed_list)
+        result[rest[1]], seed_list = get_contiguous_positions(cycle_positions, start_pos, numbers[rest[1]], seed_list)
 
     return result, seed_list
+
+
 
 
 
@@ -212,13 +227,13 @@ def full_constant_rule(matrix, attribute_type, value):
         except KeyError:
             raise ValueError(f"Invalid value '{value}' for {attribute_type.name}.")
     else:
-        # If no value provided, use the existing attribute from the first matrix entity
+        # If no value provided, use the existing attribute from the first matrix element
         constant_value = getattr(matrix[0][0], attribute_type.name.lower()) 
 
-    # Apply the constant value to all entities in the matrix
+    # Apply the constant value to all elements in the matrix
     for row in matrix:
-        for entity in row:
-            setattr(entity, attribute_type.name.lower(), constant_value)
+        for element in row:
+            setattr(element, attribute_type.name.lower(), constant_value)
             
 #CONSTANT            
 def constant_rule(matrix, attribute_type, seed_list):   
@@ -237,9 +252,9 @@ def constant_rule(matrix, attribute_type, seed_list):
        if n_values >=3: 
            values.remove (constant_value)# remove it so we get unique values for each row, only remove it when we the attribute does have 3 instances at least
         
-        # Set this constant value for the specified attribute across all entities in the row
-       for entity in row:
-            setattr(entity, attribute_type.name.lower(), constant_value)
+        # Set this constant value for the specified attribute across all elements in the row
+       for element in row:
+            setattr(element, attribute_type.name.lower(), constant_value)
    return matrix, seed_list
             
 #PROGRESSION        
@@ -252,12 +267,12 @@ def progression_rule(matrix, attribute_type, seed_list):
                    
         
     for row in matrix:            
-        start_values, seed_list = adjust_starting_entity(row[0], attribute_type, start_values, seed_list)#adjusts the entity and updates the start values
+        start_values, seed_list = adjust_starting_element(row[0], attribute_type, start_values, seed_list)#adjusts the element and updates the start values
                 
         # Get the starting value and apply progression across the row
         current_value = getattr(row[0], attribute_type.name.lower()).value
        
-        for i, entity in enumerate(row):
+        for i, element in enumerate(row):
             # Calculate the new value using the progression formula
             new_value = (current_value + i * step_size * direction) 
             
@@ -279,7 +294,7 @@ def progression_rule(matrix, attribute_type, seed_list):
             # Now, iterate through the Enum members of the enum_class to find the matching value
             for enum_member in enum_class:           
                 if enum_member.value == new_value:
-                    setattr(entity, attribute_type.name.lower(), enum_member)
+                    setattr(element, attribute_type.name.lower(), enum_member)
                     break
             else:
                     # If no matching value is found, raise an error
@@ -338,17 +353,17 @@ def determine_starting_values ( attribute_type, max_value, step_size, direction)
               
     return start_value_list
     
-def adjust_starting_entity(entity, attribute_type, start_value_list, seed_list):
+def adjust_starting_element(element, attribute_type, start_value_list, seed_list):
     "select value from the start value_list and set it as starting value"   
     
     start_value, seed_list  = random_choice(seed_list, start_value_list)
     start_value_list.remove(start_value)
     enum_class = ATTRIBUTETYPE_TO_ENUM.get(attribute_type)
-    # Set the adjusted current value back to the entity
+    # Set the adjusted current value back to the element
     for enum_member in enum_class:
      if enum_member.value == start_value:
          #print(enum_member, current_value, step_size, potential_value)
-         setattr(entity, attribute_type.name.lower(), enum_member)     
+         setattr(element, attribute_type.name.lower(), enum_member)     
          break
         
     
@@ -388,16 +403,16 @@ def distribute_three(matrix, attribute_type, binding_list, seed_list):
         binding_list.append ('upper')
     
     
-    # Assign values to entities
+    # Assign values to elements
     for row, row_values in zip(matrix, rows):
         
-        for i, entity in enumerate(row):
+        for i, element in enumerate(row):
             value_to_assign = row_values[i]
 
             # Find the corresponding enum member and set the attribute
             for enum_member in enum_class:
                 if enum_member.value == value_to_assign:
-                    setattr(entity, attribute_type.name.lower(), enum_member)
+                    setattr(element, attribute_type.name.lower(), enum_member)
                     break
             else:
                 raise ValueError(f"No matching enum value found for {value_to_assign}.")
@@ -430,17 +445,17 @@ def arithmetic_rule(matrix, attribute_type, layout, direction, seed_list):
             
     
         for row in matrix:
-            for entity in row:                
-                r,c = entity.entity_index
+            for element in row:                
+                r,c = element.element_index
                 
                 value_to_assign=arithmetic_matrix[r][c] 
                 
                 if value_to_assign == 0:
-                    setattr(entity, attribute_type.name.lower(), None)
+                    setattr(element, attribute_type.name.lower(), None)
                 
                 for enum_member in enum_class:                   
                     if enum_member.value == value_to_assign:
-                        setattr(entity, attribute_type.name.lower(), enum_member)
+                        setattr(element, attribute_type.name.lower(), enum_member)
                   
         
     if layout is not None:   
@@ -459,15 +474,15 @@ def arithmetic_rule(matrix, attribute_type, layout, direction, seed_list):
            
    
         for row in matrix:
-            for entity in row:                
-                r,c = entity.entity_index
+            for element in row:                
+                r,c = element.element_index
                 value_to_assign=arithmetic_matrix[r][c] 
                 if value_to_assign == 0:
-                    setattr(entity, attribute_type.name.lower(), None)
+                    setattr(element, attribute_type.name.lower(), None)
                 
                 for enum_member in enum_class:                   
                     if enum_member.value == value_to_assign:
-                        setattr(entity, attribute_type.name.lower(), enum_member)      
+                        setattr(element, attribute_type.name.lower(), enum_member)      
         
         
       

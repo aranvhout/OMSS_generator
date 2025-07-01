@@ -1,7 +1,7 @@
 # OMSS imports
 from .rules import Ruletype, Rule, AttributeType
 from .seed import random_shuffle, random_choice
-from .entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linenumbers,Bigshapenumbers, Littleshapenumbers
+from .element import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Linenumbers,Bigshapenumbers, Littleshapenumbers
 
 #general imports
 import copy
@@ -59,17 +59,17 @@ class Answer:
 
 
 
-def create_alternatives(matrices, entity_types, n_alternatives, seed_list, updated_rules):
+def create_alternatives(matrices, element_types, n_alternatives, seed_list, updated_rules):
     
-    # combine the matrices in a starting entity called answer
-    alternative_dict = {entity_type: matrices[entity_type][-1][-1] for entity_type in matrices}
+    # combine the matrices in a starting element called answer
+    alternative_dict = {element_type: matrices[element_type][-1][-1] for element_type in matrices}
     answer = Answer(**alternative_dict)
    
     #calculate how many iterations (splits in the tree) we need
     iterations = math.ceil(math.log(n_alternatives, 2)) #calculate number of iterations
         
     #create attribute list,1) with a preference for non-constant attributes 
-    attribute_list, number_entities, deleted_splits = create_attribute_list (answer, entity_types, iterations, seed_list, updated_rules)
+    attribute_list, number_elements, deleted_splits = create_attribute_list (answer, element_types, iterations, seed_list, updated_rules)
    
     #alternatives
     alternative_list = [answer]
@@ -77,17 +77,17 @@ def create_alternatives(matrices, entity_types, n_alternatives, seed_list, updat
         raise ValueError("Too many alternatives for the specific setting. Please lower the number of alternatives.")
 
     for i in range(iterations):  
-        entity_type, attribute=attribute_list[i]
+        element_type, attribute=attribute_list[i]
         new_alternative_list = []
         for alternative in alternative_list:            
-            new_alternative_list.extend (modify_attribute(alternative, entity_type, attribute, seed_list))
+            new_alternative_list.extend (modify_attribute(alternative, element_type, attribute, seed_list))
             alternative_list = new_alternative_list          
    
     
-    if number_entities: #if we have an arithmetic thing going on, the alternatives are created in the same way as before, but then modified a bit  , this doesnt work properly number entities only contains entities with none values
-        alternative_list, seed_list = modify_alternatives_with_numbers(alternative_list, number_entities, entity_types, seed_list)     
-        alternative_list, seed_list = perform_additional_splits(deleted_splits, entity_types, alternative_list, iterations, seed_list)    
-        alternative_list = improve_alternatives (alternative_list, entity_types, deleted_splits, iterations, seed_list)
+    if number_elements: #if we have an arithmetic thing going on, the alternatives are created in the same way as before, but then modified a bit  , this doesnt work properly number elements only contains elements with none values
+        alternative_list, seed_list = modify_alternatives_with_numbers(alternative_list, number_elements, element_types, seed_list)     
+        alternative_list, seed_list = perform_additional_splits(deleted_splits, element_types, alternative_list, iterations, seed_list)    
+        alternative_list = improve_alternatives (alternative_list, element_types, deleted_splits, iterations, seed_list)
         
     #sample
     selected_alternative_list, seed_list = sample_alternatives(alternative_list, n_alternatives,seed_list) 
@@ -98,34 +98,34 @@ def create_alternatives(matrices, entity_types, n_alternatives, seed_list, updat
    
 
 
-def create_attribute_list(answer, entity_types, iterations, seed_list, updated_rules):
+def create_attribute_list(answer, element_types, iterations, seed_list, updated_rules):
     non_constant_attributes = []
     constant_attributes = []
     full_constant_attributes = []
 
-    attribute_list = []  # This will store all (entity_type, attribute) pairs
+    attribute_list = []  # This will store all (element_type, attribute) pairs
     
-    # Iterate through each entity type
-    for entity_type in entity_types:
+    # Iterate through each element type
+    for element_type in element_types:
               
-        # Get the rules for this entity type from updated_rules
-        entity_rules = updated_rules.get(entity_type, [])
+        # Get the rules for this element type from updated_rules
+        element_rules = updated_rules.get(element_type, [])
         
-        # Iterate through the rules for this entity type
-        for rule in entity_rules:
+        # Iterate through the rules for this element type
+        for rule in element_rules:
             if isinstance(rule, Rule):  # Ensure rule is an instance of Rule
                 attribute_type = rule.attribute_type  # Get the attribute type
                 
-                # Add the entity type and attribute to the list (this helps in filtering later)
-                attribute_list.append((entity_type, attribute_type))
+                # Add the element type and attribute to the list (this helps in filtering later)
+                attribute_list.append((element_type, attribute_type))
                 
                 # Categorize attributes based on rule type
                 if rule.rule_type == Ruletype.FULL_CONSTANT:
-                    full_constant_attributes.append((entity_type, attribute_type))  # Save the entity_type and attribute_type
+                    full_constant_attributes.append((element_type, attribute_type))  # Save the element_type and attribute_type
                 elif rule.rule_type == Ruletype.CONSTANT:
-                    constant_attributes.append((entity_type, attribute_type))  # Save the entity_type and attribute_type
+                    constant_attributes.append((element_type, attribute_type))  # Save the element_type and attribute_type
                 else:
-                    non_constant_attributes.append((entity_type, attribute_type))  # Save the entity_type and attribute_type
+                    non_constant_attributes.append((element_type, attribute_type))  # Save the element_type and attribute_type
                     
     #some shuffling within each category to prevent preferences
     attribute_list, seed_list = random_shuffle (seed_list, attribute_list)
@@ -133,61 +133,61 @@ def create_attribute_list(answer, entity_types, iterations, seed_list, updated_r
     
     # Reorder the list based on rule categories (non-constant > constant > full-constant)
     ordered_attributes = (
-        [(entity_type, attr) for entity_type, attr in attribute_list if (entity_type, attr) in non_constant_attributes] +
-        [(entity_type, attr) for entity_type, attr in attribute_list if (entity_type, attr) in constant_attributes] +
-        [(entity_type, attr) for entity_type, attr in attribute_list if (entity_type, attr) in full_constant_attributes]
+        [(element_type, attr) for element_type, attr in attribute_list if (element_type, attr) in non_constant_attributes] +
+        [(element_type, attr) for element_type, attr in attribute_list if (element_type, attr) in constant_attributes] +
+        [(element_type, attr) for element_type, attr in attribute_list if (element_type, attr) in full_constant_attributes]
     )
     
     ##modify attribute list, dealing with number attributes
     
-    modified_attribute_list, number_entities, deleted_splits = modify_attribute_list (ordered_attributes, iterations, answer, entity_types)
+    modified_attribute_list, number_elements, deleted_splits = modify_attribute_list (ordered_attributes, iterations, answer, element_types)
     
    
-    return modified_attribute_list, number_entities, deleted_splits
+    return modified_attribute_list, number_elements, deleted_splits
 
 
 
 
-def modify_attribute_list(ordered_attributes, n_iterations, answer, entity_list):
+def modify_attribute_list(ordered_attributes, n_iterations, answer, element_list):
     """
-    1. Removes all attribute tuples for any entity in entity_list that has None
+    1. Removes all attribute tuples for any element in element_list that has None
        for 'number' or 'linenumber' in the answer.
-    2. Pushes any ('EntityType', AttributeType.NUMBER) tuple from the first n_iterations
-       further down the list by swapping it with the next available tuple of the same entity.
+    2. Pushes any ('elementType', AttributeType.NUMBER) tuple from the first n_iterations
+       further down the list by swapping it with the next available tuple of the same element.
     3. Finally, ensures that 'NUMBER' attributes are completely removed from the attribute list.
     
     Returns:
     - Modified ordered_attributes list (without 'NUMBER' attributes)
-    - List of entity types in the order they were removed (first removed first)
+    - List of element types in the order they were removed (first removed first)
     """
 
     number_fields = ['number', 'linenumber']
-    number_entities_ordered = []
+    number_elements_ordered = []
     
     deleted_splits = []
     
-    # Step 1: Remove entities with missing number-related fields
-    for entity_type in entity_list:
-        entity = getattr(answer, entity_type, None)
-        if entity:
+    # Step 1: Remove elements with missing number-related fields
+    for element_type in element_list:
+        element = getattr(answer, element_type, None)
+        if element:
             for field in number_fields:
-                if hasattr(entity, field) and getattr(entity, field) is None:
-                    # Track entities removed due to missing 'number' or 'linenumber'
-                    if entity_type not in number_entities_ordered:
-                        number_entities_ordered.append(entity_type)
+                if hasattr(element, field) and getattr(element, field) is None:
+                    # Track elements removed due to missing 'number' or 'linenumber'
+                    if element_type not in number_elements_ordered:
+                        number_elements_ordered.append(element_type)
                         
                         for etype, attr in ordered_attributes:
-                            if etype==entity_type:
+                            if etype==element_type:
                                 if attr.name.lower() not in ['number', 'linenumber']: 
                                     deleted_splits.append((etype, attr))
                         
                         
                         
-                    break  # No need to check further fields for this entity
+                    break  # No need to check further fields for this element
 
-    # Remove these entities from ordered_attributes
+    # Remove these elements from ordered_attributes
     ordered_attributes = [
-       (etype, attr) for (etype, attr) in ordered_attributes if etype not in number_entities_ordered
+       (etype, attr) for (etype, attr) in ordered_attributes if etype not in number_elements_ordered
     ]
     
    
@@ -197,17 +197,17 @@ def modify_attribute_list(ordered_attributes, n_iterations, answer, entity_list)
         if i >= len(ordered_attributes):
             break
 
-        entity_type, attribute = ordered_attributes[i]
+        element_type, attribute = ordered_attributes[i]
 
         if attribute == AttributeType.NUMBER:
-            # Track entity types with a NUMBER attribute
-            if entity_type not in number_entities_ordered:
-                number_entities_ordered.append(entity_type)
+            # Track element types with a NUMBER attribute
+            if element_type not in number_elements_ordered:
+                number_elements_ordered.append(element_type)
 
-            # Look for next attribute with the same entity but not NUMBER
+            # Look for next attribute with the same element but not NUMBER
             for j in range(i + 1, len(ordered_attributes)):
-                next_entity, next_attr = ordered_attributes[j]
-                if next_entity == entity_type and next_attr != AttributeType.NUMBER:
+                next_element, next_attr = ordered_attributes[j]
+                if next_element == element_type and next_attr != AttributeType.NUMBER:
                     # Swap positions
                     ordered_attributes[i], ordered_attributes[j] = ordered_attributes[j], ordered_attributes[i]
                     break
@@ -220,43 +220,43 @@ def modify_attribute_list(ordered_attributes, n_iterations, answer, entity_list)
 
     # Step 3: Remove all instances of AttributeType.NUMBER from the list
     ordered_attributes = [
-        (entity_type, attribute) for entity_type, attribute in ordered_attributes
+        (element_type, attribute) for element_type, attribute in ordered_attributes
         if attribute != AttributeType.NUMBER
     ]
 
-    return ordered_attributes, number_entities_ordered, deleted_splits
+    return ordered_attributes, number_elements_ordered, deleted_splits
 
 
 
-def modify_attribute(alternative, entity_type, attribute, seed_list):
-    """Modify the given attribute of an entity and return both original and modified versions."""
+def modify_attribute(alternative, element_type, attribute, seed_list):
+    """Modify the given attribute of an element and return both original and modified versions."""
     # Create an alternative list
     alternative_list = []
     
     attribute= str(attribute).split('.')[-1].lower()  # Get the name of the enum value, e.g., "NUMBER" from AttributeType.NUMBER, normally I don't like stringmanupulation, 
     #since it can reduce flexibility (eg name that doesnt follow this patern), however in this case both names are totally abritrary so there is no downside
 
-    # Store the original entity
-    starting_entity = copy.deepcopy(alternative)  # Ensure original stays unchanged      
-    # Get the correct entity from the alternative (Answer)
-    entity = getattr(alternative, entity_type)
+    # Store the original element
+    starting_element = copy.deepcopy(alternative)  # Ensure original stays unchanged      
+    # Get the correct element from the alternative (Answer)
+    element = getattr(alternative, element_type)
 
-    # Get the original value from that entity
-    original_value = getattr(entity, attribute)         
+    # Get the original value from that element
+    original_value = getattr(element, attribute)         
     
     # Get a new random value that is different from the original
     new_value, seed_list = get_new_random_value(attribute, seed_list, exclude=original_value)  
 
    
-    #    Create a modified entity with the new attribute value
-    new_entity_obj = copy.deepcopy(entity)
-    setattr(new_entity_obj, attribute, new_value)
+    #    Create a modified element with the new attribute value
+    new_element_obj = copy.deepcopy(element)
+    setattr(new_element_obj, attribute, new_value)
     
-    entity_dict = alternative.split_back()
-    entity_dict[entity_type] = new_entity_obj  # Replace only the modified one
-    modified_answer = Answer(**entity_dict)
+    element_dict = alternative.split_back()
+    element_dict[element_type] = new_element_obj  # Replace only the modified one
+    modified_answer = Answer(**element_dict)
     
-    alternative_list.append(starting_entity)
+    alternative_list.append(starting_element)
     alternative_list.append(modified_answer)
     
     return alternative_list
@@ -320,48 +320,48 @@ def sample_alternatives(alternative_list, n_alternatives, seed_list):
    
 
 
-def modify_alternatives_with_numbers(alternative_list, number_entities, entity_types, seed_list):
+def modify_alternatives_with_numbers(alternative_list, number_elements, element_types, seed_list):
     """
     Modifies up to half of the alternative answers by changing number/linenumber fields
-    in the entities listed in entity types The process uses `get_safe_candidates` to
+    in the elements listed in element types The process uses `get_safe_candidates` to
     ensure valid modifications and uniqueness.
     """
 
     # Step 1: Convert None to 0 for removed number/linenumber fields
  
     for ans in alternative_list:
-        for entity_type in number_entities: 
-            entity_obj = getattr(ans, entity_type, None)
-            if entity_obj:
+        for element_type in number_elements: 
+            element_obj = getattr(ans, element_type, None)
+            if element_obj:
                 for key in ['number', 'linenumber']:
-                    if hasattr(entity_obj, key) and getattr(entity_obj, key) is None:
-                        setattr(entity_obj, key, 0)
+                    if hasattr(element_obj, key) and getattr(element_obj, key) is None:
+                        setattr(element_obj, key, 0)
                         
 
     number_keys = ['number', 'linenumber']
-    modified_entities_per_index = {i: set() for i in range(1, len(alternative_list))}
+    modified_elements_per_index = {i: set() for i in range(1, len(alternative_list))}
     modified_indices = set()
     max_modification_list = list(range(len(alternative_list) // 4, len(alternative_list)+1))
     
     max_modifications, seed_list = random_choice(seed_list, max_modification_list)
-    all_entities = list(alternative_list[0].__dict__.keys())
+    all_elements = list(alternative_list[0].__dict__.keys())
     
     
     def filtered_repr(ans):
         repr_dict = {}
-        for e_type in all_entities:
+        for e_type in all_elements:
             e_obj = getattr(ans, e_type)
             if any(hasattr(e_obj, k) and getattr(e_obj, k) not in [None, 0] for k in number_keys):
                 repr_dict[e_type] = {k: v for k, v in e_obj.__dict__.items() if k not in number_keys}
         return repr(repr_dict)
 
-    # Step 2: Process entities one by one
+    # Step 2: Process elements one by one
     while len(modified_indices) < max_modifications:
         made_progress = False 
-        for entity_type in entity_types: #i had the idea that this should be arimethic entity types, but actually it does work better now, men this code is so complex i will have to recheck it
+        for element_type in element_types: #i had the idea that this should be arimethic element types, but actually it does work better now, men this code is so complex i will have to recheck it
             
             # 2.1: Get safe candidates for modification
-            candidates = get_safe_candidates(entity_type, modified_entities_per_index, alternative_list, entity_types)
+            candidates = get_safe_candidates(element_type, modified_elements_per_index, alternative_list, element_types)
             
             if not candidates:
                
@@ -371,19 +371,19 @@ def modify_alternatives_with_numbers(alternative_list, number_entities, entity_t
            
 
             answer_copy = copy.deepcopy(alternative_list[idx_to_modify])
-            entity_obj = getattr(answer_copy, entity_type)
-            key_to_modify = next((k for k in number_keys if hasattr(entity_obj, k)), None)
+            element_obj = getattr(answer_copy, element_type)
+            key_to_modify = next((k for k in number_keys if hasattr(element_obj, k)), None)
             if not key_to_modify:
                 continue
 
-            current_value = getattr(entity_obj, key_to_modify)
+            current_value = getattr(element_obj, key_to_modify)
             new_value, seed_list = get_new_random_value(key_to_modify, seed_list, arithmetic = True, exclude=current_value)
           
-            setattr(entity_obj, key_to_modify, new_value)
+            setattr(element_obj, key_to_modify, new_value)
 
-            # 3.5 - Check if all number fields across all entities in this answer are now 0 or None
+            # 3.5 - Check if all number fields across all elements in this answer are now 0 or None
             all_zero = True
-            for e_type in all_entities:
+            for e_type in all_elements:
                 e_obj = getattr(answer_copy, e_type)
                 for k in number_keys:
                     if hasattr(e_obj, k) and getattr(e_obj, k) not in [None, 0]:
@@ -394,7 +394,7 @@ def modify_alternatives_with_numbers(alternative_list, number_entities, entity_t
 
             if all_zero:
                
-                continue  # Try again for same or next entity
+                continue  # Try again for same or next element
 
             # Step 4-5: Check uniqueness
             new_repr = filtered_repr(answer_copy)
@@ -406,7 +406,7 @@ def modify_alternatives_with_numbers(alternative_list, number_entities, entity_t
             # Step 6: Commit change
             alternative_list[idx_to_modify] = answer_copy
             modified_indices.add(idx_to_modify)
-            modified_entities_per_index[idx_to_modify].add(entity_type)
+            modified_elements_per_index[idx_to_modify].add(element_type)
           
             made_progress = True
 
@@ -422,18 +422,18 @@ def modify_alternatives_with_numbers(alternative_list, number_entities, entity_t
 
 
 
-def get_safe_candidates(entity_type, modified_entities_per_index, alternative_list, entity_types):
+def get_safe_candidates(element_type, modified_elements_per_index, alternative_list, element_types):
     safe = []
     number_keys = ['number', 'linenumber']
     for i in range(1, len(alternative_list)):
-        if entity_type in modified_entities_per_index[i]:
+        if element_type in modified_elements_per_index[i]:
             continue
-        # Make sure at least one of the *other* entities has a number/linenumber ≠ 0/None
+        # Make sure at least one of the *other* elements has a number/linenumber ≠ 0/None
         has_nonzero_other = False
-        for other_entity in entity_types:
-            if other_entity == entity_type:
+        for other_element in element_types:
+            if other_element == element_type:
                 continue
-            other_obj = getattr(alternative_list[i], other_entity, None)
+            other_obj = getattr(alternative_list[i], other_element, None)
             if other_obj and any(
                 hasattr(other_obj, key) and getattr(other_obj, key) not in [None, 0]
                 for key in number_keys
@@ -447,14 +447,14 @@ def get_safe_candidates(entity_type, modified_entities_per_index, alternative_li
 
 
 
-def improve_alternatives(alternative_list, entity_types, deleted_splits, n_iterations, seed_list):
+def improve_alternatives(alternative_list, element_types, deleted_splits, n_iterations, seed_list):
     answer = alternative_list[0]
     number_keys = ['number', 'linenumber']
-    all_entities = list(answer.__dict__.keys())
+    all_elements = list(answer.__dict__.keys())
     
     def filtered_repr(ans):
         repr_dict = {}
-        for e_type in all_entities:
+        for e_type in all_elements:
             e_obj = getattr(ans, e_type, None)
             if not e_obj:
                 continue
@@ -463,7 +463,7 @@ def improve_alternatives(alternative_list, entity_types, deleted_splits, n_itera
                 k: v for k, v in e_obj.__dict__.items()
                 if k not in number_keys
             }
-            # Skip if entity is considered inactive
+            # Skip if element is considered inactive
             if filtered and any(
                 hasattr(e_obj, k) and getattr(e_obj, k) not in [None, 0] for k in number_keys
             ):
@@ -474,27 +474,27 @@ def improve_alternatives(alternative_list, entity_types, deleted_splits, n_itera
         alt = copy.deepcopy(alternative_list[i])
         changed = False
 
-        for e_type in entity_types:
-            alt_entity = getattr(alt, e_type, None)
-            answer_entity = getattr(answer, e_type, None)
+        for e_type in element_types:
+            alt_element = getattr(alt, e_type, None)
+            answer_element = getattr(answer, e_type, None)
 
-            #  Skip if entity is missing or has only None/0 in number keys
-            if not alt_entity or all(
-                not hasattr(alt_entity, k) or getattr(alt_entity, k) in [None, 0]
+            #  Skip if element is missing or has only None/0 in number keys
+            if not alt_element or all(
+                not hasattr(alt_element, k) or getattr(alt_element, k) in [None, 0]
                 for k in number_keys
             ):
                 continue
 
-            for attr in alt_entity.__dict__:
+            for attr in alt_element.__dict__:
                 if attr in number_keys:
                     continue
 
-                alt_val = getattr(alt_entity, attr)
-                ans_val = getattr(answer_entity, attr)
+                alt_val = getattr(alt_element, attr)
+                ans_val = getattr(answer_element, attr)
 
                 if alt_val != ans_val: # print(f"Trying to change {e_type}.{attr} from {alt_val} to {ans_val}")
                    
-                    setattr(alt_entity, attr, ans_val)
+                    setattr(alt_element, attr, ans_val)
 
                     # Uniqueness check
                     new_repr = filtered_repr(alt)
@@ -506,7 +506,7 @@ def improve_alternatives(alternative_list, entity_types, deleted_splits, n_itera
 
                     if new_repr in other_reprs: #"hange would duplicate an existing alternative. Revertin
                         
-                        setattr(alt_entity, attr, alt_val)
+                        setattr(alt_element, attr, alt_val)
                     else:
                         
                         changed = True
@@ -518,9 +518,9 @@ def improve_alternatives(alternative_list, entity_types, deleted_splits, n_itera
 
 
 
-def perform_additional_splits(deleted_splits, entity_types, alternative_list, n_iterations, seed_list):
+def perform_additional_splits(deleted_splits, element_types, alternative_list, n_iterations, seed_list):
     "this function is not complete yet, if the number of splits increases however in practice it works for almost 99.99 percent of the cases"
-    number_of_splits = n_iterations // len(entity_types)
+    number_of_splits = n_iterations // len(element_types)
     deleted_split_index = 0
     
 
@@ -528,7 +528,7 @@ def perform_additional_splits(deleted_splits, entity_types, alternative_list, n_
         if deleted_split_index >= len(deleted_splits):
             break  # No more deleted splits to use
 
-        entity_type, attribute_type = deleted_splits[deleted_split_index]
+        element_type, attribute_type = deleted_splits[deleted_split_index]
         attribute_name = attribute_type.name.lower()
 
         # Alternate indices: even on 1st split, odd on 2nd, even on 3rd, etc.
@@ -539,18 +539,18 @@ def perform_additional_splits(deleted_splits, entity_types, alternative_list, n_
             # Copy alternative to not modify the original list
             answer_copy = copy.deepcopy(alternative_list[idx])
 
-            # Access the entity object to modify
-            entity_obj = getattr(answer_copy, entity_type)
+            # Access the element object to modify
+            element_obj = getattr(answer_copy, element_type)
             
-            old_value = getattr(entity_obj, attribute_name)
+            old_value = getattr(element_obj, attribute_name)
            
 
             # Generate a new random value for the attribute (avoiding the old value)
             new_value, seed_value = get_new_random_value(attribute_name, seed_list, arithmetic = True, exclude=old_value)
             
 
-            # Modify the attribute on the copied entity
-            setattr(entity_obj, attribute_name, new_value)
+            # Modify the attribute on the copied element
+            setattr(element_obj, attribute_name, new_value)
 
             # Save the modified copy back to the list
             alternative_list[idx] = answer_copy
@@ -558,7 +558,7 @@ def perform_additional_splits(deleted_splits, entity_types, alternative_list, n_
             # Log the modification
             
 
-        # Move to next attribute/entity pair
+        # Move to next attribute/element pair
         deleted_split_index += 1
 
     return alternative_list, seed_list
@@ -577,13 +577,13 @@ def calculate_dissimilarity_score(selected_alternatives_list):
         except AttributeError:
             return v
 
-    def compare_entities(ent1, ent2):
+    def compare_elements(ent1, ent2):
         # Apply the "0 vs non-zero" logic for number keys
         for key in number_keys:
             v1 = normalize(getattr(ent1, key, None))
             v2 = normalize(getattr(ent2, key, None))
             if (v1 == 0 and v2 not in [0, None]) or (v2 == 0 and v1 not in [0, None]):
-                return 1  # Early exit: entity treated as 1 diff
+                return 1  # Early exit: element treated as 1 diff
 
         # Normal attribute comparison
         diff = 0
@@ -600,8 +600,8 @@ def calculate_dissimilarity_score(selected_alternatives_list):
     for alt in selected_alternatives_list:
         total_diff = 0
         # Compare all matching fields: BigShape, Line, LittleShape, etc.
-        subentities = set(vars(compare_to).keys()).union(vars(alt).keys())
-        for key in subentities:
+        subelements = set(vars(compare_to).keys()).union(vars(alt).keys())
+        for key in subelements:
             ent1 = getattr(compare_to, key, None)
             ent2 = getattr(alt, key, None)
             if ent1 is None and ent2 is None:
@@ -609,7 +609,7 @@ def calculate_dissimilarity_score(selected_alternatives_list):
             elif ent1 is None or ent2 is None:
                 total_diff += 1
             else:
-                total_diff += compare_entities(ent1, ent2)
+                total_diff += compare_elements(ent1, ent2)
         scores.append(total_diff)
 
     return scores

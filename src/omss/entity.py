@@ -70,14 +70,14 @@ class Littleshapenumbers (Enum):
      THREE = auto ()
      FOUR = auto ()
 
-# Class for BigShape entity
+# Class for BigShape element
 class BigShape:
-    def __init__(self, shape, size, position, color, angle, entity_index, number):
+    def __init__(self, shape, size, position, color, angle, element_index, number):
         self.shape = shape
         self.size = size 
         self.color = color
         self.angle = angle        
-        self.entity_index = entity_index
+        self.element_index = element_index
         self.number = number
         self.position = position  
         
@@ -98,13 +98,13 @@ class LittleShape:
     def reset_seed(cls): 
         cls._seed = None
         cls._random_instance = None
-    def __init__(self, shape, size, color, angle, position, entity_index, littleshapenumber):
+    def __init__(self, shape, size, color, angle, position, element_index, littleshapenumber):
         self.shape = shape
         self.size = size 
         self.color = color
         self.angle = angle
         self.position = position
-        self.entity_index = entity_index
+        self.element_index = element_index
         self._littleshapenumber = None
         self.littleshapenumber = littleshapenumber  # triggers setter
 
@@ -116,7 +116,7 @@ class LittleShape:
     def littleshapenumber(self, value):
         if value is None:
             self._littleshapenumber = None
-            self.entity_index = None
+            self.element_index = None
             return
 
         if not hasattr(value, "name"):
@@ -143,19 +143,19 @@ class LittleShape:
         
 
 
-# Class for Line entity
+# Class for Line element
 class Line:
-    def __init__(self, linetype,  position,  angle, linenumber, entity_index):
+    def __init__(self, linetype,  position,  angle, linenumber, element_index):
         self.linetype = linetype        
         self.position = position      
         self.linenumber = linenumber    
         self.angle = angle
-        self.entity_index = entity_index
+        self.element_index = element_index
         
 
-# Function to create a random entity (either BigShape or Line)
-def create_random_entity(seed_list, entity_type, entity_index,  position = None):
-    if entity_type == "BigShape":
+# Function to create a random element (either BigShape or Line)
+def create_random_element(seed_list, element_type, element_index,  position = None):
+    if element_type == "BigShape":
         # Create random BigShape attributes
         random_shape, seed_list = random_choice(seed_list, list(Shapes)) 
         random_size, seed_list = random_choice(seed_list, list(Sizes))
@@ -165,25 +165,25 @@ def create_random_entity(seed_list, entity_type, entity_index,  position = None)
         
         
         
-        return BigShape(shape=random_shape, size=random_size, color=random_color, angle= random_angle, entity_index =entity_index, number = random_number, position =None ), seed_list
+        return BigShape(shape=random_shape, size=random_size, color=random_color, angle= random_angle, element_index =element_index, number = random_number, position =None ), seed_list
         
-    elif entity_type == "Line":
+    elif element_type == "Line":
         # Create random Line attributes
         random_line_type, seed_list = random_choice(seed_list, list(Linetypes))
         random_number, seed_list = random_choice(seed_list, list(Linenumbers))#makes sure we don't create an empty grid as starting point
         random_angle, seed_list = random_choice(seed_list, list(Angles))
        
         if position == 'random':
-            entity_position, seed_list = random_choice(seed_list, list(Positions))
+            element_position, seed_list = random_choice(seed_list, list(Positions))
             
         else:
-            entity_position = None
+            element_position = None
             
-        return Line(linetype=random_line_type, position= entity_position, angle=random_angle, linenumber=random_number, entity_index =entity_index), seed_list
+        return Line(linetype=random_line_type, position= element_position, angle=random_angle, linenumber=random_number, element_index =element_index), seed_list
     
     
     
-    elif entity_type == "LittleShape":
+    elif element_type == "LittleShape":
         # Create random littleshape attributes
         random_shape, seed_list = random_choice(seed_list, list(Shapes)) 
         random_size, seed_list = random_choice(seed_list, list(Sizes))
@@ -192,15 +192,15 @@ def create_random_entity(seed_list, entity_type, entity_index,  position = None)
         random_number, seed_list = random_choice(seed_list, list(Littleshapenumbers))
         
         if position == 'random':
-            entity_position, seed_list =random_choice(seed_list, list(Positions))
+            element_position, seed_list =random_choice(seed_list, list(Positions))
             
         else:
-            entity_position = None
+            element_position = None
         
-        return LittleShape(shape=random_shape, size=random_size, color=random_color, angle=random_angle, position= entity_position, entity_index = entity_index, littleshapenumber = random_number ), seed_list
+        return LittleShape(shape=random_shape, size=random_size, color=random_color, angle=random_angle, position= element_position, element_index = element_index, littleshapenumber = random_number ), seed_list
 
     else:
-        raise ValueError("Unknown entity type")
+        raise ValueError("Unknown element type")
 
 
 

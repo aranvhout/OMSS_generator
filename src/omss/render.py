@@ -1,5 +1,5 @@
 #OMSS imports
-from .entity import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Line, BigShape, LittleShape, Linenumbers
+from .element import Shapes, Sizes, Colors, Angles, Positions, Linetypes, Line, BigShape, LittleShape, Linenumbers
 
 #general imports
 import cv2
@@ -49,7 +49,7 @@ NUMBER_MAP = {
 LINE_SPACING = 30  # Distance between multiple lines
 
 
-def render_matrix(entity_dict,  problem_matrix=False):
+def render_matrix(element_dict,  problem_matrix=False):
     # Settings
     panel_size = 1500
     background_color = (255, 255, 255)
@@ -62,33 +62,33 @@ def render_matrix(entity_dict,  problem_matrix=False):
     # Cell size for each grid in the 3x3 matrix
     cell_size = panel_size // 3
 
-    # Dictionary to collect entities by grid position (row, column)
-    grouped_entities = {}
+    # Dictionary to collect elements by grid position (row, column)
+    grouped_elements = {}
 
-    # Collect all entities based on their entity_index
-    for matrix in entity_dict.values():
-        for entity_list in matrix:  # entity_list is a list of entities in the same cell
-            for entity in entity_list:  # Iterate through each entity in the list
-                if entity.entity_index is None:  # Skip entities with None as entity_index
+    # Collect all elements based on their element_index
+    for matrix in element_dict.values():
+        for element_list in matrix:  # element_list is a list of elements in the same cell
+            for element in element_list:  # Iterate through each element in the list
+                if element.element_index is None:  # Skip elements with None as element_index
                     continue
 
-                r, c = entity.entity_index  # Extract row and column index
+                r, c = element.element_index  # Extract row and column index
                 if problem_matrix and (r, c) == (2, 2):  # Skip last cell for problem_matrix
                     continue
 
-                if (r, c) not in grouped_entities:
-                    grouped_entities[(r, c)] = []
-                grouped_entities[(r, c)].append(entity)  # Store entities in the correct grid cell
+                if (r, c) not in grouped_elements:
+                    grouped_elements[(r, c)] = []
+                grouped_elements[(r, c)].append(element)  # Store elements in the correct grid cell
 
-    # Render the grouped entities into their respective grid cells
-    for (r, c), entities in grouped_entities.items():
-        entity_img = render_entity(entities)  # Render all entities in this cell
+    # Render the grouped elements into their respective grid cells
+    for (r, c), elements in grouped_elements.items():
+        element_img = render_element(elements)  # Render all elements in this cell
 
         # Calculate the position of the current cell
         y_start, x_start = r * cell_size, c * cell_size
 
-        # Place the rendered entities in the corresponding position on the main canvas
-        img[y_start:y_start + cell_size, x_start:x_start + cell_size] = entity_img
+        # Place the rendered elements in the corresponding position on the main canvas
+        img[y_start:y_start + cell_size, x_start:x_start + cell_size] = element_img
 
     # Draw grid lines between the cells
     for i in range(1, 3):
@@ -100,9 +100,9 @@ def render_matrix(entity_dict,  problem_matrix=False):
     return img
     
 
-def render_entity(entities, idx=None):
+def render_element(elements, idx=None):
     """
-    Render multiple entities on a square canvas and return the composite image.
+    Render multiple elements on a square canvas and return the composite image.
     """
     # some settings
     panel_size = 500
@@ -111,7 +111,7 @@ def render_entity(entities, idx=None):
     # Create a blank color canvas
     img = np.ones((panel_size, panel_size, 3), np.uint8) * np.array(background_color, dtype=np.uint8)
 
-    # Define size and position adjustments for the entities
+    # Define size and position adjustments for the elements
     size_factor = {
         Sizes.SMALL: 0.2,
         Sizes.MEDIUM: 0.5,
@@ -141,41 +141,41 @@ def render_entity(entities, idx=None):
         Linetypes.WAVE: render_wavy_line
     }
 
-    for entity in entities:
-        if (hasattr(entity, 'linenumber') and (entity.linenumber is None or entity.linenumber == 0)) or \
-           (hasattr(entity, 'number') and (entity.number is None or entity.number == 0)):
+    for element in elements:
+        if (hasattr(element, 'linenumber') and (element.linenumber is None or element.linenumber == 0)) or \
+           (hasattr(element, 'number') and (element.number is None or element.number == 0)):
             continue  # Skip rendering
 
         # Handle multiple positions
-        positions = entity.position if isinstance(entity.position, list) else [entity.position]
+        positions = element.position if isinstance(element.position, list) else [element.position]
 
         for pos in positions:
             center = position_centers.get(pos, (panel_size // 2, panel_size // 2))
 
             # line
-            if isinstance(entity, Line):
+            if isinstance(element, Line):
                 length_multiplier = corner_length_multiplier if pos in {
                     Positions.TOP_LEFT, Positions.TOP_RIGHT, Positions.BOTTOM_LEFT, Positions.BOTTOM_RIGHT
                 } else 1.0
                 length = 300 * length_multiplier
-                shape_renderers.get(entity.linetype)(img, center, length, entity)
+                shape_renderers.get(element.linetype)(img, center, length, element)
 
             # big shape / little shape
-            elif isinstance(entity, BigShape) or isinstance(entity, LittleShape):
+            elif isinstance(element, BigShape) or isinstance(element, LittleShape):
                 size_multiplier = corner_size_multiplier if pos in {
                     Positions.TOP_LEFT, Positions.TOP_RIGHT, Positions.BOTTOM_LEFT, Positions.BOTTOM_RIGHT
                 } else 1.0
-                size = int(size_multiplier * size_factor.get(entity.size, 1) * panel_size / 2)
-                shape_renderers.get(entity.shape)(img, center, size, entity)
+                size = int(size_multiplier * size_factor.get(element.size, 1) * panel_size / 2)
+                shape_renderers.get(element.shape)(img, center, size, element)
 
     return img
 
 
     
 
-def render_triangle(img, center, size, entity):
-    angle = ANGLE_MAP[entity.angle] * pi / 180  # Convert angle to radians
-    color = COLOR_MAP[entity.color]
+def render_triangle(img, center, size, element):
+    angle = ANGLE_MAP[element.angle] * pi / 180  # Convert angle to radians
+    color = COLOR_MAP[element.color]
 
     scale_factor = 1.8
     adjusted_size = size * scale_factor
@@ -225,9 +225,9 @@ def render_triangle(img, center, size, entity):
 
 
 
-def render_square(img, center, size, entity):
-    angle = ANGLE_MAP[entity.angle] * pi / 180  # Convert angle to radians
-    color = COLOR_MAP[entity.color]
+def render_square(img, center, size, element):
+    angle = ANGLE_MAP[element.angle] * pi / 180  # Convert angle to radians
+    color = COLOR_MAP[element.color]
     
     scale_factor = 1.5
     adjusted_size = size * scale_factor
@@ -276,9 +276,9 @@ def render_square(img, center, size, entity):
     cv2.polylines(img, [shifted_pts], isClosed=True, color=(0, 0, 0), thickness=2)
 
 
-def render_pentagon(img, center, size, entity):
-    color = COLOR_MAP[entity.color]    
-    angle = ANGLE_MAP[entity.angle] * pi / 180  # Convert angle to radians
+def render_pentagon(img, center, size, element):
+    color = COLOR_MAP[element.color]    
+    angle = ANGLE_MAP[element.angle] * pi / 180  # Convert angle to radians
 
     # Standard orientation: C1 at the top
     base_angle = -pi / 2  
@@ -323,9 +323,9 @@ def render_pentagon(img, center, size, entity):
     cv2.polylines(img, [pts_final.reshape((-1, 1, 2))], isClosed=True, color=(0, 0, 0), thickness=2)
 
 
-def render_septagon(img, center, size, entity):
-    color = COLOR_MAP[entity.color]  
-    angle = ANGLE_MAP[entity.angle] * pi / 180  # Convert angle to radians
+def render_septagon(img, center, size, element):
+    color = COLOR_MAP[element.color]  
+    angle = ANGLE_MAP[element.angle] * pi / 180  # Convert angle to radians
 
     # Standard orientation: C1 at the top
     base_angle = -pi / 2  
@@ -374,9 +374,9 @@ def render_septagon(img, center, size, entity):
 
 
 
-def render_decagon(img, center, size, entity):
-    color = COLOR_MAP[entity.color]
-    angle = ANGLE_MAP[entity.angle] * pi / 180  # Convert angle to radians
+def render_decagon(img, center, size, element):
+    color = COLOR_MAP[element.color]
+    angle = ANGLE_MAP[element.angle] * pi / 180  # Convert angle to radians
 
     # Shift the starting angle to a different point on the decagon
     base_angle = 0  # Set this to any angle you prefer to shift the shape's orientation
@@ -429,9 +429,9 @@ def render_decagon(img, center, size, entity):
  
 
 
-def render_circle(img, center, length, entity):
-    color = COLOR_MAP[entity.color]
-    start_angle = ANGLE_MAP[entity.angle] + 108 ##we need to offset it  to make the wedge center appear at the bottom, 90 +36/2
+def render_circle(img, center, length, element):
+    color = COLOR_MAP[element.color]
+    start_angle = ANGLE_MAP[element.angle] + 108 ##we need to offset it  to make the wedge center appear at the bottom, 90 +36/2
     end_angle = start_angle + 324  # 360 - 36
 
     # Draw the filled arc
@@ -496,12 +496,12 @@ def draw_arrowhead(img, start, end, color=(0, 0, 0), thickness=3, size=16, forwa
 
 
 
-def render_straight_line(img, center, length, entity):
+def render_straight_line(img, center, length, element):
     """Draws one or multiple straight lines with arrowheads."""
     color = (0, 0, 0)
     thickness = 3
-    angle = ANGLE_MAP[entity.angle] * pi / 180
-    number = NUMBER_MAP[entity.linenumber]
+    angle = ANGLE_MAP[element.angle] * pi / 180
+    number = NUMBER_MAP[element.linenumber]
     total_offset = (number - 1) * LINE_SPACING // 2
 
     for i in range(number):
@@ -517,12 +517,12 @@ def render_straight_line(img, center, length, entity):
         draw_arrowhead(img, start, end, color, thickness)
 
 
-def render_curved_line(img, center, length, entity):
+def render_curved_line(img, center, length, element):
     """Draws one or multiple curved lines with arrowheads."""
     color = (0, 0, 0)
     thickness = 3
-    angle = ANGLE_MAP[entity.angle] * pi / 180
-    number = NUMBER_MAP[entity.linenumber]
+    angle = ANGLE_MAP[element.angle] * pi / 180
+    number = NUMBER_MAP[element.linenumber]
     total_offset = (number - 1) * LINE_SPACING // 2
 
     for i in range(number):
@@ -545,12 +545,12 @@ def render_curved_line(img, center, length, entity):
             draw_arrowhead(img, curve_points[-2], curve_points[-1], color, thickness)
 
 
-def render_wavy_line(img, center, length, entity, amplitude=10, frequency=3):
+def render_wavy_line(img, center, length, element, amplitude=10, frequency=3):
     """Draws one or multiple wavy lines with arrowheads."""
     color = (0, 0, 0)
     thickness = 3
-    angle = ANGLE_MAP[entity.angle] * pi / 180
-    number = NUMBER_MAP[entity.linenumber]
+    angle = ANGLE_MAP[element.angle] * pi / 180
+    number = NUMBER_MAP[element.linenumber]
     total_offset = (number - 1) * LINE_SPACING // 2
 
     for i in range(number):

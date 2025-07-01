@@ -1,9 +1,9 @@
 #OMSS imports
 from .rules import  AttributeType, apply_rules
 from .seed import seed_generator
-from .entity import create_random_entity, LittleShape
+from .element import create_random_element, LittleShape
 from .alternatives import create_alternatives
-from .render import render_matrix, render_entity
+from .render import render_matrix, render_element
 from .configuration import configuration_settings
 from .rules import Rule
 
@@ -13,9 +13,9 @@ import cv2
 import random
 from pathlib import Path
  
-def create_matrix( rules, seed=None, alternatives = None, alternative_seed = None, save = True, output_file = False, entity_types=None, path =None): 
+def create_matrix( rules, seed=None, alternatives = None, alternative_seed = None, save = True, output_file = False, element_types=None, path =None): 
     """Wrapping function that creates the matrix and alternatives"""
-       
+   
     # Generate seeds
     if seed  == None:
         seed = random.randint(0, 999999)        
@@ -25,9 +25,9 @@ def create_matrix( rules, seed=None, alternatives = None, alternative_seed = Non
     
     seed_list = seed_generator(seed) #use the seed to generate a seed list 
     
-    # If entity_types is not provided, infer from rules
-    if entity_types is None:
-        entity_types = list(rules.keys())
+    # If element_types is not provided, infer from rules
+    if element_types is None:
+        element_types = list(rules.keys())
         
         
      # Path
@@ -37,31 +37,32 @@ def create_matrix( rules, seed=None, alternatives = None, alternative_seed = Non
          path = Path(path)
     
     
-    #This reviews the rules/matrices at the group settings. Allowing constraints in for entity-type based upon another. For now this is only used for arithmetic
-    updated_rules, seed_list = configuration_settings (rules, entity_types, seed_list)
+    #This reviews the rules/matrices at the group settings. Allowing constraints in for element-type based upon another. For now this is only used for arithmetic
+    updated_rules, seed_list = configuration_settings (rules, element_types, seed_list)
     
     matrices = {}  # dict to store valid matrices to be created
     
-   
+    # Step 4: superugly but we need to assign a position seed in case littleshape has an aritmetic
+    
 
     # Create the directory if it doesn't exist
     path.mkdir(parents=True, exist_ok=True)
     
     #for loop that creates the matrix
-    for entity_type in entity_types:
+    for element_type in element_types:
         
-        if entity_type not in updated_rules:
-            raise ValueError(f"No rules defined for entity type: {entity_type}")
+        if element_type not in updated_rules:
+            raise ValueError(f"No rules defined for element type: {element_type}")
        
-        entity_rules = updated_rules[entity_type]
+        element_rules = updated_rules[element_type]
                 
-        while entity_type not in matrices:            
-           # Create a starting matrix for the current entity type
-            starting_matrix = initialise_matrix(entity_rules, seed_list, entity_type)#note to self. entity type defined in the for-loop 
+        while element_type not in matrices:            
+           # Create a starting matrix for the current element type
+            starting_matrix = initialise_matrix(element_rules, seed_list, element_type)#note to self. element type defined in the for-loop 
             # Apply rules to the starting matrix
-            matrix, seed_list = apply_rules(starting_matrix, entity_rules, seed_list)   
+            matrix, seed_list = apply_rules(starting_matrix, element_rules, seed_list)   
             
-            matrices[entity_type] = matrix  # Save the valid matrix
+            matrices[element_type] = matrix  # Save the valid matrix
     
     #we distuingish between saving and not saving. Saving will output the matrices in a folder, whereas not saving output the matrices and alternatives as variables the user can catch
     
@@ -72,7 +73,7 @@ def create_matrix( rules, seed=None, alternatives = None, alternative_seed = Non
             LittleShape.set_seed(alternative_seed)#this is very ugly, we need to set a separate global seed for the position of little shape
 
             #create the alternatives and save the dissimilarity scores of the alternatives in a list
-            dis_scores = generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, updated_rules, path, save =True)
+            dis_scores = generate_and_save_alternatives(matrices, element_types, alternatives, alternative_seed, updated_rules, path, save =True)
             
             if output_file == True: #creates output file contain info about the matrices etc                
                 create_output_file(updated_rules, dis_scores, seed, alternative_seed, save, path)
@@ -89,7 +90,7 @@ def create_matrix( rules, seed=None, alternatives = None, alternative_seed = Non
         if alternatives and alternatives > 1:
             LittleShape.reset_seed()
             LittleShape.set_seed(alternative_seed)#this is very ugly, we need to set a separate global seed for the position of little shape
-            rendered_alternative_list_bgr, dis_scores = generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, updated_rules, path, save =False)
+            rendered_alternative_list_bgr, dis_scores = generate_and_save_alternatives(matrices, element_types, alternatives, alternative_seed, updated_rules, path, save =False)
             rendered_alternative_list = []
             for alternative_bgr in rendered_alternative_list_bgr:
                 alternative = cv2.cvtColor(alternative_bgr, cv2.COLOR_BGR2RGB)
@@ -102,7 +103,7 @@ def create_matrix( rules, seed=None, alternatives = None, alternative_seed = Non
                                             
      
         
-def initialise_matrix(rules, seed_list, entity_type=["big-shape"]):
+def initialise_matrix(rules, seed_list, element_type=["big-shape"]):
     """creates a random matrix as a starting point"""
     matrix = []
     #for loop in which we iterate of the rows and then the columns
@@ -110,12 +111,12 @@ def initialise_matrix(rules, seed_list, entity_type=["big-shape"]):
         row = []
         for c in range(3):
             # Check if the rule is an instance of Rule and has the POSITION attribute
-            # position attribute refers to position in a grid, if there is a position rule, the entity will be placed randomly in one the corners
+            # position attribute refers to position in a grid, if there is a position rule, the element will be placed randomly in one the corners
             if not any(rule.attribute_type == AttributeType.POSITION for rule in rules):
-                entity, seed_list = create_random_entity(seed_list, entity_type, entity_index=(r, c))  # Default position
+                element, seed_list = create_random_element(seed_list, element_type, element_index=(r, c))  # Default position
             else:
-                entity, seed_list = create_random_entity(seed_list, entity_type, entity_index=(r, c), position="random")  # Random position
-            row.append(entity)
+                element, seed_list = create_random_element(seed_list, element_type, element_index=(r, c), position="random")  # Random position
+            row.append(element)
         matrix.append(row)
     return matrix
 
@@ -131,23 +132,23 @@ def save_matrices(matrices,  path):
         cv2.imwrite(os.path.join(path, "problem_matrix.png"), problem_matrix)
       
     
-def generate_and_save_alternatives(matrices, entity_types, alternatives, alternative_seed, rules, path, save):
+def generate_and_save_alternatives(matrices, element_types, alternatives, alternative_seed, rules, path, save):
     """generates, renders and saves the alternatives"""
     alternative_seed_list = seed_generator(alternative_seed)#separate seedlist for the alternatives
     
     #generate the alternatives and dissimilarity scores
-    generated_alternatives, dis_scores = create_alternatives(matrices, entity_types, alternatives, alternative_seed_list, rules)
+    generated_alternatives, dis_scores = create_alternatives(matrices, element_types, alternatives, alternative_seed_list, rules)
    
     if save is True:
         for idx, answer in enumerate(generated_alternatives):        
-            rendered_alternative = render_entity(list(answer.split_back().values()), idx)
+            rendered_alternative = render_element(list(answer.split_back().values()), idx)
             cv2.imwrite(os.path.join(path, f"alternative_{idx}.png"), rendered_alternative)
         return dis_scores
    
     if save is False:
         rendered_alternative_list = []
         for idx, answer in enumerate(generated_alternatives):        
-            rendered_alternative = render_entity(list(answer.split_back().values()), idx)
+            rendered_alternative = render_element(list(answer.split_back().values()), idx)
             rendered_alternative_list.append(rendered_alternative)
         return rendered_alternative_list, dis_scores
 
