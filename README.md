@@ -1,6 +1,6 @@
 # omss
 
-**omss** is a Python package for generating matrix reasoning puzzles, inspired by Raven's Progressive Matrices, designed to assess fluid intelligence in humans. It allows users to generate an unlimited number of customizable puzzles across a range of difficulty levels. 
+**omss** is a Python package for generating matrix reasoning puzzles, inspired by Raven's Progressive Matrices, designed to assess fluid intelligence. It allows users to generate an unlimited number of customizable puzzles across a range of difficulty levels. 
 
 The package was inspired in part by [`raven-gen`](https://github.com/shlomenu/raven-gen).  
 *Chi Zhang*, *Feng Gao*, *Baoxiong Jia*, *Yixin Zhu*, *Song-Chun Zhu*  
