@@ -13,7 +13,7 @@ import cv2
 import random
 from pathlib import Path
  
-def create_matrix( rules, seed=None, alternatives = None, alternative_seed = None, save = True, output_file = False, element_types=None, path =None): 
+def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = None, save = True, output_file = False, element_types=None, path =None): 
     """Wrapping function that creates the matrix and alternatives"""
    
     # Generate seeds

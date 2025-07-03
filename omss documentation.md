@@ -10,10 +10,10 @@ The package was inspired in part by [`raven-gen`](https://github.com/shlomenu/ra
 **omss** has been rebuilt from scratch, with a focus on flexibility, reproducibility, and suitability for human testing.
 
 ## Contents
-
 - [Overview](#overview)
+- [Installation](#installation)
 - [Rules and RuleTypes](#ruletypes)
-- [Elements and Attributes](#elements-and-attributes)
+- [Elements and AttributeTypes](#elements-and-attributes)
 - [Matrix Generation](#matrix-generation)
 - [Alternatives Generation](#alternatives-generation)
 - [Seeds](#seeds)
@@ -23,12 +23,106 @@ The package was inspired in part by [`raven-gen`](https://github.com/shlomenu/ra
 
 ## Overview
 
-OMSS works with **elements** which a placed in 3 x 3 matrix. These elements have a visual appearance which is determined by their **atributes**. Specific instances of these attributes may change within a row according to a logical pattern. This logical pattern is determined by the user with **Rules**. Importantly, each **attribute** is always goverened by only one **RuleType**. 
+OMSS works with **elements** which a placed in 3 x 3 matrix. These elements have a visual appearance which is determined by their **atributes**. Specific instances of these attributes may change within a row according to a logical pattern. This logical pattern is determined by the user with **Rules**.
+
+
+### Function Signature
+
+**`create_matrix(rules, alternatives=None, seed=None, alternative_seed=None, save=True, output_file=False, element_types=None, path=None)`**
+
+#### Parameters
+
+- **`rules`** (*required*, `dict`):  
+  A dictionary containing both the `RuleType` and the `AttributeType` that each rule applies to.
+
+- **`alternatives`** (`int`, optional):  
+  The number of alternatives to generate. Must be between 0 and 32 (up to 64 depending on settings).  
+  Default: `None`.
+
+- **`seed`** (`int`, optional):  
+  Seed for the main matrix generation. Used for reproducibility.  
+  Default: `None`.
+
+- **`alternative_seed`** (`int`, optional):  
+  Seed for generating alternatives.  
+  Default: `None`.
+
+- **`save`** (`bool`, optional):  
+  Whether to save the matrix and alternatives to disk.  
+  - `True`: Saves files to the specified path (or a default folder).  
+  - `False`: Returns the matrix and alternatives as Python objects.  
+  Default: `True`.
+
+- **`output_file`** (`bool`, optional):  
+  Whether to generate an extra output file with metadata about the rules, seeds, alternatives.  
+  Default: `False`.
+
+- **`element_types`** (`list` or `None`, optional):  
+  Specifies which elements to include in the matrix.  
+  - If `None`, all elements listed in the `rules` will be used.  
+  Default: `None`.
+
+- **`path`** (`str` or `None`, optional):  
+  Path where matrices and alternatives will be saved.  
+  - If `None` and `save=True`, a folder named `OMSS_output` is created in the user’s Documents directory.  
+  Default: `None`.
+
+---
+
 
 ### Example
-In the the code below we will set some ruletypes for the attributes of an element called 'BigShape'. BigShape has a number of attributes (angle, shape, color, size, number). Each of these attributes can take on multiple instances. For example, the color attribute determines the color of the shape and has 8 colors (). 
+In the example below, we use the program to define some rule types for the attributes of an element called BigShape. To keep things simple, we'll create a basic puzzle by applying the CONSTANT rule type and using the program's default settings by only specifying the rules.
 
-For now we will create a simple puzzle by using Constant ruletype which ensure that the attributes do not change within a row.
+```python
+#import statements
+import omss
+from omss import Ruletype, AttributeType, Rule, create_matrix
+
+#the dictionary for the in which RuleTypes are coupled to AttributeTypes
+rules = {
+    'BigShape': [       
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
+    
+#the function that creates the matrices
+create_matrix(rules)
+```
+
+In the following sections, we will first cover the different **rules**, **elements**, and their **attributes**. Next, we’ll explain the process of **matrix generation**, the creation of **alternatives**, how **seeds** function, and finally, some additional **custom settings**.
+
+## Installation
+
+
+
+
+
+
+
+
+
+## Rules
+Rules are defined by the user and determine how attributes change across columns in the matrix. Each rule is composed of a RuleType and an AttributeType. The RuleType defines the logical pattern of modification, while the AttributeType specifies which attribute is affected.
+
+Most RuleTypes are general and can operate on any AttributeType. However, each AttributeType can be governed by only one RuleType.
+
+Since RuleTypes are general and shared across elements, they are discussed here. AttributeTypes, on the other hand, are specific to each element and will be addressed in the Elements section.
+
+
+
+### RuleTypes
+OMSS uses 5 different RuleTypes, namely: constant, full_constant, distribute_three, progression and arithmetic
+
+#### **CONSTANT**
+The `CONSTANT` rule ensures that an attribute remains unchanged **within a row**.  
+For example, if a `color` attribute is governed by the `CONSTANT` rule, all elements in the same row will have the same color.
+
+---
+####  Example
+Let’s create a very straightforward matrix puzzle. We'll once again use the BigShape element and set all of its AttributeTypes to CONSTANT, ensuring that no attribute changes within any row. This creates a simple, uniform pattern and serves as a good starting point for understanding how rule definitions work.
+
 
 ```python
 import omss
@@ -40,35 +134,80 @@ rules = {
         Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
         Rule(Ruletype.CONSTANT, AttributeType.COLOR),
         Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
+        Rule(Ruletype.CONSTANT, AttributeType.SIZE)}
     
 
 create_matrix(rules)
 ```
-In the following sections, we will first cover the different **rules**, **elements**, and their **attributes**. Next, we’ll explain the process of **matrix generation**, the creation of **alternatives**, how **seeds** function, and finally, some additional **custom settings**.
 
-## Rules and Ruletypes
-Rules are defined by the user and govern how attributes change across columns. Each rule consists of a RuleType and an AttributeType object. The RuleType defines the logical pattern by which an attribute is modified, while the AttributeType specifies which attribute the rule affects. Consequently, each AttributeType is modified by exactly one RuleType. Moreover, most RuleTypes can operate on all AttributeTypes. 
-
-For the sake of simplicity, we will refer to RuleTypes simply as rules, and to AttributeTypes as attributes from this point onward.
-
-OMSS uses 5 rules:
-
-#### **CONSTANT**
-The `CONSTANT` rule ensures that an attribute remains unchanged **within a row**.  
-For example, if a `color` attribute is governed by the `CONSTANT` rule, all elements in the same row will have the same color.
-
----
 
 #### **FULL_CONSTANT**
-The `FULL_CONSTANT` rule ensures that an attribute remains unchanged **across the entire matrix**.  
-For instance, if a `color` attribute is governed by the `FULL_CONSTANT` rule, every element in the matrix will share the same color.
+The `FULL_CONSTANT` rule ensures that an attribute remains unchanged **across the entire matrix**. It is also possible to specify the specific value of the unchanged attribute.
 
+#### Example
+Let’s simplify the previous example even further by applying the FULL_CONSTANT rule to the color attribute. This means that all elements in the matrix will now have the same color, as opposed to the previous case where colors were constant only within rows.
+
+To further enhance the uniformity of the matrix, we'll also apply the FULL_CONSTANT rule to the size attribute and fix it to a preselected value. The available size values are 'small', 'medium', and 'large'.
+
+```python
+import omss
+from omss import Ruletype, AttributeType, Rule, create_matrix
+
+rules = {
+    'BigShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')}
+    
+
+create_matrix(rules)
+```
 ---
 
 #### **DISTRIBUTE_THREE**
 The `DISTRIBUTE_THREE` rule distributes **three distinct values** of an attribute across each row.  
 For example, if the `shape` attribute uses this rule, each row will contain the same three different shapes (e.g., triangle, square, circle).
+
+#### Example
+Until now, our puzzles have been fairly lackluster. By applying the `DISTRIBUTE_THREE` rule, we can start creating puzzles with actual variation and a more complicated logical structure.
+
+Let’s enhance the previous matrix by applying the DISTRIBUTE_THREE rule to the color attribute. This means each row will now contain three different colors, adding a more interesting pattern for the solver to detect.
+
+```python
+import omss
+from omss import Ruletype, AttributeType, Rule, create_matrix
+
+rules = {
+    'BigShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
+        Rule(Ruletype.CONSTANT, AttributeType.SIZE, value = 'medium')}
+    
+
+create_matrix(rules)
+```
+
+It’s also possible to apply multiple `DISTRIBUTE_THREE` rules to different attribute types within a single matrix. Building on the previous example, we now apply a `DISTRIBUTE_THREE` rule to both the shape and color attributes. This creates an even more varied and engaging puzzle by distributing three distinct shapes and three distinct colors across each row.
+
+```python
+import omss
+from omss import Ruletype, AttributeType, Rule, create_matrix
+
+rules = {
+    'BigShape': [       
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
+        Rule(Ruletype.CONSTANT, AttributeType.SIZE, value = 'medium')}
+    
+
+create_matrix(rules)
+```
 
 ---
 
