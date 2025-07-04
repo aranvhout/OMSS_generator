@@ -1,11 +1,7 @@
 ---
 title: "OMSS Documentation"
 format: gfm
-
-toc: true
-number-sections: true
 ---
-
 
 
 **omss** is a Python package for generating matrix reasoning puzzles, inspired by Raven's Progressive Matrices, designed to assess fluid intelligence. It allows users to generate an unlimited number of customizable puzzles across a range of difficulty levels. 
@@ -80,6 +76,8 @@ OMSS works with **elements** which a placed in 3 x 3 matrix. These elements have
 ### Example
 In the example below, we use the program to define some rule types for the attributes of an element called BigShape. To keep things simple, we'll create a basic puzzle by applying the CONSTANT rule type and using the program's default settings by only specifying the rules.
 
+
+
 ```{python}
 #import statements
 import omss
@@ -96,7 +94,7 @@ rules = {
     
 #create the matrices
 solution_matrix, problem_matrix = create_matrix(rules, save = False)
-
+a=2
 #plot the matrices
 plot_matrices(solution_matrix, problem_matrix)
 ```
@@ -150,7 +148,7 @@ rules = {
 
 #create the matrices
 solution_matrix, problem_matrix = create_matrix(rules, save = False)
-
+print(a)
 #plot the matrices
 plot_matrices(solution_matrix, problem_matrix)
 ```
