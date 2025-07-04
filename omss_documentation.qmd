@@ -4,14 +4,11 @@ format: gfm
 ---
 
 
-**omss** is a Python package for generating matrix reasoning puzzles, inspired by Raven's Progressive Matrices, designed to assess fluid intelligence. It allows users to generate an unlimited number of customizable puzzles across a range of difficulty levels. test 
-
-The package was inspired in part by [`raven-gen`](https://github.com/shlomenu/raven-gen).  
+**omss** is a Python package for generating matrix reasoning puzzles, inspired by Raven's Progressive Matrices, designed to assess fluid intelligence. It allows users to generate an unlimited number of customizable puzzles across a range of difficulty levels. The package was inspired in part by [`raven-gen`](https://github.com/shlomenu/raven-gen).  
 *Chi Zhang*, *Feng Gao*, *Baoxiong Jia*, *Yixin Zhu*, *Song-Chun Zhu*  
 *Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2019*  
 
 **omss** has been rebuilt from scratch, with a focus on flexibility, reproducibility, and suitability for human testing.
-
 ## Contents
 - [Overview](#overview)
 - [Installation](#installation)
@@ -22,6 +19,12 @@ The package was inspired in part by [`raven-gen`](https://github.com/shlomenu/ra
 - [Seeds](#seeds)
 - [Multiple Elements](#multiple-elements)
 - [Additional Settings](#Additional-settings)
+
+
+
+
+
+
 
 
 ## Overview
@@ -245,6 +248,7 @@ Attributes are represented by classes that have a defined order. The PROGRESSION
 `PROGRESSION` can be also applied to less intuitive attributes, such as color; however, doing so might produce less intuitive or meaningful results.
 
 ---
+
 #### Example
 To properly showcase the `PROGRESSION` rule we will introduce a new type of `element`, namely `LittleShape`. `LittleShape` is quite similar to `BigShape` in terms of its attributes and appearance, but it is a bit smaller. As a consequence, it is possible to fit multiple `LittleShape` elements a single grid.
 
@@ -274,6 +278,7 @@ plot_matrices(solution_matrix, problem_matrix)
 The `ARITHMETIC` rule performs **addition or subtraction operations**, and can only be applied to numeric attributes.  If multiple element types share this rule, their attribute values will be added to or subtracted from one another.
 
 ---
+
 #### Example
 We will now use the LittleShape element to demonstrate the ARITHMETIC rule by applying it to its numeric attribute, littleshapenumber.
 
@@ -287,13 +292,8 @@ rules = {
         Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
         Rule(Ruletype.CONSTANT, AttributeType.COLOR),
         Rule(Ruletype.ARITHMETIC, AttributeType.LITTLESHAPENUMBER),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')],
-     'BigShape': [       
-        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
-        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
-        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
-        Rule(Ruletype.ARITHMETIC, AttributeType.NUMBER),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
+
 
 #create the matrices
 solution_matrix, problem_matrix, = create_matrix(rules, save = False)
@@ -337,9 +337,14 @@ rules = {
         Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
         Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
         Rule(Ruletype.CONSTANT, AttributeType.COLOR),
-        Rule(Ruletype.ARITHMETIC, AttributeType.LITTLESHAPENUMBER, direction = 'addition'),
+        Rule(Ruletype.ARITHMETIC, AttributeType.LITTLESHAPENUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')],
+     'BigShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.ARITHMETIC, AttributeType.NUMBER),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
-    
 
 #create the matrices
 solution_matrix, problem_matrix, = create_matrix(rules, save = False)

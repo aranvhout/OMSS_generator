@@ -1,28 +1,22 @@
 **omss** is a Python package for generating matrix reasoning puzzles,
 inspired by Raven's Progressive Matrices, designed to assess fluid
 intelligence. It allows users to generate an unlimited number of
-customizable puzzles across a range of difficulty levels. test
-
-The package was inspired in part by
+customizable puzzles across a range of difficulty levels. The package
+was inspired in part by
 [`raven-gen`](https://github.com/shlomenu/raven-gen).\
 *Chi Zhang*, *Feng Gao*, *Baoxiong Jia*, *Yixin Zhu*, *Song-Chun Zhu*\
 *Proceedings of the IEEE Conference on Computer Vision and Pattern
 Recognition (CVPR), 2019*
 
 **omss** has been rebuilt from scratch, with a focus on flexibility,
-reproducibility, and suitability for human testing.
-
-## Contents
-
--   [Overview](#overview)
--   [Installation](#installation)
--   [Rules and RuleTypes](#ruletypes)
--   [Elements and AttributeTypes](#elements-and-attributes)
--   [Matrix Generation](#matrix-generation)
--   [Alternatives Generation](#alternatives-generation)
--   [Seeds](#seeds)
--   [Multiple Elements](#multiple-elements)
--   [Additional Settings](#Additional-settings)
+reproducibility, and suitability for human testing. \## Contents -
+[Overview](#overview) - [Installation](#installation) - [Rules and
+RuleTypes](#ruletypes) - [Elements and
+AttributeTypes](#elements-and-attributes) - [Matrix
+Generation](#matrix-generation) - [Alternatives
+Generation](#alternatives-generation) - [Seeds](#seeds) - [Multiple
+Elements](#multiple-elements) - [Additional
+Settings](#Additional-settings)
 
 ## Overview
 
@@ -171,7 +165,7 @@ rules = {
         Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
         Rule(Ruletype.CONSTANT, AttributeType.COLOR),
         Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
-        Rule(Ruletype.CONSTANT, AttributeType.SIZE)]}
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
     
 
 #create the matrices
@@ -263,7 +257,7 @@ rules = {
         Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
         Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
         Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
-        Rule(Ruletype.CONSTANT, AttributeType.SIZE, value = 'medium')]}
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
     
 
 #create the matrices
@@ -325,8 +319,8 @@ step-by-step. For instance, the shape attribute is ordered from simpler
 to more complex shapes, allowing the rule to create a logical
 progression.
 
-`PROGRESSION` can be also applied to less intuitive attributes, even
-colour; however, doing so will produces less intuitive or meaningful
+`PROGRESSION` can be also applied to less intuitive attributes, such as
+color; however, doing so might produce less intuitive or meaningful
 results.
 
 ------------------------------------------------------------------------
@@ -357,7 +351,7 @@ rules = {
     
 
 #create the matrices
-solution_matrix, problem_matrix = create_matrix(rules, save = False)
+solution_matrix, problem_matrix, = create_matrix(rules, save = False)
 
 #plot the matrices
 plot_matrices(solution_matrix, problem_matrix)
@@ -374,3 +368,117 @@ The `ARITHMETIC` rule performs **addition or subtraction operations**,
 and can only be applied to numeric attributes. If multiple element types
 share this rule, their attribute values will be added to or subtracted
 from one another.
+
+------------------------------------------------------------------------
+
+#### Example
+
+We will now use the LittleShape element to demonstrate the ARITHMETIC
+rule by applying it to its numeric attribute, littleshapenumber.
+
+:::: {.cell execution_count="7"}
+``` {.python .cell-code}
+import omss
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
+
+rules = {
+    'LittleShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.ARITHMETIC, AttributeType.LITTLESHAPENUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
+
+
+#create the matrices
+solution_matrix, problem_matrix, = create_matrix(rules, save = False)
+
+#plot the matrices
+plot_matrices(solution_matrix, problem_matrix)
+```
+
+::: {.cell-output .cell-output-display}
+![](omss_documentation_files/figure-markdown/cell-8-output-1.png)
+:::
+::::
+
+It's also possible to control the direction of the arithmetic operation
+(addition or subtraction). Let's recreate the previous example using the
+LittleShape element, but this time explicitly set the operation to
+addition.
+
+:::: {.cell execution_count="8"}
+``` {.python .cell-code}
+import omss
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
+
+rules = {
+    'LittleShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.ARITHMETIC, AttributeType.LITTLESHAPENUMBER, direction = 'addition'),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
+    
+
+#create the matrices
+solution_matrix, problem_matrix, = create_matrix(rules, save = False)
+
+#plot the matrices
+plot_matrices(solution_matrix, problem_matrix)
+```
+
+::: {.cell-output .cell-output-display}
+![](omss_documentation_files/figure-markdown/cell-9-output-1.png)
+:::
+::::
+
+Finally, let's see what happens when we combine multiple elements in a
+single grid and apply the ARITHMETIC rule. To do this, we simply need to
+define rules for each element and include them in the same rules
+dictionary.
+
+In the example below, we combine both LittleShape and BigShape, and
+apply the ARITHMETIC rule to the NUMBER attribute of both. The resulting
+matrix will perform arithmetic operations across the values of both
+element types.
+
+:::: {.cell execution_count="9"}
+``` {.python .cell-code}
+import omss
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
+
+rules = {
+    'LittleShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.ARITHMETIC, AttributeType.LITTLESHAPENUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')],
+     'BigShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.ARITHMETIC, AttributeType.NUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
+
+#create the matrices
+solution_matrix, problem_matrix, = create_matrix(rules, save = False)
+
+#plot the matrices
+plot_matrices(solution_matrix, problem_matrix)
+```
+
+::: {.cell-output .cell-output-display}
+![](omss_documentation_files/figure-markdown/cell-10-output-1.png)
+:::
+::::
+
+Amazing! As you can see, the arithmetic operation is being combined
+across the two elements, resulting in a coordinated numeric progression
+between LittleShape and BigShape.
+
+Note: It is not possible to apply the ARITHMETIC rule to BigShape alone,
+since it only supports two numeric values (0 and 1). Applying arithmetic
+in isolation would result in empty grids and is thus prohibited by the
+program.
