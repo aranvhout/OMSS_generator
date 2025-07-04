@@ -1,6 +1,9 @@
 ---
 title: "OMSS Documentation"
 format: html
+execute:
+  echo: false
+  output: false
 
 ---
 
