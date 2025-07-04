@@ -277,7 +277,7 @@ plot_matrices(solution_matrix, problem_matrix)
 #### **ARITHMETIC**
 The `ARITHMETIC` rule performs **addition or subtraction operations**, and can only be applied to numeric attributes.  If multiple element types share this rule, their attribute values will be added to or subtracted from one another.
 
----
+
 
 #### Example
 We will now use the LittleShape element to demonstrate the ARITHMETIC rule by applying it to its numeric attribute, littleshapenumber.

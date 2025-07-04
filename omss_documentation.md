@@ -369,8 +369,6 @@ and can only be applied to numeric attributes. If multiple element types
 share this rule, their attribute values will be added to or subtracted
 from one another.
 
-------------------------------------------------------------------------
-
 #### Example
 
 We will now use the LittleShape element to demonstrate the ARITHMETIC
