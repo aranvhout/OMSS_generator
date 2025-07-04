@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>omss documentation</title>
+<title>omss_documentation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -79,25 +79,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">omss documentation</h1>
-</div>
 
 
 
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-
-</header>
-
-
+<section id="omss-documentation" class="level1">
+<h1>OMSS Documentation</h1>
+<ul>
+<li><a href="#contents"><span class="toc-section-number">1</span> Contents</a></li>
+<li><a href="#overview"><span class="toc-section-number">2</span> Overview</a>
+<ul>
+<li><a href="#function-signature"><span class="toc-section-number">2.1</span> Function Signature</a></li>
+<li><a href="#example"><span class="toc-section-number">2.2</span> Example</a></li>
+</ul></li>
+<li><a href="#installation"><span class="toc-section-number">3</span> Installation</a></li>
+<li><a href="#rules"><span class="toc-section-number">4</span> Rules</a>
+<ul>
+<li><a href="#ruletypes"><span class="toc-section-number">4.1</span> RuleTypes</a></li>
+</ul></li>
+</ul>
 <p><strong>omss</strong> is a Python package for generating matrix reasoning puzzles, inspired by Raven’s Progressive Matrices, designed to assess fluid intelligence. It allows users to generate an unlimited number of customizable puzzles across a range of difficulty levels.</p>
 <p>The package was inspired in part by <a href="https://github.com/shlomenu/raven-gen"><code>raven-gen</code></a>.<br>
 <em>Chi Zhang</em>, <em>Feng Gao</em>, <em>Baoxiong Jia</em>, <em>Yixin Zhu</em>, <em>Song-Chun Zhu</em><br>
@@ -167,8 +166,7 @@ Default: <code>None</code>.</li>
 <section id="example" class="level3">
 <h3 class="anchored" data-anchor-id="example">Example</h3>
 <p>In the example below, we use the program to define some rule types for the attributes of an element called BigShape. To keep things simple, we’ll create a basic puzzle by applying the CONSTANT rule type and using the program’s default settings by only specifying the rules.</p>
-<div id="121f73f3" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#import statements</span></span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#import statements</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> omss</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> omss <span class="im">import</span> Ruletype, AttributeType, Rule, create_matrix, plot_matrices</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -186,14 +184,7 @@ Default: <code>None</code>.</li>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">#plot the matrices</span></span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>plot_matrices(solution_matrix, problem_matrix)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="omss_documentation_files/figure-html/cell-2-output-1.png" width="549" height="288" class="figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
+<p><img src="omss_documentation_files/figure-commonmark/cell-2-output-1.png" class="img-fluid"></p>
 <p>In the following sections, we will first cover the different <strong>rules</strong>, <strong>elements</strong>, and their <strong>attributes</strong>. Next, we’ll explain the process of <strong>matrix generation</strong>, the creation of <strong>alternatives</strong>, how <strong>seeds</strong> function, and finally, some additional <strong>custom settings</strong>.</p>
 </section>
 </section>
@@ -217,8 +208,7 @@ For example, if a <code>color</code> attribute is governed by the <code>CONSTANT
 <section id="example-1" class="level4">
 <h4 class="anchored" data-anchor-id="example-1">Example</h4>
 <p>Let’s create a very straightforward matrix puzzle. We’ll once again use the BigShape element and set all of its AttributeTypes to CONSTANT, ensuring that no attribute changes within any row. This creates a simple, uniform pattern and serves as a good starting point for understanding how rule definitions work.</p>
-<div id="893d8d8f" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> omss</span>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> omss</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> omss <span class="im">import</span> Ruletype, AttributeType, Rule, create_matrix, plot_matrices</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>rules <span class="op">=</span> {</span>
@@ -235,14 +225,7 @@ For example, if a <code>color</code> attribute is governed by the <code>CONSTANT
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">#plot the matrices</span></span>
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>plot_matrices(solution_matrix, problem_matrix)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="omss_documentation_files/figure-html/cell-3-output-1.png" width="549" height="288" class="figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
+<p><img src="omss_documentation_files/figure-commonmark/cell-3-output-1.png" class="img-fluid"></p>
 </section>
 <section id="full_constant" class="level4">
 <h4 class="anchored" data-anchor-id="full_constant"><strong>FULL_CONSTANT</strong></h4>
@@ -252,8 +235,7 @@ For example, if a <code>color</code> attribute is governed by the <code>CONSTANT
 <h4 class="anchored" data-anchor-id="example-2">Example</h4>
 <p>Let’s simplify the previous example even further by applying the FULL_CONSTANT rule to the color attribute. This means that all elements in the matrix will now have the same color, as opposed to the previous case where colors were constant only within rows.</p>
 <p>To further enhance the uniformity of the matrix, we’ll also apply the FULL_CONSTANT rule to the size attribute and fix it to a preselected value. The available size values are ‘small’, ‘medium’, and ‘large’.</p>
-<div id="282bafc9" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> omss</span>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> omss</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> omss <span class="im">import</span> Ruletype, AttributeType, Rule, create_matrix, plot_matrices</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>rules <span class="op">=</span> {</span>
@@ -270,14 +252,7 @@ For example, if a <code>color</code> attribute is governed by the <code>CONSTANT
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#plot the matrices</span></span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>plot_matrices(solution_matrix, problem_matrix)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="omss_documentation_files/figure-html/cell-4-output-1.png" width="549" height="288" class="figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
+<p><img src="omss_documentation_files/figure-commonmark/cell-4-output-1.png" class="img-fluid"></p>
 </section>
 <section id="distribute_three" class="level4">
 <h4 class="anchored" data-anchor-id="distribute_three"><strong>DISTRIBUTE_THREE</strong></h4>
@@ -288,8 +263,7 @@ For example, if the <code>shape</code> attribute uses this rule, each row will c
 <h4 class="anchored" data-anchor-id="example-3">Example</h4>
 <p>Until now, our puzzles have been fairly lackluster. By applying the <code>DISTRIBUTE_THREE</code> rule, we can start creating puzzles with actual variation and a more complicated logical structure.</p>
 <p>Let’s enhance the previous matrix by applying the <code>DISTRIBUTE_THREE</code> rule to the color attribute. This means each row will now contain three different colors, adding a more interesting pattern for the solver to detect.</p>
-<div id="2edd73c2" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> omss</span>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> omss</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> omss <span class="im">import</span> Ruletype, AttributeType, Rule, create_matrix, plot_matrices</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>rules <span class="op">=</span> {</span>
@@ -306,17 +280,9 @@ For example, if the <code>shape</code> attribute uses this rule, each row will c
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#plot the matrices</span></span>
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>plot_matrices(solution_matrix, problem_matrix)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="omss_documentation_files/figure-html/cell-5-output-1.png" width="549" height="288" class="figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
+<p><img src="omss_documentation_files/figure-commonmark/cell-5-output-1.png" class="img-fluid"></p>
 <p>It’s also possible to apply multiple <code>DISTRIBUTE_THREE</code> rules to different attribute types within a single matrix. Building on the previous example, we now apply a <code>DISTRIBUTE_THREE</code> rule to both the shape and color attributes. This creates an even more varied and engaging puzzle by distributing three distinct shapes and three distinct colors across each row.</p>
-<div id="5bd3086b" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> omss</span>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> omss</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> omss <span class="im">import</span> Ruletype, AttributeType, Rule, create_matrix, plot_matrices</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>rules <span class="op">=</span> {</span>
@@ -333,14 +299,7 @@ For example, if the <code>shape</code> attribute uses this rule, each row will c
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#plot the matrices</span></span>
 <span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>plot_matrices(solution_matrix, problem_matrix)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="omss_documentation_files/figure-html/cell-6-output-1.png" width="549" height="288" class="figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
+<p><img src="omss_documentation_files/figure-commonmark/cell-6-output-1.png" class="img-fluid"></p>
 <hr>
 </section>
 <section id="progression" class="level4">
@@ -354,8 +313,7 @@ For example, if the <code>shape</code> attribute uses this rule, each row will c
 <h4 class="anchored" data-anchor-id="example-4">Example</h4>
 <p>To properly showcase the <code>PROGRESSION</code> rule we will introduce a new type of <code>element</code>, namely <code>LittleShape</code>. <code>LittleShape</code> is quite similar to <code>BigShape</code> in terms of its attributes and appearance, but it is a bit smaller. As a consequence, it is possible to fit multiple <code>LittleShape</code> elements a single grid.</p>
 <p>Below we will apply a <code>PROGRESSION</code> rule to <code>LittleShape</code>’s number attribute! As you can see the number of elements increases/decreases</p>
-<div id="0ce8d438" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> omss</span>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> omss</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> omss <span class="im">import</span> Ruletype, AttributeType, Rule, create_matrix, plot_matrices</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>rules <span class="op">=</span> {</span>
@@ -372,18 +330,12 @@ For example, if the <code>shape</code> attribute uses this rule, each row will c
 <span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#plot the matrices</span></span>
 <span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>plot_matrices(solution_matrix, problem_matrix)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="omss_documentation_files/figure-html/cell-7-output-1.png" width="549" height="288" class="figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
+<p><img src="omss_documentation_files/figure-commonmark/cell-7-output-1.png" class="img-fluid"></p>
 </section>
 <section id="arithmetic" class="level4">
 <h4 class="anchored" data-anchor-id="arithmetic"><strong>ARITHMETIC</strong></h4>
 <p>The <code>ARITHMETIC</code> rule performs <strong>addition or subtraction operations</strong>, and can only be applied to numeric attributes. If multiple element types share this rule, their attribute values will be added to or subtracted from one another.</p>
+</section>
 </section>
 </section>
 </section>
