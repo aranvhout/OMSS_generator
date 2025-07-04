@@ -1,6 +1,4 @@
 ---
-execute:
-  echo: true
 title: OMSS Documentation
 toc-title: Table of contents
 ---
