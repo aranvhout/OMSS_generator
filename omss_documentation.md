@@ -1,8 +1,3 @@
----
-title: OMSS Documentation
-toc-title: Table of contents
----
-
 **omss** is a Python package for generating matrix reasoning puzzles,
 inspired by Raven's Progressive Matrices, designed to assess fluid
 intelligence. It allows users to generate an unlimited number of
