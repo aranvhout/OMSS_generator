@@ -221,7 +221,7 @@ def create_output_file(updated_rules, dis_scores, seed_value, alternative_seed_v
 
 
 
-def plot_matrices(problem_matrix, solution_matrix, alternatives=None):
+def plot_matrices(solution_matrix, problem_matrix, alternatives=None):
     problem_matrix = np.array(problem_matrix)
     solution_matrix = np.array(solution_matrix)
     
