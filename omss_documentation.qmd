@@ -1,11 +1,6 @@
 ---
 title: "OMSS Documentation"
-format:
-  html:
-    toc: false
-execute:
-  echo: true
- 
+format: gfm
 ---
 
 
