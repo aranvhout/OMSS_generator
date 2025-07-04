@@ -173,12 +173,13 @@ For example, if the `shape` attribute uses this rule, each row will contain the 
 #### Example
 Until now, our puzzles have been fairly lackluster. By applying the `DISTRIBUTE_THREE` rule, we can start creating puzzles with actual variation and a more complicated logical structure.
 
-Let’s enhance the previous matrix by applying the DISTRIBUTE_THREE rule to the color attribute. This means each row will now contain three different colors, adding a more interesting pattern for the solver to detect.
+Let’s enhance the previous matrix by applying the `DISTRIBUTE_THREE` rule to the color attribute. This means each row will now contain three different colors, adding a more interesting pattern for the solver to detect.
 
 ```python
 import omss
 from omss import Ruletype, AttributeType, Rule, create_matrix
 
+print(1+1)
 rules = {
     'BigShape': [       
         Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
@@ -203,7 +204,7 @@ rules = {
         Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
         Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
         Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
-        Rule(Ruletype.CONSTANT, AttributeType.SIZE, value = 'medium')}
+        Rule(Ruletype.FULLCONSTANT, AttributeType.SIZE, value = 'medium')}
     
 
 create_matrix(rules)
@@ -212,12 +213,34 @@ create_matrix(rules)
 ---
 
 #### **PROGRESSION**
-The `PROGRESSION` rule increases or decreases the value of an attribute across a row.  
-For instance, if applied to the `size` attribute, element sizes will progressively grow or shrink within a row.
+The PROGRESSION rule increases or decreases the value of an attribute across a row.
+For example, when applied to the size attribute, element sizes will progressively grow or shrink within each row.
 
-This rule can also be applied to less intuitive attributes like `shape` (e.g., from simple to complex forms) or even `color`—though the latter is **discouraged**, as it tends to produce inconsistent or meaningless results.
+Attributes are represented by classes that have a defined order. The PROGRESSION rule follows this order to modify attribute values step-by-step. For instance, the shape attribute is ordered from simpler to more complex shapes, allowing the rule to create a logical progression.
+
+`PROGRESSION` can be also applied to less intuitive attributes, even colour; however, doing so will produces less intuitive or meaningful results.
 
 ---
+#### Example
+To properly showcase the `PROGRESSION` rule we will introduce a new type of `element`, namely `LittleShape`. `LittleShape` is quite similar to `BigShape` in terms of its attributes and appearance, but it is a bit smaller. As a consequence, it is possible to fit multiple `LittleShape` elements a single grid.
+
+Below we will apply a `PROGRESSION` rule to `LittleShape`'s number attribute! As you can see the number of elements increases/decreases 
+
+```python
+import omss
+from omss import Ruletype, AttributeType, Rule, create_matrix
+
+rules = {
+    'LittleShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.PROGRESSION, AttributeType.LITTLESHAPENUMBER),
+        Rule(Ruletype.FULLCONSTANT, AttributeType.SIZE, value = 'medium')}
+    
+
+create_matrix(rules)
+```
 
 #### **ARITHMETIC**
 The `ARITHMETIC` rule performs **addition or subtraction operations**, and can only be applied to numeric attributes.  If multiple element types share this rule, their attribute values will be added to or subtracted from one another.

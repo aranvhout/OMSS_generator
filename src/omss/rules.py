@@ -169,6 +169,12 @@ def coupling(rule, numbers, direction, seed_list):
             raise ValueError("All numbers must be the same for CONSTANT rule.")
         shared, seed_list = random_choice(seed_list, position_values, numbers[0])
         return [shared for _ in numbers], seed_list
+    
+    if rule == Ruletype.FULL_CONSTANT:
+        if len(set(numbers)) != 1:
+            raise ValueError("All numbers must be the same for CONSTANT rule.")
+        shared, seed_list = random_choice(seed_list, position_values, numbers[0])
+        return [shared for _ in numbers], seed_list
 
     if rule == Ruletype.DISTRIBUTE_THREE:
         
@@ -229,12 +235,13 @@ def full_constant_rule(matrix, attribute_type, value):
     else:
         # If no value provided, use the existing attribute from the first matrix element
         constant_value = getattr(matrix[0][0], attribute_type.name.lower()) 
-
+        
     # Apply the constant value to all elements in the matrix
     for row in matrix:
         for element in row:
             setattr(element, attribute_type.name.lower(), constant_value)
             
+      
 #CONSTANT            
 def constant_rule(matrix, attribute_type, seed_list):   
     # Get the Enum class based on the attribute
@@ -255,8 +262,24 @@ def constant_rule(matrix, attribute_type, seed_list):
         # Set this constant value for the specified attribute across all elements in the row
        for element in row:
             setattr(element, attribute_type.name.lower(), constant_value)
+           
    return matrix, seed_list
             
+#PROGRESSION        
+def flatten_cell(cell):
+    """Flattens any nested list structure inside a matrix cell and returns a flat list of elements."""
+    if not isinstance(cell, list):
+        return [cell]
+    
+    result = []
+    for item in cell:
+        if isinstance(item, list):
+            result.extend(flatten_cell(item))
+        else:
+            result.append(item)
+    return result
+
+
 #PROGRESSION        
 def progression_rule(matrix, attribute_type, seed_list):
     """Applies a progression rule across each row for a given attribute."""
@@ -299,6 +322,10 @@ def progression_rule(matrix, attribute_type, seed_list):
             else:
                     # If no matching value is found, raise an error
                 raise ValueError(f"No matching enum value found for {new_value} in {attribute_type.name}.", attribute_type)
+                   
+                       
+            
+
                    
                        
             

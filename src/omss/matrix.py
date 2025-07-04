@@ -80,25 +80,36 @@ def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = No
         print('matrix created')
         
     if save == False:
-        #we first convert bgr to rgb values (cv2 works with bgr)
+        # Convert BGR to RGB
         solution_matrix_bgr = render_matrix(matrices)
         solution_matrix = cv2.cvtColor(solution_matrix_bgr, cv2.COLOR_BGR2RGB)
         problem_matrix_bgr = render_matrix(matrices, problem_matrix=True)
         problem_matrix = cv2.cvtColor(problem_matrix_bgr, cv2.COLOR_BGR2RGB)
-        
-        #save the matrices and output file in a list
+
+        rendered_alternative_list = []
+        output_file_obj = None
+
         if alternatives and alternatives > 1:
             LittleShape.reset_seed()
-            LittleShape.set_seed(alternative_seed)#this is very ugly, we need to set a separate global seed for the position of little shape
-            rendered_alternative_list_bgr, dis_scores = generate_and_save_alternatives(matrices, element_types, alternatives, alternative_seed, updated_rules, path, save =False)
-            rendered_alternative_list = []
-            for alternative_bgr in rendered_alternative_list_bgr:
-                alternative = cv2.cvtColor(alternative_bgr, cv2.COLOR_BGR2RGB)
-                rendered_alternative_list.append(alternative)
+            LittleShape.set_seed(alternative_seed)
+            rendered_alternative_list_bgr, dis_scores = generate_and_save_alternatives(
+            matrices, element_types, alternatives, alternative_seed, updated_rules, path, save=False
+            )
+            rendered_alternative_list = [
+            cv2.cvtColor(alt_bgr, cv2.COLOR_BGR2RGB) for alt_bgr in rendered_alternative_list_bgr
+            ]
+
             if output_file == True:
-                output_file = create_output_file(updated_rules, dis_scores, seed, alternative_seed, save, path)    
-        print('matrix created')
-        return solution_matrix, problem_matrix, rendered_alternative_list, output_file   
+                output_file_obj = create_output_file(updated_rules, dis_scores, seed, alternative_seed, save, path)
+                # Return 4 values
+                return solution_matrix, problem_matrix, rendered_alternative_list, output_file_obj
+
+            # Return 3 values: no output file but alternatives exist
+            return solution_matrix, problem_matrix, rendered_alternative_list
+
+        # No alternatives, just return 2 values
+        return solution_matrix, problem_matrix
+
     
                                             
      
