@@ -84,10 +84,7 @@ In the example below, we use the program to define some rule types for the attri
 ```{python}
 #import statements
 import omss
-from omss import Ruletype, AttributeType, Rule, create_matrix
-
-import numpy as np
-import matplotlib.pyplot as plt
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
 
 #the dictionary for the in which RuleTypes are coupled to AttributeTypes
 rules = {
@@ -98,27 +95,11 @@ rules = {
         Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
     
-#the function that creates the matrices
+#create the matrices
 solution_matrix, problem_matrix = create_matrix(rules, save = False)
 
-
-problem_matrix = np.array(problem_matrix)
-solution_matrix = np.array(solution_matrix)
-# Plot side by side, smaller size
-plt.figure(figsize=(6, 3))  # smaller overall plot
-
-plt.subplot(1, 2, 1)
-plt.imshow(problem_matrix)
-plt.title('Problem')
-plt.axis('off')
-
-plt.subplot(1, 2, 2)
-plt.imshow(solution_matrix)
-plt.title('Solution')
-plt.axis('off')
-
-plt.tight_layout()
-plt.show()
+#plot the matrices
+plot_matrices(solution_matrix, problem_matrix)
 ```
 
 
@@ -157,7 +138,7 @@ Let’s create a very straightforward matrix puzzle. We'll once again use the Bi
 
 ```{python}
 import omss
-from omss import Ruletype, AttributeType, Rule, create_matrix
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
 
 rules = {
     'BigShape': [       
@@ -168,7 +149,11 @@ rules = {
         Rule(Ruletype.CONSTANT, AttributeType.SIZE)]}
     
 
-create_matrix(rules)
+#create the matrices
+solution_matrix, problem_matrix = create_matrix(rules, save = False)
+
+#plot the matrices
+plot_matrices(solution_matrix, problem_matrix)
 ```
 
 
@@ -182,7 +167,7 @@ To further enhance the uniformity of the matrix, we'll also apply the FULL_CONST
 
 ```{python}
 import omss
-from omss import Ruletype, AttributeType, Rule, create_matrix
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
 
 rules = {
     'BigShape': [       
@@ -193,9 +178,13 @@ rules = {
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
     
 
-create_matrix(rules)
+#create the matrices
+solution_matrix, problem_matrix = create_matrix(rules, save = False)
+
+#plot the matrices
+plot_matrices(solution_matrix, problem_matrix)
 ```
----
+
 
 #### **DISTRIBUTE_THREE**
 The `DISTRIBUTE_THREE` rule distributes **three distinct values** of an attribute across each row.  
@@ -208,9 +197,8 @@ Let’s enhance the previous matrix by applying the `DISTRIBUTE_THREE` rule to t
 
 ```{python}
 import omss
-from omss import Ruletype, AttributeType, Rule, create_matrix
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
 
-print(1+1)
 rules = {
     'BigShape': [       
         Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
@@ -220,14 +208,18 @@ rules = {
         Rule(Ruletype.CONSTANT, AttributeType.SIZE, value = 'medium')]}
     
 
-create_matrix(rules)
+#create the matrices
+solution_matrix, problem_matrix = create_matrix(rules, save = False)
+
+#plot the matrices
+plot_matrices(solution_matrix, problem_matrix)
 ```
 
 It’s also possible to apply multiple `DISTRIBUTE_THREE` rules to different attribute types within a single matrix. Building on the previous example, we now apply a `DISTRIBUTE_THREE` rule to both the shape and color attributes. This creates an even more varied and engaging puzzle by distributing three distinct shapes and three distinct colors across each row.
 
 ```{python}
 import omss
-from omss import Ruletype, AttributeType, Rule, create_matrix
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
 
 rules = {
     'BigShape': [       
@@ -238,7 +230,11 @@ rules = {
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
     
 
-create_matrix(rules)
+#create the matrices
+solution_matrix, problem_matrix = create_matrix(rules, save = False)
+
+#plot the matrices
+plot_matrices(solution_matrix, problem_matrix)
 ```
 
 ---
@@ -259,7 +255,7 @@ Below we will apply a `PROGRESSION` rule to `LittleShape`'s number attribute! As
 
 ```{python}
 import omss
-from omss import Ruletype, AttributeType, Rule, create_matrix
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
 
 rules = {
     'LittleShape': [       
@@ -270,7 +266,11 @@ rules = {
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
     
 
-create_matrix(rules)
+#create the matrices
+solution_matrix, problem_matrix = create_matrix(rules, save = False)
+
+#plot the matrices
+plot_matrices(solution_matrix, problem_matrix)
 ```
 
 #### **ARITHMETIC**

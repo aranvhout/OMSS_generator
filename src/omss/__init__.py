@@ -60,4 +60,4 @@ Example:
 
 
 from .rules import Ruletype, AttributeType, Rule
-from .matrix import create_matrix
+from .matrix import create_matrix, plot_matrices

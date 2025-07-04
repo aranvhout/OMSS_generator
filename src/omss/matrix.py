@@ -12,7 +12,10 @@ import os
 import cv2
 import random
 from pathlib import Path
- 
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
+import math
 def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = None, save = True, output_file = False, element_types=None, path =None): 
     """Wrapping function that creates the matrix and alternatives"""
    
@@ -110,8 +113,7 @@ def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = No
         # No alternatives, just return 2 values
         return solution_matrix, problem_matrix
 
-    
-                                            
+               
      
         
 def initialise_matrix(rules, seed_list, element_type=["big-shape"]):
@@ -218,7 +220,66 @@ def create_output_file(updated_rules, dis_scores, seed_value, alternative_seed_v
 
 
 
+
+def plot_matrices(problem_matrix, solution_matrix, alternatives=None):
+    problem_matrix = np.array(problem_matrix)
+    solution_matrix = np.array(solution_matrix)
     
+    if alternatives is None:
+        alternatives = []
+    else:
+        alternatives = [np.array(alt) for alt in alternatives]
+
+    n_alternatives = len(alternatives)
+    max_alts_per_row = 4
+    alt_rows = math.ceil(n_alternatives / max_alts_per_row)
+
+    total_rows = 1 + alt_rows  # 1 row for problem + solution, rest for alternatives
+    total_cols = max(2, min(max_alts_per_row, n_alternatives))  # use up to 4 cols
+
+    fig_width = 3 * total_cols
+    fig_height = 3 * total_rows
+
+    fig = plt.figure(figsize=(fig_width, fig_height))
+    gs = GridSpec(total_rows, total_cols, height_ratios=[4] + [1]*alt_rows, figure=fig)
+
+    # --- Top row: Problem and Solution centered ---
+    start_top = (total_cols - 2) // 2
+    for col in range(total_cols):
+        ax = fig.add_subplot(gs[0, col])
+        if col == start_top:
+            ax.imshow(problem_matrix)
+            ax.set_title("Problem")
+        elif col == start_top + 1:
+            ax.imshow(solution_matrix)
+            ax.set_title("Solution")
+        else:
+            ax.axis('off')
+            continue
+        ax.axis('off')
+        ax.set_box_aspect(1)
+
+    # --- Alternative rows (up to 4 per row, centered) ---
+    for row in range(1, total_rows):
+        row_idx = row - 1
+        alt_start = row_idx * max_alts_per_row
+        alt_end = min(alt_start + max_alts_per_row, n_alternatives)
+        alts_in_this_row = alt_end - alt_start
+        start_col = (total_cols - alts_in_this_row) // 2
+
+        for col in range(total_cols):
+            ax = fig.add_subplot(gs[row, col])
+            alt_idx = alt_start + (col - start_col)
+            if start_col <= col < start_col + alts_in_this_row:
+                ax.imshow(alternatives[alt_idx])
+                ax.set_title(f"Alternative {alt_idx}", fontsize=8)
+                ax.axis('off')
+                ax.set_box_aspect(1)
+            else:
+                ax.axis('off')
+
+    plt.tight_layout()
+    plt.show()
     
    
     
