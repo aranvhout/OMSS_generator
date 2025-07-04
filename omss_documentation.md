@@ -1,4 +1,4 @@
-# omss documentation
+# OMSS Documentation
 
 
 **omss** is a Python package for generating matrix reasoning puzzles,
