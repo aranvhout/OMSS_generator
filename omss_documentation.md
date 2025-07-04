@@ -1,4 +1,7 @@
 ---
+execute:
+  echo: false
+  output: false
 title: OMSS Documentation
 toc-title: Table of contents
 ---
@@ -95,33 +98,6 @@ the attributes of an element called BigShape. To keep things simple,
 we'll create a basic puzzle by applying the CONSTANT rule type and using
 the program's default settings by only specifying the rules.
 
-:::: {.cell execution_count="1"}
-``` {.python .cell-code}
-#import statements
-import omss
-from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
-
-#the dictionary for the in which RuleTypes are coupled to AttributeTypes
-rules = {
-    'BigShape': [       
-        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.SHAPE),
-        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
-        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
-        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
-    
-#create the matrices
-solution_matrix, problem_matrix = create_matrix(rules, save = False)
-a=2
-#plot the matrices
-plot_matrices(solution_matrix, problem_matrix)
-```
-
-::: {.cell-output .cell-output-display}
-![](omss_documentation_files/figure-markdown/cell-2-output-1.png)
-:::
-::::
-
 In the following sections, we will first cover the different **rules**,
 **elements**, and their **attributes**. Next, we'll explain the process
 of **matrix generation**, the creation of **alternatives**, how
@@ -165,36 +141,6 @@ ensuring that no attribute changes within any row. This creates a
 simple, uniform pattern and serves as a good starting point for
 understanding how rule definitions work.
 
-::::: {.cell execution_count="2"}
-``` {.python .cell-code}
-import omss
-from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
-
-rules = {
-    'BigShape': [       
-        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
-        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
-        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
-        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
-        Rule(Ruletype.CONSTANT, AttributeType.SIZE)]}
-    
-
-#create the matrices
-solution_matrix, problem_matrix = create_matrix(rules, save = False)
-print(a)
-#plot the matrices
-plot_matrices(solution_matrix, problem_matrix)
-```
-
-::: {.cell-output .cell-output-stdout}
-    2
-:::
-
-::: {.cell-output .cell-output-display}
-![](omss_documentation_files/figure-markdown/cell-3-output-2.png)
-:::
-:::::
-
 #### **FULL_CONSTANT**
 
 The `FULL_CONSTANT` rule ensures that an attribute remains unchanged
@@ -211,32 +157,6 @@ case where colors were constant only within rows.
 To further enhance the uniformity of the matrix, we'll also apply the
 FULL_CONSTANT rule to the size attribute and fix it to a preselected
 value. The available size values are 'small', 'medium', and 'large'.
-
-:::: {.cell execution_count="3"}
-``` {.python .cell-code}
-import omss
-from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
-
-rules = {
-    'BigShape': [       
-        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
-        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.COLOR),
-        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
-    
-
-#create the matrices
-solution_matrix, problem_matrix = create_matrix(rules, save = False)
-
-#plot the matrices
-plot_matrices(solution_matrix, problem_matrix)
-```
-
-::: {.cell-output .cell-output-display}
-![](omss_documentation_files/figure-markdown/cell-4-output-1.png)
-:::
-::::
 
 #### **DISTRIBUTE_THREE**
 
@@ -257,64 +177,12 @@ rule to the color attribute. This means each row will now contain three
 different colors, adding a more interesting pattern for the solver to
 detect.
 
-:::: {.cell execution_count="4"}
-``` {.python .cell-code}
-import omss
-from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
-
-rules = {
-    'BigShape': [       
-        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
-        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
-        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
-        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
-        Rule(Ruletype.CONSTANT, AttributeType.SIZE, value = 'medium')]}
-    
-
-#create the matrices
-solution_matrix, problem_matrix = create_matrix(rules, save = False)
-
-#plot the matrices
-plot_matrices(solution_matrix, problem_matrix)
-```
-
-::: {.cell-output .cell-output-display}
-![](omss_documentation_files/figure-markdown/cell-5-output-1.png)
-:::
-::::
-
 It's also possible to apply multiple `DISTRIBUTE_THREE` rules to
 different attribute types within a single matrix. Building on the
 previous example, we now apply a `DISTRIBUTE_THREE` rule to both the
 shape and color attributes. This creates an even more varied and
 engaging puzzle by distributing three distinct shapes and three distinct
 colors across each row.
-
-:::: {.cell execution_count="5"}
-``` {.python .cell-code}
-import omss
-from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
-
-rules = {
-    'BigShape': [       
-        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.SHAPE),
-        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
-        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
-        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
-    
-
-#create the matrices
-solution_matrix, problem_matrix = create_matrix(rules, save = False)
-
-#plot the matrices
-plot_matrices(solution_matrix, problem_matrix)
-```
-
-::: {.cell-output .cell-output-display}
-![](omss_documentation_files/figure-markdown/cell-6-output-1.png)
-:::
-::::
 
 ------------------------------------------------------------------------
 
@@ -346,32 +214,6 @@ elements a single grid.
 
 Below we will apply a `PROGRESSION` rule to `LittleShape`'s number
 attribute! As you can see the number of elements increases/decreases
-
-:::: {.cell execution_count="6"}
-``` {.python .cell-code}
-import omss
-from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
-
-rules = {
-    'LittleShape': [       
-        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
-        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
-        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
-        Rule(Ruletype.PROGRESSION, AttributeType.LITTLESHAPENUMBER),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
-    
-
-#create the matrices
-solution_matrix, problem_matrix = create_matrix(rules, save = False)
-
-#plot the matrices
-plot_matrices(solution_matrix, problem_matrix)
-```
-
-::: {.cell-output .cell-output-display}
-![](omss_documentation_files/figure-markdown/cell-7-output-1.png)
-:::
-::::
 
 #### **ARITHMETIC**
 
