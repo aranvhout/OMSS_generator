@@ -1,11 +1,10 @@
 ---
 title: "OMSS Documentation"
-format: 
-  gfm:
-    number-sections: true        # Automatically number your sections
-    code-line-numbers: true      # Add line numbers to code blocks
-    syntax-highlight: kate       # Nice syntax highlighting theme
+format: gfm
+number-sections: true    
 ---
+
+
 
 
 
