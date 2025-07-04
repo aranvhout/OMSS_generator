@@ -362,12 +362,16 @@ plot_matrices(solution_matrix, problem_matrix)
 :::
 ::::
 
+------------------------------------------------------------------------
+
 #### **ARITHMETIC**
 
 The `ARITHMETIC` rule performs **addition or subtraction operations**,
 and can only be applied to numeric attributes. If multiple element types
 share this rule, their attribute values will be added to or subtracted
 from one another.
+
+------------------------------------------------------------------------
 
 #### Example
 
