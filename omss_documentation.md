@@ -1,6 +1,16 @@
 # OMSS Documentation
 
 
+- [<span class="toc-section-number">1</span> Contents](#contents)
+- [<span class="toc-section-number">2</span> Overview](#overview)
+  - [<span class="toc-section-number">2.1</span> Function
+    Signature](#function-signature)
+  - [<span class="toc-section-number">2.2</span> Example](#example)
+- [<span class="toc-section-number">3</span>
+  Installation](#installation)
+- [<span class="toc-section-number">4</span> Rules](#rules)
+  - [<span class="toc-section-number">4.1</span> RuleTypes](#ruletypes)
+
 **omss** is a Python package for generating matrix reasoning puzzles,
 inspired by Raven’s Progressive Matrices, designed to assess fluid
 intelligence. It allows users to generate an unlimited number of
