@@ -1,7 +1,7 @@
 ---
 title: "OMSS Documentation"
-format: gfm
-number-sections: true    
+format: html
+
 ---
 
 

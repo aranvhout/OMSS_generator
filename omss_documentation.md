@@ -17,7 +17,7 @@ Recognition (CVPR), 2019*
 **omss** has been rebuilt from scratch, with a focus on flexibility,
 reproducibility, and suitability for human testing.
 
-## Contents {#contents number="1"}
+## Contents
 
 -   [Overview](#overview)
 -   [Installation](#installation)
@@ -29,7 +29,7 @@ reproducibility, and suitability for human testing.
 -   [Multiple Elements](#multiple-elements)
 -   [Additional Settings](#Additional-settings)
 
-## Overview {#overview number="2"}
+## Overview
 
 OMSS works with **elements** which a placed in 3 x 3 matrix. These
 elements have a visual appearance which is determined by their
@@ -37,11 +37,11 @@ elements have a visual appearance which is determined by their
 a row according to a logical pattern. This logical pattern is determined
 by the user with **Rules**.
 
-### Function Signature {#function-signature number="2.1"}
+### Function Signature
 
 **`create_matrix(rules, alternatives=None, seed=None, alternative_seed=None, save=True, output_file=False, element_types=None, path=None)`**
 
-#### Parameters {#parameters number="2.1.1"}
+#### Parameters
 
 -   **`rules`** (*required*, `dict`):\
     A dictionary containing both the `RuleType` and the `AttributeType`
@@ -88,7 +88,7 @@ by the user with **Rules**.
 
 ------------------------------------------------------------------------
 
-### Example {#example number="2.2"}
+### Example
 
 In the example below, we use the program to define some rule types for
 the attributes of an element called BigShape. To keep things simple,
@@ -127,9 +127,9 @@ In the following sections, we will first cover the different **rules**,
 of **matrix generation**, the creation of **alternatives**, how
 **seeds** function, and finally, some additional **custom settings**.
 
-## Installation {#installation number="3"}
+## Installation
 
-## Rules {#rules number="4"}
+## Rules
 
 Rules are defined by the user and determine how attributes change across
 columns in the matrix. Each rule is composed of a RuleType and an
@@ -143,12 +143,12 @@ Since RuleTypes are general and shared across elements, they are
 discussed here. AttributeTypes, on the other hand, are specific to each
 element and will be addressed in the Elements section.
 
-### RuleTypes {#ruletypes number="4.1"}
+### RuleTypes
 
 OMSS uses 5 different RuleTypes, namely: constant, full_constant,
 distribute_three, progression and arithmetic
 
-#### **CONSTANT** {#constant number="4.1.1"}
+#### **CONSTANT**
 
 The `CONSTANT` rule ensures that an attribute remains unchanged **within
 a row**.\
@@ -157,7 +157,7 @@ all elements in the same row will have the same color.
 
 ------------------------------------------------------------------------
 
-#### Example {#example-1 number="4.1.2"}
+#### Example
 
 Let's create a very straightforward matrix puzzle. We'll once again use
 the BigShape element and set all of its AttributeTypes to CONSTANT,
@@ -195,13 +195,13 @@ plot_matrices(solution_matrix, problem_matrix)
 :::
 :::::
 
-#### **FULL_CONSTANT** {#full_constant number="4.1.3"}
+#### **FULL_CONSTANT**
 
 The `FULL_CONSTANT` rule ensures that an attribute remains unchanged
 **across the entire matrix**. It is also possible to specify the
 specific value of the unchanged attribute.
 
-#### Example {#example-2 number="4.1.4"}
+#### Example
 
 Let's simplify the previous example even further by applying the
 FULL_CONSTANT rule to the color attribute. This means that all elements
@@ -238,7 +238,7 @@ plot_matrices(solution_matrix, problem_matrix)
 :::
 ::::
 
-#### **DISTRIBUTE_THREE** {#distribute_three number="4.1.5"}
+#### **DISTRIBUTE_THREE**
 
 The `DISTRIBUTE_THREE` rule distributes **three distinct values** of an
 attribute across each row.\
@@ -246,7 +246,7 @@ For example, if the `shape` attribute uses this rule, each row will
 contain the same three different shapes (e.g., triangle, square,
 circle).
 
-#### Example {#example-3 number="4.1.6"}
+#### Example
 
 Until now, our puzzles have been fairly lackluster. By applying the
 `DISTRIBUTE_THREE` rule, we can start creating puzzles with actual
@@ -318,7 +318,7 @@ plot_matrices(solution_matrix, problem_matrix)
 
 ------------------------------------------------------------------------
 
-#### **PROGRESSION** {#progression number="4.1.7"}
+#### **PROGRESSION**
 
 The PROGRESSION rule increases or decreases the value of an attribute
 across a row. For example, when applied to the size attribute, element
@@ -336,7 +336,7 @@ results.
 
 ------------------------------------------------------------------------
 
-#### Example {#example-4 number="4.1.8"}
+#### Example
 
 To properly showcase the `PROGRESSION` rule we will introduce a new type
 of `element`, namely `LittleShape`. `LittleShape` is quite similar to
@@ -373,7 +373,7 @@ plot_matrices(solution_matrix, problem_matrix)
 :::
 ::::
 
-#### **ARITHMETIC** {#arithmetic number="4.1.9"}
+#### **ARITHMETIC**
 
 The `ARITHMETIC` rule performs **addition or subtraction operations**,
 and can only be applied to numeric attributes. If multiple element types
