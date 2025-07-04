@@ -477,8 +477,7 @@ plot_matrices(solution_matrix, problem_matrix)
 ::::
 
 Amazing! As you can see, the arithmetic operation is being combined
-across the two elements, resulting in a coordinated numeric progression
-between LittleShape and BigShape.
+across the two elements.
 
 Note: It is not possible to apply the ARITHMETIC rule to BigShape alone,
 since it only supports two numeric values (0 and 1). Applying arithmetic

@@ -355,7 +355,7 @@ solution_matrix, problem_matrix, = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-Amazing! As you can see, the arithmetic operation is being combined across the two elements, resulting in a coordinated numeric progression between LittleShape and BigShape.
+Amazing! As you can see, the arithmetic operation is being combined across the two elements.
 
 Note: It is not possible to apply the ARITHMETIC rule to BigShape alone, since it only supports two numeric values (0 and 1). Applying arithmetic in isolation would result in empty grids and is thus prohibited by the program.
 
