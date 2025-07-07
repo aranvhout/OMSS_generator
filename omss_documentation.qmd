@@ -9,16 +9,17 @@ format: gfm
 *Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2019*  
 
 **omss** has been rebuilt from scratch, with a focus on flexibility, reproducibility, and suitability for human testing.
+
 ## Contents
 - [Overview](#overview)
 - [Installation](#installation)
 - [Rules and RuleTypes](#ruletypes)
 - [Elements and AttributeTypes](#Elements-and-AttributeTypes)
 - [Alternatives Generation](#alternatives-generation)
-- [Matrix Generation](#matrix-generation)
 - [Seeds](#seeds)
-- [Multiple Elements](#multiple-elements)
-- [Additional Settings](#Additional-settings)
+- [Matrix Generation](#matrix-generation)
+- [Output](#output)
+
 
 
 
@@ -600,9 +601,9 @@ solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternative
 plot_matrices(solution_matrix, problem_matrix, alternatives)
 ```
 
-In this case, the `Line` element remains unchanged in the alternatives. This is because all variation within the matrix comes from the `SHAPE` and `COLOR` attributes of the `BigShape` element, while the `Line` element is governed by a `CONSTANT` rule. Since the line does not contribute to the underlying logic of the puzzle, the program correctly avoids modifying it when generating alternatives.
+In this case, the `Line` element remains unchanged in the alternatives. This is because all variation within the matrix comes from the `SHAPE` and `COLOR` attributes of the `BigShape` element, while all the atributes of the `Line` element is governed by a `CONSTANT` rule. Since the line does not contribute to the underlying logic of the puzzle, the program correctly avoids modifying it when generating alternatives.
 
-However, if we now remove the `DISTRIBUTETHREE` rule from the `COLOR` attribute of `BigShape` and instead apply `DISTRIBUTETHREE` to the `LINETYPE` attribute of the `Line` element, the behavior changes. In this configuration, variation across the matrix is now partially driven by the `Line` element. As a result, when generating alternatives, the program may introduce modifications to `LINETYPE` as well—since it is now governed by a rule that makes it relevant to the puzzle logic. 
+However, if we now remove the `DISTRIBUTE_THREE` rule from the `COLOR` attribute of `BigShape` and instead apply `DISTRIBUTE_THREE` to the `LINETYPE` attribute of the `Line` element, the behavior changes. In this configuration, variation across the matrix is now partially driven by the `Line` element. As a result, when generating alternatives, the program may introduce modifications to `LINETYPE` as well.
 
 This demonstrates how shifting rule assignments across elements directly influences which attributes are prioritized when constructing alternative options.
 
@@ -631,3 +632,70 @@ solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternative
 #plot the matrices
 plot_matrices(solution_matrix, problem_matrix, alternatives)
 ```
+
+## Seeds
+
+As you might have noticed in most of the examples above, the matrices change each time you re-run the code. This is because both the matrix and the alternatives are generated randomly. The only constraint is that they must follow the specified rules and, in the case of alternatives, modify attributes from the preselected list.
+
+To make the generation process reproducible, the system supports the use of **seeds**. Each matrix can be generated using a specific **matrix seed**, which ensures that the same matrix will be created every time for a given combination of elements, rules, and seed value.
+
+Similarly, the generation of alternatives is controlled by a separate **alternative seed**. By default, even with a fixed matrix seed, the alternatives will still vary across runs. However, if the same alternative seed is used, the exact same set of alternatives will be produced.
+
+This separation between matrix and alternative seeds allows for flexible control: you can fix the matrix while still generating new alternatives, or lock both for full reproducibility.
+
+These seeds can also be outputted, even for matrices created without explicitly setting a seed, by using the `output_file=True` argument. When this option is enabled, the system saves both the matrix seed and the alternative seed along with the generated matrix and alternatives. 
+
+
+#### Examples,
+Let's recreate one of our earlier examples, this time specifying a seed to ensure reproducibility. We do this by simply setting the `seed` parameter to `42`. This will lock the random generation process, meaning the matrix will always look the same when this seed is used.
+
+```{python}
+import omss
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
+
+rules = {
+    'BigShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
+    
+
+#create the matrices
+solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternatives =4, seed=42, save = False)
+
+#plot the matrices
+plot_matrices(solution_matrix, problem_matrix, alternatives)
+```
+
+As expected, the matrix now looks exactly the same each time you run it! However, the alternatives might still differ between runs, since their generation relies on a separate random process.
+
+To ensure the alternatives remain consistent as well, we can set a second seed: `alternative_seed`. By setting `alternative_seed=42`, we lock the generation of the alternatives, making both the matrix and its answer options fully reproducible.
+
+```{python}
+import omss
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
+
+rules = {
+    'BigShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
+    
+
+#create the matrices
+solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternatives =4, seed=42, alternative_seed =42, save = False)
+
+#plot the matrices
+plot_matrices(solution_matrix, problem_matrix, alternatives)
+```
+
+It is also possible to set a seed for the alternatives without setting a seed for the matrix. In this case, the alternatives become constrained.
+
+1. Based on the same input matrix, the alternatives will always be the same—because the `alternative_seed` ensures deterministic behavior.
+2. However, since the matrix itself is randomly generated (due to the absence of a `seed`), the input to the alternatives will vary between runs.
+
+In essence, this means that for a given combination of rules and attribute types, the same internal logic will be used to generate the list of attributes that are modified in the alternatives. While the content of the matrix changes between runs, the way in which alternatives are built from it remains fixed. This allows for some consistency in how variation is introduced in the alternatives while still producing fresh matrices each time.

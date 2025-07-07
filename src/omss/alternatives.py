@@ -93,7 +93,6 @@ def create_alternatives(matrices, element_types, n_alternatives, seed_list, upda
     selected_alternative_list, seed_list = sample_alternatives(alternative_list, n_alternatives,seed_list) 
     dis_scores = calculate_dissimilarity_score(selected_alternative_list)
     
-    print(attribute_list)
     return selected_alternative_list, dis_scores
    
 
