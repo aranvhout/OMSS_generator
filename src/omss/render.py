@@ -137,8 +137,8 @@ def render_element(elements, idx=None):
         Shapes.DECAGON: render_decagon,
         Shapes.CIRCLE: render_circle,
         Linetypes.SOLID: render_straight_line,
-        Linetypes.CURVE: render_curved_line,
-        Linetypes.WAVE: render_wavy_line
+        Linetypes.CURVED: render_curved_line,
+        Linetypes.WAVED: render_wavy_line
     }
 
     for element in elements:

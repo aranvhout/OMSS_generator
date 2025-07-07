@@ -13,7 +13,7 @@ format: gfm
 - [Overview](#overview)
 - [Installation](#installation)
 - [Rules and RuleTypes](#ruletypes)
-- [Elements and AttributeTypes](#elements-and-attributes)
+- [Elements and AttributeTypes](#Elements-and-AttributeTypes)
 - [Matrix Generation](#matrix-generation)
 - [Alternatives Generation](#alternatives-generation)
 - [Seeds](#seeds)
@@ -97,7 +97,7 @@ rules = {
     
 #create the matrices
 solution_matrix, problem_matrix = create_matrix(rules, save = False)
-a=2
+
 #plot the matrices
 plot_matrices(solution_matrix, problem_matrix)
 ```
@@ -146,12 +146,12 @@ rules = {
         Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
         Rule(Ruletype.CONSTANT, AttributeType.COLOR),
         Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
+        Rule(Ruletype.CONSTANT, AttributeType.SIZE)]}
     
 
 #create the matrices
 solution_matrix, problem_matrix = create_matrix(rules, save = False)
-print(a)
+
 #plot the matrices
 plot_matrices(solution_matrix, problem_matrix)
 ```
@@ -358,4 +358,63 @@ plot_matrices(solution_matrix, problem_matrix)
 Amazing! As you can see, the arithmetic operation is being combined across the two elements.
 
 Note: It is not possible to apply the ARITHMETIC rule to BigShape alone, since it only supports two numeric values (0 and 1). Applying arithmetic in isolation would result in empty grids and is thus prohibited by the program.
+
+## Elements and AttributeTypes
+As of yet OMSS supports three different elements. `BigShape`, `LittleShape` and `Line'.  Each of these elements has a unique visual representation and is characterized by a specific set of attributetypes. LittleShape and Bigshape share many attributetypes, whereas Line is more unique. The following section provides a detailed overview of each element and its associated attributetypes.
+
+
+### BigShape
+
+`BigShape` supports the following attribute types:
+
+- **`SHAPE`**  
+  Defines the shapes of the BigShape object. There are currently six shapes, ordered from least to most polygonal: `TRIANGLE`, `SQUARE`, `PENTAGON`, `SEPTAGON`, and `CIRCLE`.
+
+- **`COLOR`**  
+  Specifies the color of the object. Eight color options are available: `BLUE`, `ORANGE`, `GREEN`, `BROWN`, `PURPLE`, `GRAY`, `RED`, and `YELLOW`. All hues have been selected to be colorblind-friendly.
+
+- **`SIZE`**  
+  Determines the scale of the BigShape. There are three size instances: `SMALL`, `MEDIUM`, and `LARGE`.
+
+- **`ANGLE`**  
+  Specifies the rotation angle of the BigShape object. This attribute includes 10 discrete values, increasing in 36-degree increments. It is particularly well-suited for the `PROGRESSION` rule type.
+
+- **`NUMBER`**  
+  Indicates the number of BigShape objects placed within a grid cell. By default, only a single instance (`ONE`) is supported. However, when the `ARITHMETIC` rule is applied, this attribute may be overridden (e.g., set to `NONE`) to allow for arithmetic operations on the number of elements.
+
+
+### LittleShape
+
+`LittleShape` shares nearly all AttributeTypes with `BigShape`. However, because it is smaller in size, multiple `LittleShape` elements can be placed within a single grid cell. Consequently, its `NUMBER` AttributeType behaves differently. `LittleShape` supports the following AttributeTypes:
+
+- **`LITTLESHAPENUMBER`**  
+  Indicates the number of `LittleShape` objects placed in a grid cell. Four values are available: `ONE`, `TWO`, `THREE`, and `FOUR`.
+
+- **`SHAPE`**  
+  Defines the shapes of the LittleShape object. There are currently six shapes, ordered from least to most polygonal: `TRIANGLE`, `SQUARE`, `PENTAGON`, `SEPTAGON`, and `CIRCLE`.
+
+- **`COLOR`**  
+  Specifies the color of the object. Eight color options are available: `BLUE`, `ORANGE`, `GREEN`, `BROWN`, `PURPLE`, `GRAY`, `RED`, and `YELLOW`. All hues have been selected to be colorblind-friendly.
+
+- **`SIZE`**  
+  Determines the scale of the LittleShape. There are three size instances: `SMALL`, `MEDIUM`, and `LARGE`.
+
+- **`ANGLE`**  
+  Specifies the rotation angle of the LittleShape object. This attribute includes 10 discrete values, increasing in 36-degree increments. It is particularly well-suited for the `PROGRESSION` rule type.
+
+
+### Line
+
+As the name suggests, `Line` places a line-shaped object in the grid. It supports the following AttributeTypes:
+
+- **`LINETYPE`**  
+  Specifies the visual style of the line. There are three options: `SOLID`, `CURVED`, and `WAVED`, placing a solid, curved, or waved line in the grid, respectively.
+
+- **`LINENUMBER`**  
+  Indicates the number of lines placed within a grid cell. Five values are available: `ONE`, `TWO`, `THREE`, `FOUR`, and `FIVE`.
+
+- **`ANGLE`**  
+  Specifies the rotation angle of the Line object. This attribute includes 10 discrete values, increasing in 36-degree increments.
+
+
 
