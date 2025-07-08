@@ -19,7 +19,15 @@ reproducibility, and suitability for human testing.
 - [Overview](#overview)
 - [Installation](#installation)
 - [Rules and RuleTypes](#ruletypes)
+  - [Constant](#constant)
+  - [Full_constant](#full_constant)
+  - [Distribute_three](#distribute_three)
+  - [Progression](#progression)
+  - [Arithmetic](#arithmetic)
 - [Elements and AttributeTypes](#elements-and-attributetypes)
+  - [BigShape](#BigShape)
+  - [LittleShape](#LittleShape)
+  - [Line](#Line)
 - [Alternatives Generation](#alternatives-generation)
 - [Seeds](#seeds)
 - [Matrix Generation](#matrix-generation)
@@ -969,8 +977,8 @@ still producing fresh matrices each time.
 ## Matrix Generation
 
 In this section, we explain some of the inner workings of the program,
-specifically how a matrix is generated in greater detail. The process
-involves several steps.
+specifically we will adress how a matrix is generated in greater detail.
+The process involves several steps.
 
 First, a seed is set, either the one provided by the user or, if none is
 specified, a random seed is selected. This seed is then used to generate
@@ -1015,3 +1023,156 @@ Alternative generation is described in [Alternatives
 Generation](#alternatives-generation). Essentially, the final grid of
 the combined matrix (i.e., the solution) is passed to the alternative
 module as the starting point for generating alternatives.
+
+## Output
+
+By default, the program always outputs two matrices:
+
+- The **solution matrix** (the full, completed grid)
+- The **problem matrix** (the same as the solution, but with one grid
+  cell missing)
+
+If alternatives have been generated, these will also be included in the
+output.
+
+### Saving the Matrices
+
+There are two main ways to handle the output of the matrices: as Python
+objects or as saved image files.
+
+#### 1. Output as Python Objects
+
+If the `save` argument is set to `False`, the matrices are returned as
+bitmap objects. These can then be:
+
+- Captured and used directly in your Python script
+- Plotted using the built-in omss plotting function
+- Further modified, analyzed, or embedded in custom visualizations
+
+Use the `plot_matrices` function to display them:
+
+### `plot_matrices` Function
+
+This function accepts three arguments:
+
+- `solution_matrix`: the full, completed matrix  
+- `problem_matrix`: the matrix with the final cell removed  
+- `alternatives` *(optional)*: a list of alternative matrices, if
+  generated
+
+#### Example
+
+``` python
+import omss
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
+
+rules = {
+    'BigShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
+    
+
+#create the matrices
+solution_matrix, problem_matrix = create_matrix(rules, save = False)
+
+#plot the matrices
+plot_matrices(solution_matrix, problem_matrix)
+```
+
+![](omss_documentation_files/figure-commonmark/cell-22-output-1.png)
+
+### 2. Save Directly to Local Folder
+
+This is the **recommended method**, especially if you’re generating a
+large number of puzzles.
+
+To enable this:
+
+- Set the `save` argument to `True`  
+- If no path is provided, the matrices will be saved to a folder called
+  `omss_output`, created in your **Documents** directory
+
+> **Note:** The `omss_output` folder will be overwritten each time
+> unless a custom path is provided. It is strongly recommended to
+> specify a custom output path.
+
+``` python
+import omss
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
+
+rules = {
+    'BigShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
+    
+
+#create the matrices
+create_matrix(rules, path = 'yourpath')
+```
+
+    matrix created
+
+### Output Document
+
+In addition to saving the matrix images, an optional output txt file may
+be generated if `output_file=True` is set. This file contains metadata
+such as:
+
+- The matrix seed and alternative seed  
+- The rules used to generate the matrix  
+- A dissimilarity score for each alternative, indicating how dissimilar
+  an alternative to the solution is
+
+This output file will be:
+
+- Exported to the `output_folder` if `save=True`  
+- Returned directly in Python if `save=False`
+
+#### example
+
+``` python
+import omss
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
+
+rules = {
+    'BigShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
+    
+
+#create the matrices
+solution_matrix, problem_matrix, alternative, output_file = create_matrix(rules, alternatives =2, save = False, output_file = True)
+
+#print the output_file
+print(output_file)
+```
+
+    RULES
+    rules = {
+        'BigShape': [
+            Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+            Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+            Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
+            Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
+            Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium'),
+        ],
+    }
+
+    SEEDS
+    seed = 14766
+    alternative seed = 102942
+
+    ALTERNATIVES
+    number of alternatives: 2
+    dissimilarity of alternatives:
+        alternative 1: 0
+        alternative 2: 1
