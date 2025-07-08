@@ -3,10 +3,8 @@ title: "OMSS Documentation"
 format: gfm
 ---
 
-
 **omss** is a Python package for generating matrix reasoning puzzles, inspired by Raven's Progressive Matrices, designed to assess fluid intelligence. It allows users to generate an unlimited number of customizable puzzles across a range of difficulty levels. The package was inspired in part by [`raven-gen`](https://github.com/shlomenu/raven-gen).  
-*Chi Zhang*, *Feng Gao*, *Baoxiong Jia*, *Yixin Zhu*, *Song-Chun Zhu*  
-*Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2019*  
+*Chi Zhang*, *Feng Gao*, *Baoxiong Jia*, *Yixin Zhu*, *Song-Chun Zhu* *Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2019*  
 
 **omss** has been rebuilt from scratch, with a focus on flexibility, reproducibility, and suitability for human testing.
 
@@ -14,7 +12,7 @@ format: gfm
 - [Overview](#overview)
 - [Installation](#installation)
 - [Rules and RuleTypes](#ruletypes)
-- [Elements and AttributeTypes](#Elements-and-AttributeTypes)
+- [Elements and AttributeTypes](#elements-and-attributetypes)
 - [Alternatives Generation](#alternatives-generation)
 - [Seeds](#seeds)
 - [Matrix Generation](#matrix-generation)
@@ -74,7 +72,6 @@ OMSS works with **elements** which a placed in 3 x 3 matrix. These elements have
 
 ---
 
-
 ### Example
 In the example below, we use the program to define some rule types for the attributes of an element called BigShape. To keep things simple, we'll create a basic puzzle by applying the CONSTANT rule type and using the program's default settings by only specifying the rules.
 
@@ -104,14 +101,31 @@ plot_matrices(solution_matrix, problem_matrix)
 
 In the following sections, we will first cover the different **rules**, **elements**, and their **attributes**. Next, we’ll explain the process of **matrix generation**, the creation of **alternatives**, how **seeds** function, and finally, some additional **custom settings**.
 
+---
+
 ## Installation
 
+OMSS can be installed using `pip`:
 
+```bash
+pip install omss
+```
 
+or downloaded directly from the github
 
+```bash
+git clone https://github.com/aranvhout/OMSS_generator
+cd OMSS_generator
+pip install .
+```
 
+Once installed downloaded the following imports are required
 
+```{python}
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
+```
 
+---
 
 
 ## Rules
@@ -131,6 +145,7 @@ The `CONSTANT` rule ensures that an attribute remains unchanged **within a row**
 For example, if a `color` attribute is governed by the `CONSTANT` rule, all elements in the same row will have the same color.
 
 ---
+
 ####  Example
 Let’s create a very straightforward matrix puzzle. We'll once again use the BigShape element and set all of its AttributeTypes to CONSTANT, ensuring that no attribute changes within any row. This creates a simple, uniform pattern and serves as a good starting point for understanding how rule definitions work.
 
@@ -184,7 +199,6 @@ solution_matrix, problem_matrix = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-
 #### **DISTRIBUTE_THREE**
 The `DISTRIBUTE_THREE` rule distributes **three distinct values** of an attribute across each row.  
 For example, if the `shape` attribute uses this rule, each row will contain the same three different shapes (e.g., triangle, square, circle).
@@ -237,6 +251,7 @@ plot_matrices(solution_matrix, problem_matrix)
 ```
 
 ---
+
 
 #### **PROGRESSION**
 The PROGRESSION rule increases or decreases the value of an attribute across a row.
@@ -357,6 +372,7 @@ plot_matrices(solution_matrix, problem_matrix)
 Amazing! As you can see, the arithmetic operation is being combined across the two elements.
 
 Note: It is not possible to apply the ARITHMETIC rule to BigShape alone, since it only supports two numeric values (0 and 1). Applying arithmetic in isolation would result in empty grids and is thus prohibited by the program.
+
 
 ## Elements and AttributeTypes
 As of yet OMSS supports three different elements. `BigShape`, `LittleShape` and `Line'.  Each of these elements has a unique visual representation and is characterized by a specific set of attributetypes. LittleShape and Bigshape share many attributetypes, whereas Line is more unique. The following section provides a detailed overview of each element and its associated attributetypes.
@@ -505,7 +521,7 @@ solution_matrix, problem_matrix, = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-## Combining element
+
 
 ## Alternatives Generation
 
