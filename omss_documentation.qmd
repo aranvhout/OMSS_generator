@@ -715,3 +715,28 @@ It is also possible to set a seed for the alternatives without setting a seed fo
 2. However, since the matrix itself is randomly generated (due to the absence of a `seed`), the input to the alternatives will vary between runs.
 
 In essence, this means that for a given combination of rules and attribute types, the same internal logic will be used to generate the list of attributes that are modified in the alternatives. While the content of the matrix changes between runs, the way in which alternatives are built from it remains fixed. This allows for some consistency in how variation is introduced in the alternatives while still producing fresh matrices each time.
+
+## Matrix Generation
+
+In this section, we explain some of the inner workings of the program, specifically we will adress how a matrix is generated in greater detail. The process involves several steps.
+
+First, a seed is set, either the one provided by the user or, if none is specified, a random seed is selected. This seed is then used to generate a list of 500 integers. Whenever a random number is needed, the program iterates through this seed list.
+
+Second, the user-defined rules are parsed to a configuration module. This module checks for any interactions between rules across different elements. If such interactions exist, it updates the rules accordingly. Currently, this mainly applies to the **arithmetic rule**, which can operate across multiple element types, but this module may be extended in the future to handle additional rules.
+
+Third, the rules are processed separately for each element type (e.g., if rules are set for both `BigShape` and `Line`, these are handled sequentially). For each element type, the following steps are repeated:
+
+1. A random starting matrix is generated, consisting of a 3 × 3 grid of random elements.
+2. This matrix forms the basis for applying the RuleTypes to the AttributeTypes. For example, if the first random element in a row is blue and there is a constant ruletype for the attributype color, this blue color will be applied to the entire row.
+3. Each rule is applied in sequence until all attribute types specified by a ruletype have been processed.
+   - Importantly, any attribute type without a specified ruletype remains random, as the original starting matrix is generated random.
+
+These steps are repeated until all element matrices are generated. The matrices are then saved in a dictionary and passed to the rendering module.
+
+The rendering module draws each element matrix separately and overlays them in sequence. This means that element matrices specified later by the user are layered on top of earlier ones. This process continues until the puzzle is fully rendered for all element types.
+
+Finally, the complete matrix is outputted.
+
+Alternative generation is described in [Alternatives Generation](#alternatives-generation). Essentially, the final grid of the combined matrix (i.e., the solution) is passed to the alternative module as the starting point for generating alternatives.
+
+
