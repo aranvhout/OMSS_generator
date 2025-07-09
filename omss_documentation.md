@@ -1,18 +1,10 @@
 # OMSS Documentation
 
 
-**omss** is a Python package for generating matrix reasoning puzzles,
-inspired by Raven’s Progressive Matrices, designed to assess fluid
-intelligence. It allows users to generate an unlimited number of
-customizable puzzles across a range of difficulty levels. The package
-was inspired in part by
-[`raven-gen`](https://github.com/shlomenu/raven-gen).  
-*Chi Zhang*, *Feng Gao*, *Baoxiong Jia*, *Yixin Zhu*, *Song-Chun Zhu*
-*Proceedings of the IEEE Conference on Computer Vision and Pattern
-Recognition (CVPR), 2019*
-
-**omss** has been rebuilt from scratch, with a focus on flexibility,
-reproducibility, and suitability for human testing.
+**omss** is a Python package for generating matrix reasoning puzzles
+designed to assess fluid intelligence. It allows users to generate an
+unlimited number of customizable puzzles across a range of difficulty
+levels.
 
 ## Contents
 
@@ -32,10 +24,11 @@ reproducibility, and suitability for human testing.
 - [Seeds](#seeds)
 - [Matrix Generation](#matrix-generation)
 - [Output](#output)
+- [Acknowledgements](#acknowledgements)
 
 ## Overview
 
-OMSS works with **elements** which a placed in 3 x 3 matrix. These
+OMSS works with **elements** which are placed in 3 x 3 matrix. These
 elements have a visual appearance which is determined by their
 **atributes**. Specific instances of these attributes may change within
 a row according to a logical pattern. This logical pattern is determined
@@ -48,17 +41,16 @@ by the user with **Rules**.
 #### Parameters
 
 - **`rules`** (*required*, `dict`):  
-  A dictionary containing both the `RuleType` and the `AttributeType`
-  that each rule applies to.
+  A dictionary containing both the `RuleType` and the `AttributeType` it
+  applies to.
 
 - **`alternatives`** (`int`, optional):  
-  The number of alternatives to generate. Must be between 0 and 32 (up
-  to 64 depending on settings).  
+  The number of alternatives to generate. Must be between 0 and 16 (can
+  be up to 32 depending on settings).  
   Default: `None`.
 
 - **`seed`** (`int`, optional):  
-  Seed for the main matrix generation. Used for reproducibility.  
-  Default: `None`.
+  Seed for the main matrix generation. Default: `None`.
 
 - **`alternative_seed`** (`int`, optional):  
   Seed for generating alternatives.  
@@ -91,14 +83,39 @@ by the user with **Rules**.
 
 ------------------------------------------------------------------------
 
-### Example
+In the following sections, we will first cover the different **rules**,
+**elements**, and their **attributes**. Next, we’ll explain the process
+of **matrix generation**, the creation of **alternatives**, how
+**seeds** function, and finally, some additional **custom settings**.
 
-In the example below, we use the program to define some rule types for
-the attributes of an element called BigShape. To keep things simple,
-we’ll create a basic puzzle by applying the CONSTANT rule type and using
-the program’s default settings by only specifying the rules.
+------------------------------------------------------------------------
 
-UPDATE THIS EXAMPLE
+## Installation and Basic Example
+
+OMSS can be installed using `pip`:
+
+``` bash
+pip install omss
+```
+
+or downloaded directly from the github
+
+``` bash
+git clone https://github.com/aranvhout/OMSS_generator
+cd OMSS_generator
+pip install .
+```
+
+Once installed downloaded the following imports are required
+
+``` python
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
+```
+
+#### Example
+
+In the example below, we will create a simple puzzle by defining Rules
+for an element called `BigShape`
 
 ``` python
 #import statements
@@ -121,71 +138,47 @@ solution_matrix, problem_matrix = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-2-output-1.png)
+![](omss_documentation_files/figure-commonmark/cell-3-output-1.png)
 
-In the following sections, we will first cover the different **rules**,
-**elements**, and their **attributes**. Next, we’ll explain the process
-of **matrix generation**, the creation of **alternatives**, how
-**seeds** function, and finally, some additional **custom settings**.
+As you can see, both the **Problem Matrix** and the **Solution Matrix**
+are outputted. In the Problem Matrix, the last grid cell of the bottom
+row is intentionally left blank.
 
-------------------------------------------------------------------------
-
-## Installation
-
-OMSS can be installed using `pip`:
-
-``` bash
-pip install omss
-```
-
-or downloaded directly from the github
-
-``` bash
-git clone https://github.com/aranvhout/OMSS_generator
-cd OMSS_generator
-pip install .
-```
-
-Once installed downloaded the following imports are required
-
-``` python
-from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
-```
-
-------------------------------------------------------------------------
+Participants must infer the underlying logic from the top two rows and
+apply this logic to fill in the blank in the bottom row.
 
 ## Rules
 
 Rules are defined by the user and determine how attributes change across
-columns in the matrix. Each rule is composed of a RuleType and an
-AttributeType. The RuleType defines the logical pattern of modification,
-while the AttributeType specifies which attribute is affected.
+columns in the matrix. Each rule is composed of a `RuleType` and an
+`AttributeType`. The `RuleType` defines the way in which the
+`AttributeType` is modified across the row.
 
-Most RuleTypes are general and can operate on any AttributeType.
-However, each AttributeType can be governed by only one RuleType.
+Most `RuleTypes` are general and can operate on any `AttributeType`.
+However, each `AttributeType` can be governed by only one RuleType.
 
-Since RuleTypes are general and shared across elements, they are
-discussed here. AttributeTypes, on the other hand, are specific to each
-element and will be addressed in the Elements section.
+Since `RuleTypes` are general and shared across `elements`, they are
+discussed here. `AttributeTypes`, on the other hand, are specific to
+each `element` and will be addressed in the
+[Elements](#elements-and-attributetypes) section.
 
 ### RuleTypes
 
-OMSS uses 5 different RuleTypes, namely: constant, full_constant,
+OMSS uses 5 different `RuleTypes`, namely: constant, full_constant,
 distribute_three, progression and arithmetic
 
 #### **CONSTANT**
 
 The `CONSTANT` rule ensures that an attribute remains unchanged **within
-a row**.  
+a row**.
+
 For example, if a `color` attribute is governed by the `CONSTANT` rule,
 all elements in the same row will have the same color.
 
-------------------------------------------------------------------------
-
-#### Example
+###### Example
 
 Let’s create a very straightforward matrix puzzle. We’ll once again use
-the BigShape element and set all of its AttributeTypes to CONSTANT,
+the BigShape element and set all of its `AttributeTypes` to `CONSTANT`,
 ensuring that no attribute changes within any row. This creates a
 simple, uniform pattern and serves as a good starting point for
 understanding how rule definitions work.
@@ -221,12 +214,12 @@ specific value of the unchanged attribute.
 #### Example
 
 Let’s simplify the previous example even further by applying the
-FULL_CONSTANT rule to the color attribute. This means that all elements
-in the matrix will now have the same color, as opposed to the previous
-case where colors were constant only within rows.
+`FULL_CONSTANT` rule to the color attribute. This means that all
+elements in the matrix will now have the same color, as opposed to the
+previous case where colors were constant only within rows.
 
 To further enhance the uniformity of the matrix, we’ll also apply the
-FULL_CONSTANT rule to the size attribute and fix it to a preselected
+`FULL_CONSTANT` rule to the size attribute and fix it to a preselected
 value. The available size values are ‘small’, ‘medium’, and ‘large’.
 
 ``` python
@@ -243,10 +236,10 @@ rules = {
     
 
 #create the matrices
-solution_matrix, problem_matrix = create_matrix(rules, save = False)
+problem_matrix, solution_matrix = create_matrix(rules, save = False)
 
 #plot the matrices
-plot_matrices(solution_matrix, problem_matrix)
+plot_matrices(problem_matrix, solution_matrix)
 ```
 
 ![](omss_documentation_files/figure-commonmark/cell-5-output-1.png)
@@ -254,7 +247,8 @@ plot_matrices(solution_matrix, problem_matrix)
 #### **DISTRIBUTE_THREE**
 
 The `DISTRIBUTE_THREE` rule distributes **three distinct values** of an
-attribute across each row.  
+attribute across each row.
+
 For example, if the `shape` attribute uses this rule, each row will
 contain the same three different shapes (e.g., triangle, square,
 circle).
@@ -293,7 +287,7 @@ plot_matrices(solution_matrix, problem_matrix)
 ![](omss_documentation_files/figure-commonmark/cell-6-output-1.png)
 
 It’s also possible to apply multiple `DISTRIBUTE_THREE` rules to
-different attribute types within a single matrix. Building on the
+different `AttributeTypes` within a single matrix. Building on the
 previous example, we now apply a `DISTRIBUTE_THREE` rule to both the
 shape and color attributes. This creates an even more varied and
 engaging puzzle by distributing three distinct shapes and three distinct
@@ -321,8 +315,6 @@ plot_matrices(solution_matrix, problem_matrix)
 
 ![](omss_documentation_files/figure-commonmark/cell-7-output-1.png)
 
-------------------------------------------------------------------------
-
 #### **PROGRESSION**
 
 The PROGRESSION rule increases or decreases the value of an attribute
@@ -341,7 +333,7 @@ results.
 
 ------------------------------------------------------------------------
 
-#### Example
+##### Example
 
 To properly showcase the `PROGRESSION` rule we will introduce a new type
 of `element`, namely `LittleShape`. `LittleShape` is quite similar to
@@ -1168,11 +1160,24 @@ print(output_file)
     }
 
     SEEDS
-    seed = 14766
-    alternative seed = 102942
+    seed = 241293
+    alternative seed = 777638
 
     ALTERNATIVES
     number of alternatives: 2
     dissimilarity of alternatives:
         alternative 1: 0
         alternative 2: 1
+
+## Acknowledgements
+
+This project was funded by the NWO Open Science grant (insert
+grantnumber and some more details).
+
+The package itself was inspired in part by
+[`raven-gen`](https://github.com/shlomenu/raven-gen). *Chi Zhang*, *Feng
+Gao*, *Baoxiong Jia*, *Yixin Zhu*, *Song-Chun Zhu* *Proceedings of the
+IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2019*
+
+**omss** has been rebuilt from scratch, with a focus on flexibility,
+reproducibility, and suitability for human testing.

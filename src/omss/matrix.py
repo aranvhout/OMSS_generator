@@ -16,6 +16,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import math
+import shutil
+
 def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = None, save = True, output_file = False, element_types=None, path =None): 
     """Wrapping function that creates the matrix and alternatives"""
    
@@ -48,7 +50,11 @@ def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = No
     # Step 4: superugly but we need to assign a position seed in case littleshape has an aritmetic
     
 
-    # Create the directory if it doesn't exist
+    # If the path exists, delete it
+    if path.exists():
+        shutil.rmtree(path)
+
+    # Now recreate the empty directory
     path.mkdir(parents=True, exist_ok=True)
     
     #for loop that creates the matrix
@@ -109,7 +115,11 @@ def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = No
 
             # Return 3 values: no output file but alternatives exist
             return solution_matrix, problem_matrix, rendered_alternative_list
-
+        
+        if output_file == True:
+            output_file_obj = create_output_file(updated_rules, None, seed, None, save, path)
+            # Return 4 values
+            return solution_matrix, problem_matrix, output_file_obj
         # No alternatives, just return 2 values
         return solution_matrix, problem_matrix
 
@@ -167,8 +177,9 @@ def generate_and_save_alternatives(matrices, element_types, alternatives, altern
 
 
 
-def create_output_file(updated_rules, dis_scores, seed_value, alternative_seed_value, save, path):
-    'creates an output file with some additional information'
+def create_output_file(updated_rules, dis_scores, seed_value, alternative_seed_value, save=False, path="."):
+    'Creates an output file with some additional information.'
+
     def format_rule(rule):
         args = [f"Ruletype.{rule.rule_type.name}", f"AttributeType.{rule.attribute_type.name}"]
         if rule.value is not None:
@@ -197,17 +208,20 @@ def create_output_file(updated_rules, dis_scores, seed_value, alternative_seed_v
     # SEEDS section
     output_lines.append("SEEDS")
     output_lines.append(f"seed = {seed_value}")
-    output_lines.append(f"alternative seed = {alternative_seed_value}\n")
+    if alternative_seed_value is not None:
+        output_lines.append(f"alternative seed = {alternative_seed_value}")
+    output_lines.append("")  # Blank line
 
     # ALTERNATIVES section
-    output_lines.append("ALTERNATIVES")
-    output_lines.append(f"number of alternatives: {len(dis_scores)}")
-    if dis_scores:
-        output_lines.append("dissimilarity of alternatives:")
-        for i, score in enumerate(dis_scores):
-            output_lines.append(f"\talternative {i + 1}: {score}")
-    else:
-        output_lines.append("no alternatives provided")
+    if dis_scores is not None:
+        output_lines.append("ALTERNATIVES")
+        output_lines.append(f"number of alternatives: {len(dis_scores)}")
+        if dis_scores:
+            output_lines.append("dissimilarity of alternatives:")
+            for i, score in enumerate(dis_scores):
+                output_lines.append(f"\talternative {i + 1}: {score}")
+        else:
+            output_lines.append("no alternatives provided")
 
     result = "\n".join(output_lines)
 
@@ -217,6 +231,7 @@ def create_output_file(updated_rules, dis_scores, seed_value, alternative_seed_v
             file.write(result)
     else:
         return result
+
 
 
 
