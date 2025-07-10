@@ -98,7 +98,7 @@ OMSS can be installed using `pip`:
 pip install omss
 ```
 
-or downloaded directly from the github
+or downloaded directly from the github:
 
 ``` bash
 git clone https://github.com/aranvhout/OMSS_generator
@@ -112,10 +112,10 @@ Once installed downloaded the following imports are required
 from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
 ```
 
-#### Example
+##### Example
 
 In the example below, we will create a simple puzzle by defining Rules
-for an element called `BigShape`
+for an element called `BigShape`.
 
 ``` python
 #import statements
@@ -142,10 +142,11 @@ plot_matrices(solution_matrix, problem_matrix)
 
 As you can see, both the **Problem Matrix** and the **Solution Matrix**
 are outputted. In the Problem Matrix, the last grid cell of the bottom
-row is intentionally left blank.
+row is intentionally left blank. Participants must infer the underlying
+logic from the top two rows and apply this logic to fill in the blank in
+the bottom row.
 
-Participants must infer the underlying logic from the top two rows and
-apply this logic to fill in the blank in the bottom row.
+------------------------------------------------------------------------
 
 ## Rules
 
@@ -155,7 +156,7 @@ columns in the matrix. Each rule is composed of a `RuleType` and an
 `AttributeType` is modified across the row.
 
 Most `RuleTypes` are general and can operate on any `AttributeType`.
-However, each `AttributeType` can be governed by only one RuleType.
+However, each `AttributeType` can be governed by only one `RuleType`.
 
 Since `RuleTypes` are general and shared across `elements`, they are
 discussed here. `AttributeTypes`, on the other hand, are specific to
@@ -165,7 +166,7 @@ each `element` and will be addressed in the
 ### RuleTypes
 
 OMSS uses 5 different `RuleTypes`, namely: constant, full_constant,
-distribute_three, progression and arithmetic
+distribute_three, progression and arithmetic.
 
 #### **CONSTANT**
 
@@ -205,22 +206,24 @@ plot_matrices(solution_matrix, problem_matrix)
 
 ![](omss_documentation_files/figure-commonmark/cell-4-output-1.png)
 
+All the elements within a row are now identical. Their color, size,
+angle and shape are all constant.
+
 #### **FULL_CONSTANT**
 
 The `FULL_CONSTANT` rule ensures that an attribute remains unchanged
 **across the entire matrix**. It is also possible to specify the
 specific value of the unchanged attribute.
 
-#### Example
+##### Example
 
 Let’s simplify the previous example even further by applying the
 `FULL_CONSTANT` rule to the color attribute. This means that all
 elements in the matrix will now have the same color, as opposed to the
-previous case where colors were constant only within rows.
-
-To further enhance the uniformity of the matrix, we’ll also apply the
-`FULL_CONSTANT` rule to the size attribute and fix it to a preselected
-value. The available size values are ‘small’, ‘medium’, and ‘large’.
+previous case where colors were constant only within rows. In addition
+we’ll also apply the `FULL_CONSTANT` rule to the size attribute and fix
+it to a preselected value. The available size values are ‘small’,
+‘medium’, and ‘large’.
 
 ``` python
 import omss
@@ -247,13 +250,11 @@ plot_matrices(problem_matrix, solution_matrix)
 #### **DISTRIBUTE_THREE**
 
 The `DISTRIBUTE_THREE` rule distributes **three distinct values** of an
-attribute across each row.
+attribute across each row. For example, if the shape attribute uses this
+rule, each row will contain the same three different shapes (e.g.,
+triangle, square, circle).
 
-For example, if the `shape` attribute uses this rule, each row will
-contain the same three different shapes (e.g., triangle, square,
-circle).
-
-#### Example
+##### Example
 
 Until now, our puzzles have been fairly lackluster. By applying the
 `DISTRIBUTE_THREE` rule, we can start creating puzzles with actual
@@ -317,12 +318,12 @@ plot_matrices(solution_matrix, problem_matrix)
 
 #### **PROGRESSION**
 
-The PROGRESSION rule increases or decreases the value of an attribute
+The `PROGRESSION` rule increases or decreases the value of an attribute
 across a row. For example, when applied to the size attribute, element
 sizes will progressively grow or shrink within each row.
 
 Attributes are represented by classes that have a defined order. The
-PROGRESSION rule follows this order to modify attribute values
+`PROGRESSION` rule follows this order to modify attribute values
 step-by-step. For instance, the shape attribute is ordered from simpler
 to more complex shapes, allowing the rule to create a logical
 progression.
@@ -330,8 +331,6 @@ progression.
 `PROGRESSION` can be also applied to less intuitive attributes, such as
 color; however, doing so might produce less intuitive or meaningful
 results.
-
-------------------------------------------------------------------------
 
 ##### Example
 
@@ -341,8 +340,9 @@ of `element`, namely `LittleShape`. `LittleShape` is quite similar to
 smaller. As a consequence, it is possible to fit multiple `LittleShape`
 elements a single grid.
 
-Below we will apply a `PROGRESSION` rule to `LittleShape`’s number
-attribute! As you can see the number of elements increases/decreases
+Below we will apply a `PROGRESSION` rule to `LittleShape's` number
+attribute! As you can see the number of elements increases or decreases
+over the row.
 
 ``` python
 import omss
@@ -366,8 +366,6 @@ plot_matrices(solution_matrix, problem_matrix)
 
 ![](omss_documentation_files/figure-commonmark/cell-8-output-1.png)
 
-------------------------------------------------------------------------
-
 #### **ARITHMETIC**
 
 The `ARITHMETIC` rule performs **addition or subtraction operations**,
@@ -375,12 +373,11 @@ and can only be applied to numeric attributes. If multiple element types
 share this rule, their attribute values will be added to or subtracted
 from one another.
 
-------------------------------------------------------------------------
+##### Example
 
-#### Example
-
-We will now use the LittleShape element to demonstrate the ARITHMETIC
-rule by applying it to its numeric attribute, littleshapenumber.
+We will now use the `LittleShape` element to demonstrate the
+`ARITHMETIC` rule by applying it to its numeric attribute,
+`littleshapenumber`.
 
 ``` python
 import omss
@@ -406,7 +403,7 @@ plot_matrices(solution_matrix, problem_matrix)
 
 It’s also possible to control the direction of the arithmetic operation
 (addition or subtraction). Let’s recreate the previous example using the
-LittleShape element, but this time explicitly set the operation to
+`LittleShape` element, but this time explicitly set the operation to
 addition.
 
 ``` python
@@ -431,15 +428,15 @@ plot_matrices(solution_matrix, problem_matrix)
 
 ![](omss_documentation_files/figure-commonmark/cell-10-output-1.png)
 
-Finally, let’s see what happens when we combine multiple elements in a
-single grid and apply the ARITHMETIC rule. To do this, we simply need to
-define rules for each element and include them in the same rules
+Finally, let’s see what happens when we combine multiple `elements` in a
+single grid and apply the `ARITHMETIC rule`. To do this, we simply need
+to define rules for each element and include them in the same rules
 dictionary.
 
-In the example below, we combine both LittleShape and BigShape, and
-apply the ARITHMETIC rule to the NUMBER attribute of both. The resulting
-matrix will perform arithmetic operations across the values of both
-element types.
+In the example below, we combine both `LittleShape` and `BigShape`, and
+apply the `ARITHMETIC` rule to the NUMBER attribute of both. The
+resulting matrix will perform arithmetic operations across the values of
+both element types.
 
 ``` python
 import omss
@@ -471,15 +468,15 @@ plot_matrices(solution_matrix, problem_matrix)
 Amazing! As you can see, the arithmetic operation is being combined
 across the two elements.
 
-Note: It is not possible to apply the ARITHMETIC rule to BigShape alone,
-since it only supports two numeric values (0 and 1). Applying arithmetic
-in isolation would result in empty grids and is thus prohibited by the
-program.
+Note: It is not possible to apply the `ARITHMETIC` rule to BigShape
+alone, since it only supports two numeric values (0 and 1). Applying
+arithmetic in isolation would result in empty grids and is thus
+prevented by the program.
 
 ## Elements and AttributeTypes
 
 As of yet OMSS supports three different elements. `BigShape`,
-`LittleShape` and \`Line’. Each of these elements has a unique visual
+`LittleShape` and `Line`. Each of these elements has a unique visual
 representation and is characterized by a specific set of attributetypes.
 LittleShape and Bigshape share many attributetypes, whereas Line is more
 unique. The following section provides a detailed overview of each
@@ -1160,8 +1157,8 @@ print(output_file)
     }
 
     SEEDS
-    seed = 241293
-    alternative seed = 777638
+    seed = 975479
+    alternative seed = 480744
 
     ALTERNATIVES
     number of alternatives: 2
