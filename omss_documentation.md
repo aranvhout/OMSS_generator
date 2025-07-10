@@ -57,7 +57,7 @@ by the user with **Rules**.
   Default: `None`.
 
 - **`save`** (`bool`, optional):  
-  Whether to save the matrix and alternatives to disk.
+  Whether to save the matrix and alternatives to folder.
 
   - `True`: Saves files to the specified path (or a default folder).  
   - `False`: Returns the matrix and alternatives as Python objects.  
@@ -477,14 +477,15 @@ prevented by the program.
 
 As of yet OMSS supports three different elements. `BigShape`,
 `LittleShape` and `Line`. Each of these elements has a unique visual
-representation and is characterized by a specific set of attributetypes.
-LittleShape and Bigshape share many attributetypes, whereas Line is more
-unique. The following section provides a detailed overview of each
-element and its associated attributetypes.
+representation and is characterized by a specific set of
+`AttributeTypes`. `LittleShape` and `Bigshape` share many of the same
+`Attributetypes`, whereas `Line` is more unique. The following section
+provides a detailed overview of each `element` and its associated
+`Attributetypes`.
 
 ### BigShape
 
-`BigShape` supports the following attribute types:
+`BigShape` supports the following `Attributetypes`:
 
 - **`SHAPE`**  
   Defines the shapes of the BigShape object. There are currently six
@@ -512,12 +513,12 @@ element and its associated attributetypes.
   (e.g., set to `NONE`) to allow for arithmetic operations on the number
   of elements.
 
-#### Example
+##### Example
 
-Let’s uses these attributypes to create a more constrained puzzle for
-Bigshape. Specifically, we will use some of the instances above to make
-a puzzle of red, medium sized squares with a progression in the angle
-(i.e. making the triangle rotate).
+Let’s uses these `Attributetypes` to create a more constrained puzzle
+for `Bigshape`. Specifically, we will use some of the instances above to
+make a puzzle of red, medium sized squares with a progression in the
+angle (i.e. making the triangle rotate).
 
 ``` python
 import omss
@@ -543,11 +544,11 @@ plot_matrices(solution_matrix, problem_matrix)
 
 ### LittleShape
 
-`LittleShape` shares nearly all AttributeTypes with `BigShape`. However,
-because it is smaller in size, multiple `LittleShape` elements can be
-placed within a single grid cell. Consequently, its `NUMBER`
-AttributeType behaves differently. `LittleShape` supports the following
-AttributeTypes:
+`LittleShape` shares nearly all `Attributetypes` with `BigShape`.
+However, because it is smaller in size, multiple `LittleShape` elements
+can be placed within a single grid cell. Consequently, its `NUMBER`
+`AttributeType` behaves differently. `LittleShape` supports the
+following `Attributetypes`:
 
 - **`LITTLESHAPENUMBER`**  
   Indicates the number of `LittleShape` objects placed in a grid cell.
@@ -572,7 +573,7 @@ AttributeTypes:
   includes 10 discrete values, increasing in 36-degree increments. It is
   particularly well-suited for the `PROGRESSION` rule type.
 
-#### Example
+##### Example
 
 Let’s now see if we can make an arithmetic puzzle for the
 `LITTLESHAPENUMBER` attribute of `LittleShape`. We’ll fix the other
@@ -605,7 +606,7 @@ plot_matrices(solution_matrix, problem_matrix)
 ### Line
 
 As the name suggests, `Line` places a line-shaped object in the grid. It
-supports the following AttributeTypes:
+supports the following `Attributetypes`:
 
 - **`LINETYPE`**  
   Specifies the visual style of the line. There are three options:
@@ -620,11 +621,11 @@ supports the following AttributeTypes:
   Specifies the rotation angle of the Line object. This attribute
   includes 10 discrete values, increasing in 36-degree increments.
 
-#### Examples
+##### Examples
 
-Let’s try to make a basic Line puzzle. For now we won’t specify any
-specific attributetypes. We will just make a Line puzzle that progresses
-both in Linenumber and Angle!
+Let’s try to make a basic `Line` puzzle. For now we won’t specify any
+specific `Attributetypes`. We will just make a Line puzzle that
+progresses both in `LINENUMBER` and `ANGLE`!
 
 ``` python
 import omss
@@ -647,9 +648,9 @@ plot_matrices(solution_matrix, problem_matrix)
 
 ![](omss_documentation_files/figure-commonmark/cell-14-output-1.png)
 
-Let’s create another line puzzle! Now we will put the angles and
-line-numbers to constant and apply a distribute_three to the linetypes.
-As you can see, each linetype (waved, curved, straight) now appears once
+Let’s create another `Line` puzzle! Now we will put the `ANGLE` and
+`LINENUMBER` to constant and apply a distribute_three to `LINETYPE`. As
+you can see, each `LINETYPE` (waved, curved, straight) now appears once
 in each row.
 
 ``` python
@@ -663,7 +664,6 @@ rules = {
         Rule(Ruletype.CONSTANT, AttributeType.LINENUMBER)]}
  
     
-
 #create the matrices
 solution_matrix, problem_matrix, = create_matrix(rules, save = False)
 
@@ -672,6 +672,8 @@ plot_matrices(solution_matrix, problem_matrix)
 ```
 
 ![](omss_documentation_files/figure-commonmark/cell-15-output-1.png)
+
+------------------------------------------------------------------------
 
 ## Alternatives Generation
 
@@ -684,21 +686,22 @@ this in two broad steps:
 
 1.  **Determining What to Modify**  
     First, the program inspects the rules that have been set for the
-    puzzle. Based on these, it identifies which AttributeTypes might be
-    interesting to modify when generating alternatives. Specifically, it
-    avoids choosing AttributeTypes governed by `FULL_CONSTANT` and
+    puzzle. Based on these, it identifies which `Attributetypes` might
+    be interesting to modify when generating alternatives. Specifically,
+    it avoids choosing `Attributetypes` governed by `FULL_CONSTANT` and
     `CONSTANT` rules, since changes to these are typically too easy to
-    spot. This process results in an ordered list of AttributeTypes that
-    are eligible for modification.
+    spot. This process results in an ordered list of `AttributeTypes`,
+    with the most eligible candidates for modification being placed
+    first in the list.
 
 2.  **Tree-Based Alternative Generation**  
-    Once the list of modifiable AttributeTypes is created, the program
+    Once the list of modifiable `Attributetypes` is created, the program
     uses a tree-based structure to generate the alternatives. It starts
     by copying the correct answer and applies a random modification to
-    the first AttributeType in the list, producing a new variant. Both
+    the first `Attributetype` in the list, producing a new variant. Both
     the original answer and this first modified version become the basis
-    for the next branching step. At each subsequent level, a new
-    AttributeType from the list is modified, expanding the tree.
+    for the next branching step. At each subsequent level, the next
+    `Attributetype` from the list is modified, expanding the tree.
 
     For example, if four alternatives (including the correct answer) are
     needed, only two levels of branching are required (yielding 4
@@ -707,17 +710,17 @@ this in two broad steps:
 
 This approach ensures that the alternatives are structurally similar to
 the correct answer, while systematically introducing variation across
-relevant AttributeTypes. Moreover, because the generation process
+relevant `Attributetypes`. Moreover, because the generation process
 explicitly accounts for the rules that have been applied in the puzzle,
-the resulting alternatives tend to be highly plausible. In addition, the
+the resulting alternatives tend to be plausible. In addition, the
 tree-based generation process prevents the correct answer from being
 inferred by simply comparing the alternatives.
 
-#### Examples
+##### Examples
 
 Now let’s revisit one of our earlier examples and generate alternatives
 for it. Specifically, we’ll create a `LittleShape` matrix that uses a
-`DISTRIBUTETHREE` rule for `COLOR` and a `PROGRESSION` rule for
+`DISTRIBUTE_THREE` rule for `COLOR` and a `PROGRESSION` rule for
 `LITTLESHAPENUMBER`. We will make four alternatives (correct answer
 included), by simply setting alternatives to 4!
 
@@ -745,7 +748,7 @@ plot_matrices(solution_matrix, problem_matrix, alternatives)
 
 As you can see, both the `COLOR` and `LITTLESHAPENUMBER` attributes were
 modified in the alternatives. This makes sense: they were the only
-AttributeTypes not governed by a `CONSTANT` or `FULL_CONSTANT` rule,
+`Attributetypes` not governed by a `CONSTANT` or `FULL_CONSTANT` rule,
 making them the best candidates for variation. Now let’s change the
 setup slightly. Instead of applying a `DISTRIBUTE_THREE` rule to
 `COLOR`, we set it to `FULL_CONSTANT`.
@@ -775,16 +778,16 @@ plot_matrices(solution_matrix, problem_matrix, alternatives)
 Voilà! The alternatives are now still modified in terms of
 `LITTLESHAPENUMBER`, as this attribute is governed by a `PROGRESSION`
 rule. However, since `COLOR` is now set to `FULL_CONSTANT`, it is less
-likely to be included as modification. the program selects other
+likely to be included as modification. Instead the program selects other
 available AttributeTypes—such as `SHAPE` or `ANGLE`.
 
 However, if you would increase the number of alternatives in the above
-example (for example to 32), at some point even the FULL_CONSTANT
-attributes will be modified!
+example (for example to 32), at some point even the `AttributeTypes`
+goverend by `FULL_CONSTANT` will be modified!
 
 Alternative generation works in the same way for matrices consisting of
 multiple elements. Below we will create a matrix consisting of both a
-BigShape and Line element
+`BigShape` and `Line` element
 
 ``` python
 import omss
@@ -816,9 +819,9 @@ plot_matrices(solution_matrix, problem_matrix, alternatives)
 In this case, the `Line` element remains unchanged in the alternatives.
 This is because all variation within the matrix comes from the `SHAPE`
 and `COLOR` attributes of the `BigShape` element, while all the
-atributes of the `Line` element is governed by a `CONSTANT` rule. Since
-the line does not contribute to the underlying logic of the puzzle, the
-program correctly avoids modifying it when generating alternatives.
+atributes of the `Line` element are governed by a `CONSTANT` rule. Since
+the line does not contribute much to the underlying logic of the puzzle,
+the program avoids modifying it when generating alternatives.
 
 However, if we now remove the `DISTRIBUTE_THREE` rule from the `COLOR`
 attribute of `BigShape` and instead apply `DISTRIBUTE_THREE` to the
@@ -858,13 +861,23 @@ plot_matrices(solution_matrix, problem_matrix, alternatives)
 
 ![](omss_documentation_files/figure-commonmark/cell-19-output-1.png)
 
+### Dissimilarity Score
+
+Each alternative that is created differs from the correct answer in one
+or more `AttributeTypes`. The total number of these differences is
+summarized by its **dissimilarity score**, which can also be outputted
+(see [Output](#output)). This score provides a quantitative measure of
+how distinct an alternative is from the correct solution.
+
+------------------------------------------------------------------------
+
 ## Seeds
 
-As you might have noticed in most of the examples above, the matrices
-change each time you re-run the code. This is because both the matrix
-and the alternatives are generated randomly. The only constraint is that
-they must follow the specified rules and, in the case of alternatives,
-modify attributes from the preselected list.
+As you might have noticed in the examples above, the matrices change
+each time you re-run the code. This is because both the matrix and the
+alternatives are generated randomly. The only constraint is that they
+must follow the specified rules and, in the case of alternatives, modify
+attributes from the preselected list.
 
 To make the generation process reproducible, the system supports the use
 of **seeds**. Each matrix can be generated using a specific **matrix
@@ -884,9 +897,10 @@ or lock both for full reproducibility.
 These seeds can also be outputted, even for matrices created without
 explicitly setting a seed, by using the `output_file=True` argument.
 When this option is enabled, the system saves both the matrix seed and
-the alternative seed along with the generated matrix and alternatives.
+the alternative seed along with the generated matrix and alternatives
+(see [Output](#output))..
 
-#### Examples,
+##### Examples,
 
 Let’s recreate one of our earlier examples, this time specifying a seed
 to ensure reproducibility. We do this by simply setting the `seed`
@@ -946,14 +960,13 @@ plot_matrices(solution_matrix, problem_matrix, alternatives)
 
 ![](omss_documentation_files/figure-commonmark/cell-21-output-1.png)
 
-It is also possible to set a seed for the alternatives without setting a
-seed for the matrix. In this case, the alternatives become constrained.
-
-1.  Based on the same input matrix, the alternatives will always be the
-    same—because the `alternative_seed` ensures deterministic behavior.
-2.  However, since the matrix itself is randomly generated (due to the
-    absence of a `seed`), the input to the alternatives will vary
-    between runs.
+It is also possible to set a seed for the alternatives **without setting
+a seed for the matrix**. In this case, the alternatives become more
+constrained: 1. Based on the same input matrix, the alternatives will
+always be the same—because the `alternative_seed` ensures deterministic
+behavior. 2. However, since the matrix itself is randomly generated (due
+to the absence of a `seed` for the matrix), the input to the
+alternatives will vary between runs.
 
 In essence, this means that for a given combination of rules and
 attribute types, the same internal logic will be used to generate the
@@ -963,55 +976,68 @@ alternatives are built from it remains fixed. This allows for some
 consistency in how variation is introduced in the alternatives while
 still producing fresh matrices each time.
 
+------------------------------------------------------------------------
+
 ## Matrix Generation
 
 In this section, we explain some of the inner workings of the program,
 specifically we will adress how a matrix is generated in greater detail.
-The process involves several steps.
+The process involves several steps:
 
-First, a seed is set, either the one provided by the user or, if none is
-specified, a random seed is selected. This seed is then used to generate
-a list of 500 integers. Whenever a random number is needed, the program
-iterates through this seed list.
+### Matrix Generation Process
 
-Second, the user-defined rules are parsed to a configuration module.
-This module checks for any interactions between rules across different
-elements. If such interactions exist, it updates the rules accordingly.
-Currently, this mainly applies to the **arithmetic rule**, which can
-operate across multiple element types, but this module may be extended
-in the future to handle additional rules.
+1.  **Seed Initialization**  
+    First, a seed is set; either one provided by the user or a randomly
+    generated one. This seed is then used to produce a list of 500
+    integers. Whenever a random value is needed, the program draws
+    sequentially from this seed list.
 
-Third, the rules are processed separately for each element type (e.g.,
-if rules are set for both `BigShape` and `Line`, these are handled
-sequentially). For each element type, the following steps are repeated:
+2.  **Rule Configuration**  
+    Next, the user-defined rules are passed to a configuration module.
+    This module checks for interactions between rules that span
+    different element types. If such interactions are found, the rules
+    are automatically updated to reflect these dependencies. Currently,
+    this is primarily relevant for the **`ARITHMETIC`** rule, which can
+    operate across multiple element types. In the future, this module
+    may support additional cross-element rules or constraints.
 
-1.  A random starting matrix is generated, consisting of a 3 × 3 grid of
-    random elements.
-2.  This matrix forms the basis for applying the RuleTypes to the
-    AttributeTypes. For example, if the first random element in a row is
-    blue and there is a constant ruletype for the attributype color,
-    this blue color will be applied to the entire row.
-3.  Each rule is applied in sequence until all attribute types specified
-    by a ruletype have been processed.
-    - Importantly, any attribute type without a specified ruletype
-      remains random, as the original starting matrix is generated
-      random.
+3.  **Matrix Construction**  
+    Rules are processed separately for each element type (e.g.,
+    `BigShape`, `Line`, etc.). For each element type, the following
+    steps are executed:
 
-These steps are repeated until all element matrices are generated. The
-matrices are then saved in a dictionary and passed to the rendering
-module.
+    1.  A **random starting matrix** is generated, consisting of a 3 × 3
+        grid of elements with random instances for the `AttributeTypes`.
+    2.  
+    3.  This matrix serves as the foundation for applying the specified
+        `RuleTypes` to each `AttributeType`.  
+        For instance, if the first element in a row is blue and the rule
+        specifies `CONSTANT` for the `COLOR` attribute, the entire row
+        will be assigned that same blue color.
+    4.  Each rule is applied in sequence until all defined attribute
+        types have been processed.
+        - **Note:** Any `AttributeType` without an explicitly defined
+          `RuleType` will remain random, as the attributes in the
+          original starting matrix are also random.
 
-The rendering module draws each element matrix separately and overlays
-them in sequence. This means that element matrices specified later by
-the user are layered on top of earlier ones. This process continues
-until the puzzle is fully rendered for all element types.
+    These steps are repeated until all element matrices are generated.
+    The matrices are then saved in a dictionary and passed to the
+    rendering module.
+
+4.  **Rendering**  
+    The rendering module draws each element matrix separately and
+    overlays them in sequence. This means that element matrices
+    specified later by the user are layered on top of earlier ones. This
+    process continues until the puzzle is fully rendered for all element
+    types.
+
+5.  **Alternative generation** Alternative generation is described in
+    [Alternatives Generation](#alternatives-generation). In short, the
+    final grid of the combined matrix (i.e., the solution) is passed to
+    the alternative module as the starting point for generating the
+    alternatives.
 
 Finally, the complete matrix is outputted.
-
-Alternative generation is described in [Alternatives
-Generation](#alternatives-generation). Essentially, the final grid of
-the combined matrix (i.e., the solution) is passed to the alternative
-module as the starting point for generating alternatives.
 
 ## Output
 
@@ -1049,7 +1075,7 @@ This function accepts three arguments:
 - `alternatives` *(optional)*: a list of alternative matrices, if
   generated
 
-#### Example
+##### Example
 
 ``` python
 import omss
@@ -1075,8 +1101,8 @@ plot_matrices(solution_matrix, problem_matrix)
 
 ### 2. Save Directly to Local Folder
 
-This is the **recommended method**, especially if you’re generating a
-large number of puzzles.
+aaaa This is the **recommended method**, especially if you’re generating
+a large number of puzzles.
 
 To enable this:
 
@@ -1123,7 +1149,7 @@ This output file will be:
 - Exported to the `output_folder` if `save=True`  
 - Returned directly in Python if `save=False`
 
-#### example
+##### Example
 
 ``` python
 import omss
@@ -1157,8 +1183,8 @@ print(output_file)
     }
 
     SEEDS
-    seed = 975479
-    alternative seed = 480744
+    seed = 681310
+    alternative seed = 107043
 
     ALTERNATIVES
     number of alternatives: 2
