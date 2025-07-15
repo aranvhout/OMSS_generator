@@ -1,11 +1,11 @@
 #OMSS imports
 from .rules import  AttributeType, apply_rules
 from .seed import seed_generator
-from .element import create_random_element, LittleShape
+from .element import create_random_element
 from .alternatives import create_alternatives
 from .render import render_matrix, render_element
 from .configuration import configuration_settings
-from .rules import Rule
+
 
 #general imports
 import os
@@ -38,25 +38,24 @@ def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = No
      # Path
     if path is None:
          path = Path.home() / "Documents" / "OMSS_output"
+         
+         # If the default path exists, delete it so that we can overwrite it
+         if path.exists():
+             shutil.rmtree(path)
+
+         # Now recreate the empty directory
+         path.mkdir(parents=True, exist_ok=True)
+         
     else:
+        #if path is specified by user we dont override it or anythinbg
          path = Path(path)
+         path.mkdir(parents=True, exist_ok=True)
     
-    
-    #This reviews the rules/matrices at the group settings. Allowing constraints in for element-type based upon another. For now this is only used for arithmetic
+    #this reviews the rules/matrices at the group settings, allows constraints for element-type based upon other elements. For now this is only used for arithmetic
     updated_rules, seed_list = configuration_settings (rules, element_types, seed_list)
     
-    matrices = {}  # dict to store valid matrices to be created
-    
-    # Step 4: superugly but we need to assign a position seed in case littleshape has an aritmetic
-    
-
-    # If the path exists, delete it
-    if path.exists():
-        shutil.rmtree(path)
-
-    # Now recreate the empty directory
-    path.mkdir(parents=True, exist_ok=True)
-    
+    matrices = {}  # dict to store valid matrices to be created  
+         
     #for loop that creates the matrix
     for element_type in element_types:
         
@@ -66,21 +65,17 @@ def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = No
         element_rules = updated_rules[element_type]
                 
         while element_type not in matrices:            
-           # Create a starting matrix for the current element type
+           # create a starting matrix for the current element type
             starting_matrix = initialise_matrix(element_rules, seed_list, element_type)#note to self. element type defined in the for-loop 
-            # Apply rules to the starting matrix
-            matrix, seed_list = apply_rules(starting_matrix, element_rules, seed_list)   
-            
-            matrices[element_type] = matrix  # Save the valid matrix
+            # apply rules to the starting matrix
+            matrix, seed_list = apply_rules(starting_matrix, element_rules, seed_list)               
+            matrices[element_type] = matrix  # Save the valid matrix in the dict
     
     #we distuingish between saving and not saving. Saving will output the matrices in a folder, whereas not saving output the matrices and alternatives as variables the user can catch
     
     if save == True :
         save_matrices(matrices, path)
         if alternatives and alternatives > 1:
-            LittleShape.reset_seed()
-            LittleShape.set_seed(alternative_seed)#this is very ugly, we need to set a separate global seed for the position of little shape
-
             #create the alternatives and save the dissimilarity scores of the alternatives in a list
             dis_scores = generate_and_save_alternatives(matrices, element_types, alternatives, alternative_seed, updated_rules, path, save =True)
             
@@ -99,8 +94,7 @@ def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = No
         output_file_obj = None
 
         if alternatives and alternatives > 1:
-            LittleShape.reset_seed()
-            LittleShape.set_seed(alternative_seed)
+            
             rendered_alternative_list_bgr, dis_scores = generate_and_save_alternatives(
             matrices, element_types, alternatives, alternative_seed, updated_rules, path, save=False
             )

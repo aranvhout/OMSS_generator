@@ -1260,8 +1260,8 @@ print(output_file)
     }
 
     SEEDS
-    seed = 289591
-    alternative seed = 315853
+    seed = 795354
+    alternative seed = 456944
 
     ALTERNATIVES
     number of alternatives: 2

@@ -83,6 +83,8 @@ class BigShape:
         
         
 
+
+
 class LittleShape:
     _seed = None
     _random_instance = None
@@ -93,20 +95,44 @@ class LittleShape:
             raise RuntimeError("Seed has already been set and cannot be changed.")
         cls._seed = seed
         cls._random_instance = random.Random(seed)
-        
+
     @classmethod
-    def reset_seed(cls): 
+    def reset_seed(cls):
         cls._seed = None
         cls._random_instance = None
+
     def __init__(self, shape, size, color, angle, position, element_index, littleshapenumber):
         self.shape = shape
-        self.size = size 
+        self.size = size
         self.color = color
         self.angle = angle
-        self.position = position
+        self._position = position
         self.element_index = element_index
         self._littleshapenumber = None
         self.littleshapenumber = littleshapenumber  # triggers setter
+
+    @property
+    def position(self):
+        return self._position
+
+    @position.setter
+    def position(self, value):
+        self._position = value
+
+        # Update littleshapenumber based on the number of positions
+        count = len(value) if isinstance(value, (list, tuple)) else 1
+        int_to_name = {
+            1: "ONE",
+            2: "TWO",
+            3: "THREE",
+            4: "FOUR"
+        }
+       
+        name = int_to_name.get(count)
+        if name and self._littleshapenumber is not None:
+            enum_type = type(self._littleshapenumber)
+            if hasattr(enum_type, name):
+                self._littleshapenumber = getattr(enum_type, name)
 
     @property
     def littleshapenumber(self):
@@ -114,9 +140,12 @@ class LittleShape:
 
     @littleshapenumber.setter
     def littleshapenumber(self, value):
-        if value is None:
+        
+        if value is None or value is 0:
+            
             self._littleshapenumber = None
             self.element_index = None
+            self._position = None
             return
 
         if not hasattr(value, "name"):
@@ -128,17 +157,19 @@ class LittleShape:
             "THREE": 3,
             "FOUR": 4
         }
-
+        
         count = name_to_int.get(value.name.upper())
         if count is None:
             raise ValueError(f"Unsupported littleshapenumber: {value.name}")
 
         self._littleshapenumber = value
+
+        # Create a sorted list of positions
         positions_list = sorted(Positions, key=lambda p: p.name)
 
-        # Use seeded randomness if available, otherwise fallback to unseeded
         rnd = LittleShape._random_instance or random
-        self.position = rnd.sample(positions_list, count)
+        self._position = rnd.sample(positions_list, count)
+
 
         
 

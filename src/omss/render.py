@@ -143,7 +143,9 @@ def render_element(elements, idx=None):
 
     for element in elements:
         if (hasattr(element, 'linenumber') and (element.linenumber is None or element.linenumber == 0)) or \
+         (hasattr(element, 'littleshapenumber') and (element.littleshapenumber is None or element.littleshapenumber == 0)) or \
            (hasattr(element, 'number') and (element.number is None or element.number == 0)):
+               
             continue  # Skip rendering
 
         # Handle multiple positions

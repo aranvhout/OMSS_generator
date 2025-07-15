@@ -3,8 +3,7 @@ from .seed import random_choice
 from .rules import Ruletype, Rule
 
 def configuration_settings(rules, element_types, seed_list):
-    """Ensures all Rule objects have the necessary attributes, setting missing ones to None."""
-    
+       
     updated_rules = {}
 
     for element, rule_list in rules.items():
@@ -50,15 +49,14 @@ def constrain (updated_rules, seed_list):#placeholder for if we want to add cons
     
     
 def arithmetic_parameters(all_rules, seed_list):
-    """Handles the arithmetic-related configuration, categorizing elements and assigning layouts."""
-    
-    # Step 1: Categorize elements to do some basic checks    
+        
+    # step 1: categorize elements to do some basic checks    
     SNE_CON, MNE_CON, MNE_NCON, NA_en, All_E = categorize_elements(all_rules)
     
-    # Step 2: Select the direction (subtraction, addition) and layout for the elements 
+    # step 2: select the direction (subtraction, addition) and layout for the elements 
     all_rules, seed_list = select_direction(SNE_CON, MNE_CON, MNE_NCON, all_rules, seed_list)
                     
-    # Step 3: Assign layouts to non-number elements (for the number elements this is way less of a haz)
+    # step 3: assign layouts to single-number elements (for the multiple number elements this is way less of a haz)
     all_rules, seed_list = assign_layouts(all_rules, SNE_CON, MNE_CON, All_E,  seed_list)
     
    
@@ -72,7 +70,7 @@ def categorize_elements(all_rules):
     MNE_CON = [] #multiple numer elements, all rules constant
     MNE_NCON = [] #mulriple number elements, non constant rules
     
-    MNE_list = ['line', 'littleshape']  # Define multiple number elements
+    MNE_list = ['line', 'littleshape']  # define multiple number elements
     
     for element, element_rules in all_rules.items():
         rule_types = []
@@ -127,7 +125,7 @@ def select_direction (SNE_CON, MNE_CON, MNE_NCON, all_rules, seed_list):
             if isinstance(rule, Rule):
                 if rule.rule_type == Ruletype.ARITHMETIC:
                     direction = rule.direction
-                    if direction:  # If a direction is specified
+                    if direction:  # if a direction is specified
                         if direction not in {"addition", "subtraction"}:
                             raise ValueError(f"Invalid direction '{direction}' for element '{element}'. Must be 'addition' or 'subtraction'.")
                         elif element in SNE_CON:
@@ -188,41 +186,41 @@ def set_direction (lst, all_rules, direction):
     
 
 def assign_layouts(all_rules, SNE_CON, MNE_CON, All_E, seed_list):
-    "we will assign a layout to SNE_CON and MNE_CON (only if there are other elements present), we won't assign a layout to MNE_NCON"
+    #we will assign a layout to SNE_CON and MNE_CON (only if there are other elements present), we won't assign a layout to MNE_NCON
     layout_elements = SNE_CON + MNE_CON
    
-    # Define the layouts for addition and subtraction
+    # define the layouts for addition and subtraction
     
     available_layouts = [
         {(0, 2), (1, 1), (2, 2)},
         {(0, 1), (1, 2), (2, 1)}
     ]
 
-    # List to hold the layouts we will assign
+    # list to hold the layouts we will assign
     selected_layouts = []
 
-    # Iterate through each element in the arithmetic_non_number_elements list
+    # iterate through each element in the arithmetic_non_number_elements list
     if len (All_E)>1:
         
         for element in layout_elements:  
         
-            # If there are multiple elements, we should select different layouts for each
+            # if there are multiple elements, we should select different layouts for each
             if len(layout_elements) > 1:
-            # Ensure that layouts differ as much as possible
+            # ensure that layouts differ as much as possible
                 selected_layouts_for_element, seed_list = random_choice(seed_list, available_layouts, len(layout_elements))
             else:
-                # Just pick one layout if only one element
+                # just pick one layout if only one element
                 selected_layouts_for_element, seed_list = random_choice(seed_list, available_layouts, 1)
         
-        # Loop through each element again to assign its selected layout
+        # loop through each element again to assign its selected layout
             for idx, element in enumerate(layout_elements):
                 selected_layout = selected_layouts_for_element[idx]
-                selected_layouts.append(selected_layout)  # Store the layout for this element
+                selected_layouts.append(selected_layout)  # store the layout for this element
 
-                # Set the arithmetic layout for the element
+                # set the arithmetic layout for the element
                 for rule in all_rules[element]:
                     if isinstance(rule, Rule):
                         if rule.rule_type == Ruletype.ARITHMETIC:
-                            rule.arithmetic_layout = selected_layout  # Save the selected layout in the rule's arithmetic_layout attribute
+                            rule.arithmetic_layout = selected_layout  # save the selected layout in the rule's arithmetic_layout attribute
 
     return all_rules, seed_list
