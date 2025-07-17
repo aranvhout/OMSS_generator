@@ -55,7 +55,7 @@ For full examples and advanced usage, see the full tutorial and documentation: [
 This project is licensed under the terms of the GNU license: ['LICENSE'](https://github.com/aranvhout/OMSS_generator/blob/main/LICENSE).
 
 ## Acknowledgements
-This project was funded by the NWO Open Science grant ([OSF23.2.029](https://www.nwo.nl/en/projects/osf232029): *Open Matrices: A global, free resource for testing cognitive ability* and the [Netherlands eScience Center fellowship](https://www.esciencecenter.nl/news/fellow-feature-nicholas-juud/) of Nicholas Judd.
+This project was funded by the NWO Open Science grant ([OSF23.2.029](https://www.nwo.nl/en/projects/osf232029): *Open Matrices: A global, free resource for testing cognitive ability*) and the [Netherlands eScience Center fellowship](https://www.esciencecenter.nl/news/fellow-feature-nicholas-juud/) of Nicholas Judd.
 
 The package itself was inspired in part by [`raven-gen`](https://github.com/shlomenu/raven-gen).  *Chi Zhang*, *Feng Gao*, *Baoxiong Jia*, *Yixin Zhu*, *Song-Chun Zhu* *Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2019* 
 
