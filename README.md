@@ -2,19 +2,20 @@
 
 **omss** is a Python package for generating matrix reasoning puzzles, inspired by Raven's Progressive Matrices, designed to assess fluid intelligence. It allows users to generate an unlimited number of customizable puzzles across a range of difficulty levels. 
 
-The package was inspired in part by [`raven-gen`](https://github.com/shlomenu/raven-gen).  
-*Chi Zhang*, *Feng Gao*, *Baoxiong Jia*, *Yixin Zhu*, *Song-Chun Zhu*  
-*Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2019*  
-
-**omss** has been rebuilt from scratch, with a focus on flexibility, reproducibility, and suitability for human testing.
 
 ## Features
 
-- Fully customizable puzzle generation, including ways to manipulate difficulty and combine visual elements
-- Believable distractors generated using a tree-based transformation system
-- Reproducibility via seed values for both puzzles and distractors
+- Customizable matrix reasoning puzzle generation
+- Adjustable difficulty via rule-based system
+- Tree-based distractor generation
+- Reproducibility with seed control
 - Colorblind-friendly visual design
-- 5 types of Rules
+- 5 rule types: `constant`, `full_constant`, `distribute_three`, `progression`, `arithmetic`
+
+
+## Explanation of the github
+- license
+- tutorial/documentation
 
 ## Installation 
 
@@ -22,39 +23,40 @@ The package was inspired in part by [`raven-gen`](https://github.com/shlomenu/ra
 pip install omss
 ```
 
-## Example
-
-```python
+## Quick start
+```{python}
+#import statements
 import omss
-from omss import Ruletype, AttributeType, Rule, create_matrix
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
 
+#the dictionary for the in which RuleTypes are coupled to AttributeTypes
 rules = {
     'BigShape': [       
-        Rule(Ruletype.PROGRESSION, AttributeType.SIZE),
-        Rule(Ruletype.CONSTANT, AttributeType.SIZE),
-        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
         Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
+    
+#create the matrices
+solution_matrix, problem_matrix = create_matrix(rules, save = False)
 
-
-create_matrix(rules, alternatives=8, path = "/Users/njudd/Desktop/NewStimuli/")
+#plot the matrices
+plot_matrices(solution_matrix, problem_matrix)
 ```
 
-## Arguments
-Arguments:
-    - rules: dict
-        Rules that govern entity transformations.
-    - seed: int, optional
-        Seed for puzzle generation (default: None).
-    - alternatives: int, optional
-        Number of distractor options (default: None).
-    - alternative_seed: int, optional
-        Seed for generating alternatives (default: None).
-    - save: bool, optional
-        Whether to save output as images (default: True).
-    - output_file: bool, optional
-        Save metadata (solution, rules, etc.) (default: False).
-    - entity_types: list, optional 
-        Which entities to include (e.g., ["BigShape"]).(defaults to entity_types listed in the rules)
-    - path: str, optional
-        Output directory (default: ~/Documents/OMSS_output).
+## Documentation
+For full examples and advanced usage, see the full tutorial:
+
+## License
+This project is licensed under the terms of the GNU license.
+
+## Acknowledgements
+This project was funded by the NWO Open Science grant: *Open Matrices: A global, free resource for testing cognitive ability*
+
+The package itself was inspired in part by [`raven-gen`](https://github.com/shlomenu/raven-gen).  *Chi Zhang*, *Feng Gao*, *Baoxiong Jia*, *Yixin Zhu*, *Song-Chun Zhu* *Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2019* 
+
+Rogier Kievit
+Nickolas Judd
+Jordy van Langen
+Aran van Hout
