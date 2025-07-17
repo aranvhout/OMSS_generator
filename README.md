@@ -43,6 +43,9 @@ solution_matrix, problem_matrix = create_matrix(rules, save = False)
 
 #plot the matrices
 plot_matrices(solution_matrix, problem_matrix)
+
+#save the matrices
+#
 ```
 
 ## Documentation
