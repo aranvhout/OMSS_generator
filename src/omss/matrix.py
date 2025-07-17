@@ -84,7 +84,7 @@ def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = No
         print('matrix created')
         
     if save == False:
-        # Convert BGR to RGB
+        # convert BGR to RGB
         solution_matrix_bgr = render_matrix(matrices)
         solution_matrix = cv2.cvtColor(solution_matrix_bgr, cv2.COLOR_BGR2RGB)
         problem_matrix_bgr = render_matrix(matrices, problem_matrix=True)
@@ -104,7 +104,6 @@ def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = No
 
             if output_file == True:
                 output_file_obj = create_output_file(updated_rules, dis_scores, seed, alternative_seed, save, path)
-                # Return 4 values
                 return solution_matrix, problem_matrix, rendered_alternative_list, output_file_obj
 
             # Return 3 values: no output file but alternatives exist
@@ -112,9 +111,7 @@ def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = No
         
         if output_file == True:
             output_file_obj = create_output_file(updated_rules, None, seed, None, save, path)
-            # Return 4 values
             return solution_matrix, problem_matrix, output_file_obj
-        # No alternatives, just return 2 values
         return solution_matrix, problem_matrix
 
                
@@ -127,8 +124,9 @@ def initialise_matrix(rules, seed_list, element_type=["big-shape"]):
     for r in range(3):
         row = []
         for c in range(3):
-            # Check if the rule is an instance of Rule and has the POSITION attribute
-            # position attribute refers to position in a grid, if there is a position rule, the element will be placed randomly in one the corners
+            # check if the rule is an instance of Rule and has the POSITION attribute
+            # position attribute refers to position in a grid, if there is a position rule, the element will be placed randomly in one the corners (RN this is obsolete since we 
+            #removed the position attributes from rule based editing)
             if not any(rule.attribute_type == AttributeType.POSITION for rule in rules):
                 element, seed_list = create_random_element(seed_list, element_type, element_index=(r, c))  # Default position
             else:
@@ -172,7 +170,7 @@ def generate_and_save_alternatives(matrices, element_types, alternatives, altern
 
 
 def create_output_file(updated_rules, dis_scores, seed_value, alternative_seed_value, save=False, path="."):
-    'Creates an output file with some additional information.'
+    'creates an output file with some additional information.'
 
     def format_rule(rule):
         args = [f"Ruletype.{rule.rule_type.name}", f"AttributeType.{rule.attribute_type.name}"]
@@ -204,7 +202,7 @@ def create_output_file(updated_rules, dis_scores, seed_value, alternative_seed_v
     output_lines.append(f"seed = {seed_value}")
     if alternative_seed_value is not None:
         output_lines.append(f"alternative seed = {alternative_seed_value}")
-    output_lines.append("")  # Blank line
+    output_lines.append("")  # blank line
 
     # ALTERNATIVES section
     if dis_scores is not None:
@@ -252,7 +250,7 @@ def plot_matrices(solution_matrix, problem_matrix, alternatives=None):
     fig = plt.figure(figsize=(fig_width, fig_height))
     gs = GridSpec(total_rows, total_cols, height_ratios=[4] + [1]*alt_rows, figure=fig)
 
-    # --- Top row: Problem and Solution centered ---
+    # top row: problem and solution 
     start_top = (total_cols - 2) // 2
     for col in range(total_cols):
         ax = fig.add_subplot(gs[0, col])
@@ -268,7 +266,7 @@ def plot_matrices(solution_matrix, problem_matrix, alternatives=None):
         ax.axis('off')
         ax.set_box_aspect(1)
 
-    # --- Alternative rows (up to 4 per row, centered) ---
+    #  alternative rows (up to 4 per row)
     for row in range(1, total_rows):
         row_idx = row - 1
         alt_start = row_idx * max_alts_per_row
