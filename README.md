@@ -46,17 +46,14 @@ plot_matrices(solution_matrix, problem_matrix)
 ```
 
 ## Documentation
-For full examples and advanced usage, see the full tutorial and documentation: [`Tutorial`](https://github.com/aranvhout/OMSS_generator/blob/main/How%20to%20get%20started%20with%20omss.md)
+For full examples and advanced usage, see the full tutorial and documentation: [`Tutorial and documentation`](https://github.com/aranvhout/OMSS_generator/blob/main/How%20to%20get%20started%20with%20omss.md)
 
 ## License
-This project is licensed under the terms of the GNU license.
+This project is licensed under the terms of the GNU license: ['LICENSE'](https://github.com/aranvhout/OMSS_generator/blob/main/LICENSE).
 
 ## Acknowledgements
 This project was funded by the NWO Open Science grant: *Open Matrices: A global, free resource for testing cognitive ability*
 
 The package itself was inspired in part by [`raven-gen`](https://github.com/shlomenu/raven-gen).  *Chi Zhang*, *Feng Gao*, *Baoxiong Jia*, *Yixin Zhu*, *Song-Chun Zhu* *Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2019* 
 
-Rogier Kievit
-Nickolas Judd
-Jordy van Langen
-Aran van Hout
+Rogier Kievit, Nickolas Judd, Jordy van Langen, Aran van Hout
