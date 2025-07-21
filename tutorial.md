@@ -8,51 +8,24 @@ levels.
 
 ## Contents
 
-- [OMSS Documentation](#omss-documentation)
-  - [Contents](#contents)
-  - [Overview](#overview)
-    - [Function Signature](#function-signature)
-      - [Parameters](#parameters)
-  - [Installation and Basic Example](#installation-and-basic-example)
-        - [Example](#example)
-  - [Rules](#rules)
-    - [RuleTypes](#ruletypes)
-      - [**CONSTANT**](#constant)
-          - [Example](#example-1)
-      - [**FULL\_CONSTANT**](#full_constant)
-        - [Example](#example-2)
-      - [**DISTRIBUTE\_THREE**](#distribute_three)
-        - [Example](#example-3)
-      - [**PROGRESSION**](#progression)
-        - [Example](#example-4)
-      - [**ARITHMETIC**](#arithmetic)
-        - [Example](#example-5)
-  - [Elements and AttributeTypes](#elements-and-attributetypes)
-    - [BigShape](#bigshape)
-        - [Example](#example-6)
-    - [LittleShape](#littleshape)
-        - [Example](#example-7)
-    - [Line](#line)
-        - [Examples](#examples)
-    - [Multiple Elements](#multiple-elements)
-        - [Examples](#examples-1)
-  - [Alternatives Generation](#alternatives-generation)
-    - [Generating Alternatives](#generating-alternatives)
-        - [Examples](#examples-2)
-    - [Dissimilarity Score](#dissimilarity-score)
-  - [Seeds](#seeds)
-        - [Examples,](#examples-3)
-  - [Matrix Generation](#matrix-generation)
-    - [Matrix Generation Process](#matrix-generation-process)
-  - [Output](#output)
-    - [Saving the Matrices](#saving-the-matrices)
-      - [1. Output as Python Objects](#1-output-as-python-objects)
-    - [`plot_matrices` Function](#plot_matrices-function)
-        - [Example](#example-8)
-    - [2. Save Directly to Local Folder](#2-save-directly-to-local-folder)
-    - [Output Document](#output-document)
-        - [Example](#example-9)
-  - [Acknowledgements](#acknowledgements)
+- [Overview](#overview)
+- [Installation](#installation)
+- [Rules and RuleTypes](#ruletypes)
+  - [Constant](#constant)
+  - [Full_constant](#full_constant)
+  - [Distribute_three](#distribute_three)
+  - [Progression](#progression)
+  - [Arithmetic](#arithmetic)
+- [Elements and AttributeTypes](#elements-and-attributetypes)
+  - [BigShape](#BigShape)
+  - [LittleShape](#LittleShape)
+  - [Line](#Line)
+  - [Multiple elements](#Multiple-Elements)
+- [Alternatives Generation](#alternatives-generation)
+- [Seeds](#seeds)
+- [Matrix Generation](#matrix-generation)
+- [Output](#output)
+- [Acknowledgements](#acknowledgements)
 
 ## Overview
 
@@ -167,7 +140,7 @@ solution_matrix, problem_matrix = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-3-output-1.png)
+![](tutorial_files/figure-commonmark/cell-3-output-1.png)
 
 As you can see, both the **Problem Matrix** and the **Solution Matrix**
 are outputted. In the Problem Matrix, the last grid cell of the bottom
@@ -233,7 +206,7 @@ solution_matrix, problem_matrix = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-4-output-1.png)
+![](tutorial_files/figure-commonmark/cell-4-output-1.png)
 
 All the elements within a row are now identical. Their color, size,
 angle and shape are all constant.
@@ -274,7 +247,7 @@ problem_matrix, solution_matrix = create_matrix(rules, save = False)
 plot_matrices(problem_matrix, solution_matrix)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-5-output-1.png)
+![](tutorial_files/figure-commonmark/cell-5-output-1.png)
 
 #### **DISTRIBUTE_THREE**
 
@@ -314,7 +287,7 @@ solution_matrix, problem_matrix = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-6-output-1.png)
+![](tutorial_files/figure-commonmark/cell-6-output-1.png)
 
 It’s also possible to apply multiple `DISTRIBUTE_THREE` rules to
 different `AttributeTypes` within a single matrix. Building on the
@@ -343,7 +316,7 @@ solution_matrix, problem_matrix = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-7-output-1.png)
+![](tutorial_files/figure-commonmark/cell-7-output-1.png)
 
 #### **PROGRESSION**
 
@@ -393,7 +366,7 @@ solution_matrix, problem_matrix, = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-8-output-1.png)
+![](tutorial_files/figure-commonmark/cell-8-output-1.png)
 
 #### **ARITHMETIC**
 
@@ -428,7 +401,7 @@ solution_matrix, problem_matrix, = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-9-output-1.png)
+![](tutorial_files/figure-commonmark/cell-9-output-1.png)
 
 It’s also possible to control the direction of the arithmetic operation
 (addition or subtraction). Let’s recreate the previous example using the
@@ -455,7 +428,7 @@ solution_matrix, problem_matrix, = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-10-output-1.png)
+![](tutorial_files/figure-commonmark/cell-10-output-1.png)
 
 Finally, let’s see what happens when we combine multiple `elements` in a
 single grid and apply the `ARITHMETIC rule`. To do this, we simply need
@@ -492,7 +465,7 @@ solution_matrix, problem_matrix, = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-11-output-1.png)
+![](tutorial_files/figure-commonmark/cell-11-output-1.png)
 
 Amazing! As you can see, the arithmetic operation is being combined
 across the two elements.
@@ -569,7 +542,7 @@ solution_matrix, problem_matrix, = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-12-output-1.png)
+![](tutorial_files/figure-commonmark/cell-12-output-1.png)
 
 ### LittleShape
 
@@ -630,7 +603,7 @@ solution_matrix, problem_matrix, = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-13-output-1.png)
+![](tutorial_files/figure-commonmark/cell-13-output-1.png)
 
 ### Line
 
@@ -675,7 +648,7 @@ solution_matrix, problem_matrix, = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-14-output-1.png)
+![](tutorial_files/figure-commonmark/cell-14-output-1.png)
 
 Let’s create another `Line` puzzle! Now we will put the `ANGLE` and
 `LINENUMBER` to constant and apply a distribute_three to `LINETYPE`. As
@@ -700,7 +673,7 @@ solution_matrix, problem_matrix, = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-15-output-1.png)
+![](tutorial_files/figure-commonmark/cell-15-output-1.png)
 
 ### Multiple Elements
 
@@ -740,7 +713,7 @@ solution_matrix, problem_matrix, = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-16-output-1.png)
+![](tutorial_files/figure-commonmark/cell-16-output-1.png)
 
 As you can see, the `Line` element is placed on top of the `BigShape`
 element. Elements that are defined later in the dictionairy are drawn
@@ -777,7 +750,7 @@ solution_matrix, problem_matrix, = create_matrix(rules, save = False, element_ty
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-17-output-1.png)
+![](tutorial_files/figure-commonmark/cell-17-output-1.png)
 
 ## Alternatives Generation
 
@@ -848,7 +821,7 @@ solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternative
 plot_matrices(solution_matrix, problem_matrix, alternatives)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-18-output-1.png)
+![](tutorial_files/figure-commonmark/cell-18-output-1.png)
 
 As you can see, both the `COLOR` and `LITTLESHAPENUMBER` attributes were
 modified in the alternatives. This makes sense: they were the only
@@ -877,7 +850,7 @@ solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternative
 plot_matrices(solution_matrix, problem_matrix, alternatives)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-19-output-1.png)
+![](tutorial_files/figure-commonmark/cell-19-output-1.png)
 
 Voilà! The alternatives are now still modified in terms of
 `LITTLESHAPENUMBER`, as this attribute is governed by a `PROGRESSION`
@@ -918,7 +891,7 @@ solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternative
 plot_matrices(solution_matrix, problem_matrix, alternatives)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-20-output-1.png)
+![](tutorial_files/figure-commonmark/cell-20-output-1.png)
 
 In this case, the `Line` element remains unchanged in the alternatives.
 This is because all variation within the matrix comes from the `SHAPE`
@@ -963,7 +936,7 @@ solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternative
 plot_matrices(solution_matrix, problem_matrix, alternatives)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-21-output-1.png)
+![](tutorial_files/figure-commonmark/cell-21-output-1.png)
 
 ### Dissimilarity Score
 
@@ -1031,7 +1004,7 @@ solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternative
 plot_matrices(solution_matrix, problem_matrix, alternatives)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-22-output-1.png)
+![](tutorial_files/figure-commonmark/cell-22-output-1.png)
 
 As expected, the matrix now looks exactly the same each time you run it!
 However, the alternatives might still differ between runs, since their
@@ -1062,7 +1035,7 @@ solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternative
 plot_matrices(solution_matrix, problem_matrix, alternatives)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-23-output-1.png)
+![](tutorial_files/figure-commonmark/cell-23-output-1.png)
 
 It is also possible to set a seed for the alternatives **without setting
 a seed for the matrix**. In this case, the alternatives become more
@@ -1201,7 +1174,7 @@ solution_matrix, problem_matrix = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-![](omss_documentation_files/figure-commonmark/cell-24-output-1.png)
+![](tutorial_files/figure-commonmark/cell-24-output-1.png)
 
 ### 2. Save Directly to Local Folder
 
@@ -1287,8 +1260,8 @@ print(output_file)
     }
 
     SEEDS
-    seed = 795354
-    alternative seed = 456944
+    seed = 175382
+    alternative seed = 734761
 
     ALTERNATIVES
     number of alternatives: 2
