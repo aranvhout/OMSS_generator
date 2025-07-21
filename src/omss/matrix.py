@@ -269,7 +269,7 @@ def plot_matrices(solution_matrix, problem_matrix, alternatives=None):
     #  alternative rows (up to 4 per row)
     for row in range(1, total_rows):
         row_idx = row - 1
-        alt_start = row_idx * max_alts_per_row
+        alt_start = row_idx * max_alts_per_row 
         alt_end = min(alt_start + max_alts_per_row, n_alternatives)
         alts_in_this_row = alt_end - alt_start
         start_col = (total_cols - alts_in_this_row) // 2
@@ -279,7 +279,7 @@ def plot_matrices(solution_matrix, problem_matrix, alternatives=None):
             alt_idx = alt_start + (col - start_col)
             if start_col <= col < start_col + alts_in_this_row:
                 ax.imshow(alternatives[alt_idx])
-                ax.set_title(f"Alternative {alt_idx}", fontsize=8)
+                ax.set_title(f"Alternative {alt_idx + 1}", fontsize=8)
                 ax.axis('off')
                 ax.set_box_aspect(1)
             else:

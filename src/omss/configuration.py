@@ -97,8 +97,8 @@ def categorize_elements(all_rules):
             SNE_CON.append (element)
     
         elif has_arithmetic and not is_MNE and not rules_constant:
-            SNE_NCON.append (element)#at some point we might want to do something with this, for now we raise an error value
-            raise ValueError ('All rules should be set to either constant or full constant for an arimethic operation on an element with only two number options (1 or o)')
+            SNE_NCON.append (element)#
+            raise ValueError ('All rules should be set to either constant or full constant for an arimethic operation on an element with only two number options (1 or 0)')
             
         else:
             NA_en.append (element)
