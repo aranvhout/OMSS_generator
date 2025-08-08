@@ -47,7 +47,11 @@ def random_choice(seed_list, choices, number=None, exclude=None):
 
     return attribute, seed_list
 
-   
+def random_rule (seed_list, rules):
+   random.seed(seed_list[0])
+   rule = random.choice(rules)
+   random.seed(None)  # Reset randomness
+   return (rule, seed_list)
 
 def random_shuffle (seed_list, input_list):
     """randomly shuffles the input list based upon the seed_list"""

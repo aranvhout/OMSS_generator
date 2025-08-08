@@ -61,3 +61,6 @@ Example:
 
 from .rules import Ruletype, AttributeType, Rule
 from .matrix import create_matrix, plot_matrices
+
+from .rules_generator import ruleset
+

@@ -90,7 +90,8 @@ def apply_rules(matrix, element_rules, seed_list):
                 
             elif rule == Ruletype.FULL_CONSTANT:
                 full_constant_rule(matrix, attribute_type, value)
-              
+                seed_list = update_seedlist(seed_list)
+                
             elif rule == Ruletype.PROGRESSION:
                 progression_rule(matrix, attribute_type, seed_list)            
                 seed_list = update_seedlist(seed_list)  # Update each time

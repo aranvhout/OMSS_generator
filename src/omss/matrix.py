@@ -5,7 +5,7 @@ from .element import create_random_element
 from .alternatives import create_alternatives
 from .render import render_matrix, render_element
 from .configuration import configuration_settings
-
+from .rules_generator import rules_generator
 
 #general imports
 import os
@@ -20,7 +20,8 @@ import shutil
 
 def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = None, save = True, output_file = False, element_types=None, path =None): 
     """Wrapping function that creates the matrix and alternatives"""
-   
+    
+      
     # Generate seeds
     if seed  == None:
         seed = random.randint(0, 999999)        
@@ -30,8 +31,13 @@ def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = No
     
     seed_list = seed_generator(seed) #use the seed to generate a seed list 
     
+    
+    #check whether there are custom rules in place, if not we generate them
+    if not isinstance(rules, dict):
+        rules = rules_generator(rules, seed_list)
+    
     # If element_types is not provided, infer from rules
-    if element_types is None:
+    if element_types is None and isinstance(rules, dict):
         element_types = list(rules.keys())
         
         

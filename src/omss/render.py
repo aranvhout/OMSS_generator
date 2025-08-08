@@ -469,14 +469,11 @@ def rotate_point(point, center, angle):
     cx, cy = center
     cos_a, sin_a = cos(angle), sin(angle)
 
-    # Check for 180-degree multiples (to avoid floating-point drift)
-    if abs(angle % pi) < 1e-6:  
-        return round(2 * cx - x), round(2 * cy - y)
-
     x_new = cos_a * (x - cx) - sin_a * (y - cy) + cx
     y_new = sin_a * (x - cx) + cos_a * (y - cy) + cy
 
-    return round(x_new), round(y_new)  # Use round() to minimize drift
+    return round(x_new), round(y_new)
+
 
 def draw_arrowhead(img, start, end, color=(0, 0, 0), thickness=3, size=16, forward_offset=6):
     """Draws a clean triangle arrowhead pointing from start to end, slightly ahead of the endpoint."""
