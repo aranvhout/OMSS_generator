@@ -49,7 +49,7 @@ plot_matrices(solution_matrix, problem_matrix)
 ```
 
 ## Documentation
-For full examples and advanced usage, see the full tutorial and documentation: [`Tutorial and documentation`](https://github.com/aranvhout/OMSS_generator/blob/main/How%20to%20get%20started%20with%20omss.md)
+For full examples and advanced usage, see the full tutorial and documentation: [`Tutorial and documentation`](https://github.com/aranvhout/OMSS_generator/blob/main/tutorial.md)
 
 ## License
 This project is licensed under the terms of the GNU license: ['LICENSE'](https://github.com/aranvhout/OMSS_generator/blob/main/LICENSE).
