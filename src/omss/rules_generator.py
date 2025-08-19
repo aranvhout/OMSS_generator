@@ -888,3 +888,6 @@ advanced = [A_BSLI_A_DT, A_BSLS_A_DS, A_BSLS_A_DC, A_BS_PS_DS, A_BS_PA_DC,A_LS_A
 very_advanced = [VA_LS_DC_LI_A,VA_LS_LI_A_DT,VA_LS_DS_DC,VA_LI_DT_DN_PA, VA_LS_DS_LI_A,VA_LS_PN_LI_A,VA_LS_PN_LI_PN, VA_LS_DS_LI_DT_DN,
                  VA_LS_A_LI_DT_DN,VA_BS_PS_LS_DS_DC,VA_BS_A_LS_DN, VA_BS_A_LS_DS_DC,VA_BS_PS_DC_LS_DS_A,VA_BS_DCS_LS_DSC,
                  VA_BS_DCS_LS_DSN,VA_BS_DA_DC, VA_BS_PA_PS_DC,VA_LS_PA_A,VA_LS_DCNS,VA_LI_DT_PA_A, VA_LI_PA_A,VA_LI_PA_PN ]
+
+a = len((extremely_easy+ very_easy + easy+ moderate+advanced+very_advanced))
+print (a)

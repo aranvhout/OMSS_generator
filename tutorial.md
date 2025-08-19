@@ -9,8 +9,8 @@ levels.
 ## Contents
 
 - [Overview](#overview)
-- [Installation](#installation)
-- [Rules and RuleTypes](#ruletypes)
+- [Installation](#installation-and-basic-example)
+- - [Rules and RuleTypes](#ruletypes)
   - [Constant](#constant)
   - [Full_constant](#full_constant)
   - [Distribute_three](#distribute_three)
@@ -752,7 +752,114 @@ plot_matrices(solution_matrix, problem_matrix)
 
 ![](tutorial_files/figure-commonmark/cell-17-output-1.png)
 
-## Alternatives Generation
+## Standard Rulesets
+
+The program also includes a set of 100 predefined rule–element
+combinations, organized into six difficulty levels ranging from
+*extremely easy* to *very advanced*.
+
+### Difficulty Levels
+
+- **Extremely Easy**: All rules are set to `FULL_CONSTANT`.  
+  Every grid in the matrix is identical, so solving the puzzle only
+  requires basic pattern copying.
+
+- **Very Easy**: All rules are set to `CONSTANT`.  
+  Each row in the matrix is uniform, adding slight complexity. The
+  participant must infer that the rules apply across rows.
+
+- **Easy**: Exactly one rule is non-constant, introducing more complex
+  relationships to solve.  
+  Arithmetic rules and number-based rules are still avoided (except for
+  the `Line` element).  
+  These puzzles consist of a single element.
+
+- **Moderate**: Multiple rules are combined.  
+  Arithmetic rules may be present, as well as single rules for number
+  attributes, angle progressions, and combinations of elements.
+
+- **Advanced**: Arithmetic rules with non-constant aspects are included,
+  along with triple-rule combinations, double-rule combinations for
+  number progression and line elements, and multi-element puzzles with
+  rules for each element.
+
+- **Very Advanced**: The most challenging puzzles.
+
+------------------------------------------------------------------------
+
+### Using a Standard Ruleset
+
+It is easy to use these predefined rulesets. Simply import the ruleset
+and use it in place of a custom rules dictionary when calling
+`create_matrix`.
+
+``` python
+# Import the ruleset
+from omss import ruleset
+
+# Select the ruleset and difficulty
+solution_matrix, problem_matrix = create_matrix(ruleset.easy, save=False)
+```
+
+##### Examples
+
+In this example we will use the standard ruleset to create some
+relatively easy problems
+
+``` python
+import omss
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices, ruleset
+
+#create the matrices
+solution_matrix, problem_matrix, = create_matrix(ruleset.easy, save = False)
+
+#plot the matrices
+plot_matrices(solution_matrix, problem_matrix)
+```
+
+![](tutorial_files/figure-commonmark/cell-19-output-1.png)
+
+By re-running this cell, you can generate new problems of approximately
+the same difficulty\*. Now let’s increase the challenge by using the
+moderate ruleset:
+
+``` python
+import omss
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices, ruleset
+
+#create the matrices
+solution_matrix, problem_matrix, = create_matrix(ruleset.moderate, save = False)
+
+#plot the matrices
+plot_matrices(solution_matrix, problem_matrix)
+```
+
+![](tutorial_files/figure-commonmark/cell-20-output-1.png)
+
+Finally, let’s see if we can generate some advanced problems. These
+puzzles can be quite tough!
+
+``` python
+import omss
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices, ruleset
+
+#create the matrices
+solution_matrix, problem_matrix, = create_matrix(ruleset.advanced, save = False)
+
+#plot the matrices
+plot_matrices(solution_matrix, problem_matrix)
+```
+
+![](tutorial_files/figure-commonmark/cell-21-output-1.png)
+
+**Note:** These difficulty levels have not been experimentally
+confirmed. The main reasoning for linking a puzzle to a difficulty level
+is that a higher number of relationships (aka rules) generally increases
+its difficulty. ([Matzen et al., 2010: *Recreating
+Raven’s*](https://www.researchgate.net/publication/44608187_Recreating_Raven's_Software_for_systematically_generating_large_numbers_of_Raven-like_matrix_problems_with_normed_properties)).
+
+(right now we only have 80 problems, need to work on the names and we
+might add an additional category ) \## Alternatives Generation
 
 ### Generating Alternatives
 
@@ -821,7 +928,7 @@ solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternative
 plot_matrices(solution_matrix, problem_matrix, alternatives)
 ```
 
-![](tutorial_files/figure-commonmark/cell-18-output-1.png)
+![](tutorial_files/figure-commonmark/cell-22-output-1.png)
 
 As you can see, both the `COLOR` and `LITTLESHAPENUMBER` attributes were
 modified in the alternatives. This makes sense: they were the only
@@ -850,7 +957,7 @@ solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternative
 plot_matrices(solution_matrix, problem_matrix, alternatives)
 ```
 
-![](tutorial_files/figure-commonmark/cell-19-output-1.png)
+![](tutorial_files/figure-commonmark/cell-23-output-1.png)
 
 Voilà! The alternatives are now still modified in terms of
 `LITTLESHAPENUMBER`, as this attribute is governed by a `PROGRESSION`
@@ -891,7 +998,7 @@ solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternative
 plot_matrices(solution_matrix, problem_matrix, alternatives)
 ```
 
-![](tutorial_files/figure-commonmark/cell-20-output-1.png)
+![](tutorial_files/figure-commonmark/cell-24-output-1.png)
 
 In this case, the `Line` element remains unchanged in the alternatives.
 This is because all variation within the matrix comes from the `SHAPE`
@@ -936,7 +1043,7 @@ solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternative
 plot_matrices(solution_matrix, problem_matrix, alternatives)
 ```
 
-![](tutorial_files/figure-commonmark/cell-21-output-1.png)
+![](tutorial_files/figure-commonmark/cell-25-output-1.png)
 
 ### Dissimilarity Score
 
@@ -1004,7 +1111,7 @@ solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternative
 plot_matrices(solution_matrix, problem_matrix, alternatives)
 ```
 
-![](tutorial_files/figure-commonmark/cell-22-output-1.png)
+![](tutorial_files/figure-commonmark/cell-26-output-1.png)
 
 As expected, the matrix now looks exactly the same each time you run it!
 However, the alternatives might still differ between runs, since their
@@ -1035,7 +1142,7 @@ solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternative
 plot_matrices(solution_matrix, problem_matrix, alternatives)
 ```
 
-![](tutorial_files/figure-commonmark/cell-23-output-1.png)
+![](tutorial_files/figure-commonmark/cell-27-output-1.png)
 
 It is also possible to set a seed for the alternatives **without setting
 a seed for the matrix**. In this case, the alternatives become more
@@ -1174,7 +1281,7 @@ solution_matrix, problem_matrix = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-![](tutorial_files/figure-commonmark/cell-24-output-1.png)
+![](tutorial_files/figure-commonmark/cell-28-output-1.png)
 
 ### 2. Save Directly to Local Folder
 
@@ -1260,8 +1367,8 @@ print(output_file)
     }
 
     SEEDS
-    seed = 175382
-    alternative seed = 734761
+    seed = 480624
+    alternative seed = 236533
 
     ALTERNATIVES
     number of alternatives: 2
