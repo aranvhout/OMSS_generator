@@ -186,13 +186,19 @@ E_BS_PS = {
         Rule(Ruletype.PROGRESSION, AttributeType.SIZE)]}
 
 
-
+E_LS_PS = {
+    'LittleShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.LITTLESHAPENUMBER),
+        Rule(Ruletype.PROGRESSION, AttributeType.SIZE)]}
 
 
 E_LS_DC = {
     'LittleShape': [       
         Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
-        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE),
         Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
         Rule(Ruletype.CONSTANT, AttributeType.LITTLESHAPENUMBER),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
@@ -214,14 +220,14 @@ M_BS_PA = {
     'BigShape': [       
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SHAPE),
         Rule(Ruletype.PROGRESSION, AttributeType.ANGLE),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.NUMBER),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
 
 M_LI_PA= {
     'Line': [       
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.LINETYPE),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.LINENUMBER),
+        Rule(Ruletype.CONSTANT, AttributeType.LINETYPE),
+        Rule(Ruletype.CONSTANT, AttributeType.LINENUMBER),
         Rule(Ruletype.PROGRESSION, AttributeType.ANGLE)]}
 
 
@@ -245,7 +251,7 @@ M_BS_PS= {
     'BigShape': [       
         Rule(Ruletype.PROGRESSION, AttributeType.SHAPE),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.NUMBER),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
 
@@ -253,14 +259,14 @@ M_BS_PS= {
 M_LS_PN = {
     'LittleShape': [       
         Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
-        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE),
         Rule(Ruletype.CONSTANT, AttributeType.COLOR),
         Rule(Ruletype.PROGRESSION, AttributeType.LITTLESHAPENUMBER),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
 M_LS_DN = {
     'LittleShape': [       
         Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
-        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE),
         Rule(Ruletype.CONSTANT, AttributeType.COLOR),
         Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.LITTLESHAPENUMBER),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
@@ -268,7 +274,7 @@ M_LS_A = {
     'LittleShape': [       
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SHAPE),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.ANGLE),
-        Rule(Ruletype.FULL_CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
         Rule(Ruletype.ARITHMETIC, AttributeType.LITTLESHAPENUMBER),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
 
@@ -312,6 +318,80 @@ M_BSLI_A = {
         Rule(Ruletype.CONSTANT, AttributeType.LINETYPE),
         Rule(Ruletype.ARITHMETIC, AttributeType.LINENUMBER),
         Rule(Ruletype.CONSTANT, AttributeType.ANGLE)]}
+
+
+
+M_BS_DS_LS = {
+    'BigShape': [       
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')],
+    
+    'LittleShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.LITTLESHAPENUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
+
+M_BS_DC_LS = {
+    'BigShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')],
+    
+    'LittleShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.LITTLESHAPENUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
+
+M_BS_LS_DC = {
+    'BigShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')],
+    
+    'LittleShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.LITTLESHAPENUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
+
+M_BS_DS_LI = {
+    'BigShape': [       
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')],
+    
+    'Line': [       
+        Rule(Ruletype.CONSTANT, AttributeType.LINETYPE),
+        Rule(Ruletype.CONSTANT, AttributeType.LINENUMBER),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE)]}
+
+M_BS_LI_DT = {
+    'BigShape': [       
+        Rule(Ruletype.CONSTANT, AttributeType.SHAPE),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE),
+        Rule(Ruletype.CONSTANT, AttributeType.COLOR),
+        Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
+        Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')],
+    
+    'Line': [       
+        Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.LINETYPE),
+        Rule(Ruletype.CONSTANT, AttributeType.LINENUMBER),
+        Rule(Ruletype.CONSTANT, AttributeType.ANGLE)]}
+
 
 #advanced problems
 
@@ -782,15 +862,29 @@ VA_LI_PA_PN= {
         Rule(Ruletype.PROGRESSION, AttributeType.LINENUMBER),
         Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.ANGLE)]}
 
-test = [M_LS_A]
+test = [M_BS_LI_DT ]
 
-extremely_easy = [EE_BS, EE_LI, EE_LS, EE_BS, EE_LI, EE_LS, EE_BS_LS, EE_BS_LI] #some things doubled to improve there chances of occuring
-very_easy = [VE_BS, VE_LI, VE_LS]
-easy = [E_BS_LS, E_BS_LI, E_BS_DC, E_BS_DS, E_BS_PS,  E_LS_DC,E_LI_PN, E_LI_DT]
+"extremely easy: all rules full constant, for now also combination of elements (which we may move up)"
+extremely_easy = [EE_BS, EE_LI, EE_LS] #some things doubled to improve there chances of occuring
+
+"very easy: all rules constant, for now also combination of elements (which we may move up) "
+very_easy = [VE_BS, VE_LI, VE_LS,VE_BS, VE_LI, VE_LS, EE_BS_LS, EE_BS_LI] #some things doubled to improve there chances of occuring
+
+"easy: one rule not constant, no arithmetic rules, only a number rule for line" #prob need to add some combination of elements?
+easy = [E_BS_DC, E_BS_DS, E_BS_DC, E_BS_DS,  E_BS_PS, E_LS_PS, E_LS_DC,E_LI_PN, E_LI_DT, E_LS_DC,E_BS_LS, E_BS_LI] 
+# all things doubled except for size rules, combinations and lines, to decrease the changes of the size rule and line element (was a bit too often)
+
+
+"moderate: multiple rules combinations,arithmetic rules, single rules for numbers, angle progressions and combination of elements"
 moderate = [M_BS_PA, M_LI_PA, M_BS_PS_DC, M_BS_DC_DC, M_LS_PN, M_LS_DN, M_LS_A, 
-            M_LI_A, M_LI_DT_DN, M_BSLS_A,M_BSLI_A, M_BS_PS]
+            M_LI_A,  M_BSLS_A, M_BSLI_A, M_BS_PS,M_BS_DS_LS, M_BS_DC_LS, M_BS_LS_DC,M_BS_DS_LI,M_BS_LI_DT   ]
+
+
+"advanced: arithmetic with non-constant aspects, triple rule combis, double rule combis for number progression and line elements, combination of elements with rules for each element"
 advanced = [A_BSLI_A_DT, A_BSLS_A_DS, A_BSLS_A_DC, A_BS_PS_DS, A_BS_PA_DC,A_LS_A_DS,A_LS_A_DC,A_LS_PN_DC,
-            A_LS_PN_DS,A_LS_DN_DS,A_LI_A_DT,A_LI_A_PA,A_LI_PN_PA,A_LI_DN_PA,A_BS_DS_LS_DC,A_BS_DC_LS_DC,A_BS_DS_LI_DT,M_BS_PS_DC2 ]
+            A_LS_PN_DS, M_LI_DT_DN, A_LS_DN_DS,A_LI_A_DT, A_LI_PN_PA ,A_LI_DN_PA, A_BS_DS_LS_DC,A_BS_DC_LS_DC,A_BS_DS_LI_DT,M_BS_PS_DC2 ]
+
+"very advanced A_LI_A_PA"
 very_advanced = [VA_LS_DC_LI_A,VA_LS_LI_A_DT,VA_LS_DS_DC,VA_LI_DT_DN_PA, VA_LS_DS_LI_A,VA_LS_PN_LI_A,VA_LS_PN_LI_PN, VA_LS_DS_LI_DT_DN,
                  VA_LS_A_LI_DT_DN,VA_BS_PS_LS_DS_DC,VA_BS_A_LS_DN, VA_BS_A_LS_DS_DC,VA_BS_PS_DC_LS_DS_A,VA_BS_DCS_LS_DSC,
                  VA_BS_DCS_LS_DSN,VA_BS_DA_DC, VA_BS_PA_PS_DC,VA_LS_PA_A,VA_LS_DCNS,VA_LI_DT_PA_A, VA_LI_PA_A,VA_LI_PA_PN ]
