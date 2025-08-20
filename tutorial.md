@@ -21,7 +21,7 @@ levels.
   - [LittleShape](#LittleShape)
   - [Line](#Line)
   - [Multiple elements](#Multiple-Elements)
-- - [Standard Rulesets](#standard-rulesets)
+- [Standard Rulesets](#standard-rulesets)
 - [Alternatives Generation](#alternatives-generation)
 - [Seeds](#seeds)
 - [Matrix Generation](#matrix-generation)
@@ -1367,8 +1367,8 @@ print(output_file)
     }
 
     SEEDS
-    seed = 817191
-    alternative seed = 990504
+    seed = 215917
+    alternative seed = 924345
 
     ALTERNATIVES
     number of alternatives: 2
