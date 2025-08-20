@@ -21,6 +21,7 @@ levels.
   - [LittleShape](#LittleShape)
   - [Line](#Line)
   - [Multiple elements](#Multiple-Elements)
+- - [Standard Rulesets](#standard-rulesets)
 - [Alternatives Generation](#alternatives-generation)
 - [Seeds](#seeds)
 - [Matrix Generation](#matrix-generation)
@@ -754,36 +755,36 @@ plot_matrices(solution_matrix, problem_matrix)
 
 ## Standard Rulesets
 
-The program also includes a set of 100 predefined rule–element
+The program also includes a set of ~80 predefined rule–element
 combinations, organized into six difficulty levels ranging from
 *extremely easy* to *very advanced*.
 
 ### Difficulty Levels
 
-- **Extremely Easy**: All rules are set to `FULL_CONSTANT`.  
-  Every grid in the matrix is identical, so solving the puzzle only
-  requires basic pattern copying.
+- **Extremely Easy**: All rules are set to `FULL_CONSTANT`. Every grid
+  in the matrix is identical, so solving the puzzle only requires basic
+  pattern copying.
 
-- **Very Easy**: All rules are set to `CONSTANT`.  
-  Each row in the matrix is uniform, adding slight complexity. The
-  participant must infer that the rules apply across rows.
+- **Very Easy**: All rules are set to `CONSTANT`. Every grid within a
+  row is identical, requiring the participant to recognize row-wise
+  patterns.
 
-- **Easy**: Exactly one rule is non-constant, introducing more complex
-  relationships to solve.  
-  Arithmetic rules and number-based rules are still avoided (except for
-  the `Line` element).  
-  These puzzles consist of a single element.
+- **Easy**: One rule is non-constant, introducing more complex
+  relationships. Arithmetic rules and number-based rules are still
+  avoided (except for the `Line` element). These puzzles consist of
+  single elements.
 
-- **Moderate**: Multiple rules are combined.  
-  Arithmetic rules may be present, as well as single rules for number
-  attributes, angle progressions, and combinations of elements.
+- **Moderate**: Multiple rules are combined. Arithmetic rules may be
+  present, along with single rules for number attributes, angle
+  progressions, and combinations of elements.
 
-- **Advanced**: Arithmetic rules with non-constant aspects are included,
-  along with triple-rule combinations, double-rule combinations for
-  number progression and line elements, and multi-element puzzles with
-  rules for each element.
+- **Advanced**: Puzzles include arithmetic rules with non-constant
+  aspects and triple-rule combinations,. Moreover, there are double-rule
+  combinations for number progressions, `Line` elements and
+  multi-element puzzles.
 
-- **Very Advanced**: The most challenging puzzles.
+- **Very Advanced**: The most challenging puzzles, featuring the most
+  difficult combinations of rules and elements.
 
 ------------------------------------------------------------------------
 
@@ -858,8 +859,7 @@ is that a higher number of relationships (aka rules) generally increases
 its difficulty. ([Matzen et al., 2010: *Recreating
 Raven’s*](https://www.researchgate.net/publication/44608187_Recreating_Raven's_Software_for_systematically_generating_large_numbers_of_Raven-like_matrix_problems_with_normed_properties)).
 
-(right now we only have 80 problems, need to work on the names and we
-might add an additional category ) \## Alternatives Generation
+## Alternatives Generation
 
 ### Generating Alternatives
 
@@ -1367,8 +1367,8 @@ print(output_file)
     }
 
     SEEDS
-    seed = 480624
-    alternative seed = 236533
+    seed = 817191
+    alternative seed = 990504
 
     ALTERNATIVES
     number of alternatives: 2

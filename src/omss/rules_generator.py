@@ -862,7 +862,7 @@ VA_LI_PA_PN= {
         Rule(Ruletype.PROGRESSION, AttributeType.LINENUMBER),
         Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.ANGLE)]}
 
-test = [M_BS_LI_DT ]
+test = [VA_LS_LI_A_DT]
 
 "extremely easy: all rules full constant, for now also combination of elements (which we may move up)"
 extremely_easy = [EE_BS, EE_LI, EE_LS] #some things doubled to improve there chances of occuring
@@ -884,10 +884,9 @@ moderate = [M_BS_PA, M_LI_PA, M_BS_PS_DC, M_BS_DC_DC, M_LS_PN, M_LS_DN, M_LS_A,
 advanced = [A_BSLI_A_DT, A_BSLS_A_DS, A_BSLS_A_DC, A_BS_PS_DS, A_BS_PA_DC,A_LS_A_DS,A_LS_A_DC,A_LS_PN_DC,
             A_LS_PN_DS, M_LI_DT_DN, A_LS_DN_DS,A_LI_A_DT, A_LI_PN_PA ,A_LI_DN_PA, A_BS_DS_LS_DC,A_BS_DC_LS_DC,A_BS_DS_LI_DT,M_BS_PS_DC2 ]
 
-"very advanced A_LI_A_PA"
-very_advanced = [VA_LS_DC_LI_A,VA_LS_LI_A_DT,VA_LS_DS_DC,VA_LI_DT_DN_PA, VA_LS_DS_LI_A,VA_LS_PN_LI_A,VA_LS_PN_LI_PN, VA_LS_DS_LI_DT_DN,
+"very advanced: "
+very_advanced = [A_LI_A_PA, VA_LS_DC_LI_A,VA_LS_LI_A_DT,VA_LS_DS_DC,VA_LI_DT_DN_PA, VA_LS_DS_LI_A,VA_LS_PN_LI_A,VA_LS_PN_LI_PN, VA_LS_DS_LI_DT_DN,
                  VA_LS_A_LI_DT_DN,VA_BS_PS_LS_DS_DC,VA_BS_A_LS_DN, VA_BS_A_LS_DS_DC,VA_BS_PS_DC_LS_DS_A,VA_BS_DCS_LS_DSC,
                  VA_BS_DCS_LS_DSN,VA_BS_DA_DC, VA_BS_PA_PS_DC,VA_LS_PA_A,VA_LS_DCNS,VA_LI_DT_PA_A, VA_LI_PA_A,VA_LI_PA_PN ]
 
-a = len((extremely_easy+ very_easy + easy+ moderate+advanced+very_advanced))
-print (a)
+
