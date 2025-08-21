@@ -22,6 +22,7 @@ def configuration_settings(rules, element_types, seed_list):
                     arithmetic_layout=rule.arithmetic_layout if rule.arithmetic_layout else None,
                     excluded=rule.excluded if rule.excluded else None
                     )
+                
                 updated_rules[element].append(new_rule)
 
     #constrain function
@@ -62,7 +63,7 @@ def arithmetic_parameters(all_rules, seed_list):
 
 def categorize_elements(all_rules):
     NA_en = [] #non aritmetic elements
-    SNE_CON = [] #single number elements, all rules constant
+    SNE_CON = [] #single number elements, all rules constant (single number element means that this element only has one numebr value (aka it can only be 1 or None to be technical))
     SNE_NCON = [] #sinlge number elements, non constant rules
     MNE_CON = [] #multiple numer elements, all rules constant
     MNE_NCON = [] #mulriple number elements, non constant rules
@@ -165,8 +166,9 @@ def select_direction (SNE_CON, MNE_CON, MNE_NCON, all_rules, seed_list):
                 set_direction(MNE, all_rules, direction)
             elif len (MNE_direction) > 1: 
                 for element in MNE_direction:
-                    direction, seed_list = random_choice(seed_list, ["addition", "subtraction"])  
-                    set_direction(element, all_rules, direction)           
+                    if element.direction == None: #we only set a direction for the elenments with no direction
+                        direction, seed_list = random_choice(seed_list, ["addition", "subtraction"])  
+                        set_direction(element, all_rules, direction)           
               
     return (all_rules, seed_list)
     
@@ -184,6 +186,8 @@ def set_direction (lst, all_rules, direction):
 
 def assign_layouts(all_rules, SNE_CON, MNE_CON, All_E, seed_list):
     #we will assign a layout to SNE_CON and MNE_CON (only if there are other elements present), we won't assign a layout to MNE_NCON
+    #LAYOUT basiccaly determines in which position there might be a zero value (aka no element). obv we want to avoid entirely empty grids
+        
     layout_elements = SNE_CON + MNE_CON
    
     # define the layouts for addition and subtraction
@@ -203,7 +207,7 @@ def assign_layouts(all_rules, SNE_CON, MNE_CON, All_E, seed_list):
         
             # if there are multiple elements, we should select different layouts for each
             if len(layout_elements) > 1:
-            # ensure that layouts differ as much as possible
+            # ensure that layouts differ as much as possible 
                 selected_layouts_for_element, seed_list = random_choice(seed_list, available_layouts, len(layout_elements))
             else:
                 # just pick one layout if only one element
