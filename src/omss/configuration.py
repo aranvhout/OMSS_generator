@@ -2,8 +2,10 @@
 from .seed import random_choice
 from .rules import Ruletype, Rule
 
-def configuration_settings(rules, element_types, seed_list):
-       
+def configuration_settings(rules, element_types, seed_list):     
+    """wrapper function that add some more information to the rules, and can be used for updating this information based on the other elements
+    . For now its only real functionality has to do with combining arithmetic operations on multiple elements"""
+    
     updated_rules = {}
 
     for element, rule_list in rules.items():
@@ -11,7 +13,7 @@ def configuration_settings(rules, element_types, seed_list):
             updated_rules[element] = []
         
             for rule in rule_list:
-            # Create a new Rule instance with all missing attributes set to None
+            # create a new rule instance with all missing attributes set to None
                 new_rule = Rule(
                     rule_type=rule.rule_type,
                     attribute_type=rule.attribute_type if rule.attribute_type else None,
@@ -26,9 +28,7 @@ def configuration_settings(rules, element_types, seed_list):
     if len(element_types)>1: #aka multiple elements
         updated_rules, seed_list = constrain (updated_rules, seed_list) #add constraining settings (potentially)
         
-
-
-    #check whether we need so set an arithmetic layout    
+    #check whether we need so set an arithmetic layout (in case of an arithmetic rule)
     has_arithmetic_rule = any(
     any(isinstance(rule, Rule) and rule.rule_type == Ruletype.ARITHMETIC for rule in rule_list)
     for rule_list in updated_rules.values()
@@ -37,15 +37,12 @@ def configuration_settings(rules, element_types, seed_list):
     if  has_arithmetic_rule is True:
         updated_rules, seed_list = arithmetic_parameters (updated_rules, seed_list)
 
-
-
     return updated_rules, seed_list
 
 
 def constrain (updated_rules, seed_list):#placeholder for if we want to add constraining possibilities in the future
     return updated_rules, seed_list  
     
- 
     
     
 def arithmetic_parameters(all_rules, seed_list):

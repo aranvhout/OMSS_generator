@@ -20,8 +20,7 @@ import shutil
 
 def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = None, save = True, output_file = False, element_types=None, path =None): 
     """Wrapping function that creates the matrix and alternatives"""
-    
-      
+          
     # Generate seeds
     if seed  == None:
         seed = random.randint(0, 999999)        
@@ -30,13 +29,12 @@ def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = No
         alternative_seed = random.randint(0, 999999)
     
     seed_list = seed_generator(seed) #use the seed to generate a seed list 
-    
-    
-    #check whether there are custom rules in place, if not we generate them
+        
+    #check whether there are custom rules in place, if not we select them from our predefined rulesets
     if not isinstance(rules, dict):
         rules = rules_generator(rules, seed_list)
     
-    # If element_types is not provided, infer from rules
+    # if the element_types are not provided, we use all the elements in the rules
     if element_types is None and isinstance(rules, dict):
         element_types = list(rules.keys())
         
@@ -45,11 +43,11 @@ def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = No
     if path is None:
          path = Path.home() / "Documents" / "OMSS_output"
          
-         # If the default path exists, delete it so that we can overwrite it
+         # if the default path exists, delete it so that we can overwrite it
          if path.exists():
              shutil.rmtree(path)
 
-         # Now recreate the empty directory
+         # now recreate the empty directory
          path.mkdir(parents=True, exist_ok=True)
          
     else:
@@ -60,7 +58,7 @@ def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = No
     #this reviews the rules/matrices at the group settings, allows constraints for element-type based upon other elements. For now this is only used for arithmetic
     updated_rules, seed_list = configuration_settings (rules, element_types, seed_list)
     
-    matrices = {}  # dict to store valid matrices to be created  
+    matrices = {}  # dict to store matrices to be created  
          
     #for loop that creates the matrix
     for element_type in element_types:
@@ -75,7 +73,7 @@ def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = No
             starting_matrix = initialise_matrix(element_rules, seed_list, element_type)#note to self. element type defined in the for-loop 
             # apply rules to the starting matrix
             matrix, seed_list = apply_rules(starting_matrix, element_rules, seed_list)               
-            matrices[element_type] = matrix  # Save the valid matrix in the dict
+            matrices[element_type] = matrix  # save the valid matrix in the matrices dict
     
     #we distuingish between saving and not saving. Saving will output the matrices in a folder, whereas not saving output the matrices and alternatives as variables the user can catch
     
@@ -90,24 +88,27 @@ def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = No
         print('matrix created')
         
     if save == False:
-        # convert BGR to RGB
+        # convert BGR to RGB, we need to change the values because RGB is way more common for plotting in python
         solution_matrix_bgr = render_matrix(matrices)
         solution_matrix = cv2.cvtColor(solution_matrix_bgr, cv2.COLOR_BGR2RGB)
         problem_matrix_bgr = render_matrix(matrices, problem_matrix=True)
         problem_matrix = cv2.cvtColor(problem_matrix_bgr, cv2.COLOR_BGR2RGB)
-
-        rendered_alternative_list = []
+       
+        #create the alternatives and save the dissimilarity scores of the alternatives in a list
+        rendered_alternative_list = [] #outside the for loop because we need to be able to deliver an empty list if there are no alternatives for following steps
         output_file_obj = None
-
+              
         if alternatives and alternatives > 1:
-            
+            #create alternatives
             rendered_alternative_list_bgr, dis_scores = generate_and_save_alternatives(
             matrices, element_types, alternatives, alternative_seed, updated_rules, path, save=False
             )
+            #convert the colour values
             rendered_alternative_list = [
             cv2.cvtColor(alt_bgr, cv2.COLOR_BGR2RGB) for alt_bgr in rendered_alternative_list_bgr
             ]
 
+    #some ugly code to account for no or yes output file and other combinations (alternatives: true or false)
             if output_file == True:
                 output_file_obj = create_output_file(updated_rules, dis_scores, seed, alternative_seed, save, path)
                 return solution_matrix, problem_matrix, rendered_alternative_list, output_file_obj
@@ -123,7 +124,7 @@ def create_matrix( rules,  alternatives = None, seed=None, alternative_seed = No
                
      
         
-def initialise_matrix(rules, seed_list, element_type=["big-shape"]):
+def initialise_matrix(rules, seed_list, element_type):
     """creates a random matrix as a starting point"""
     matrix = []
     #for loop in which we iterate of the rows and then the columns
@@ -132,11 +133,11 @@ def initialise_matrix(rules, seed_list, element_type=["big-shape"]):
         for c in range(3):
             # check if the rule is an instance of Rule and has the POSITION attribute
             # position attribute refers to position in a grid, if there is a position rule, the element will be placed randomly in one the corners (RN this is obsolete since we 
-            #removed the position attributes from rule based editing)
+            #removed the position attributes from rule based editing: however i left it in if we want to do something with this in the future)
             if not any(rule.attribute_type == AttributeType.POSITION for rule in rules):
-                element, seed_list = create_random_element(seed_list, element_type, element_index=(r, c))  # Default position
+                element, seed_list = create_random_element(seed_list, element_type, element_index=(r, c))  # default position in the centre
             else:
-                element, seed_list = create_random_element(seed_list, element_type, element_index=(r, c), position="random")  # Random position
+                element, seed_list = create_random_element(seed_list, element_type, element_index=(r, c), position="random")  # random position
             row.append(element)
         matrix.append(row)
     return matrix
@@ -163,14 +164,14 @@ def generate_and_save_alternatives(matrices, element_types, alternatives, altern
     if save is True:
         for idx, answer in enumerate(generated_alternatives):        
             rendered_alternative = render_element(list(answer.split_back().values()), idx)
-            cv2.imwrite(os.path.join(path, f"alternative_{idx}.png"), rendered_alternative)
+            cv2.imwrite(os.path.join(path, f"alternative_{idx}.png"), rendered_alternative) #we write it to disk
         return dis_scores
    
     if save is False:
         rendered_alternative_list = []
         for idx, answer in enumerate(generated_alternatives):        
             rendered_alternative = render_element(list(answer.split_back().values()), idx)
-            rendered_alternative_list.append(rendered_alternative)
+            rendered_alternative_list.append(rendered_alternative) #we save it to the list
         return rendered_alternative_list, dis_scores
 
 
@@ -234,7 +235,8 @@ def create_output_file(updated_rules, dis_scores, seed_value, alternative_seed_v
 
 
 
-def plot_matrices(solution_matrix, problem_matrix, alternatives=None):
+def plot_matrices(solution_matrix, problem_matrix, alternatives=None, hide_solution = False):
+    "cool last minute function to easily plot the matrices and alternatives in python"
     problem_matrix = np.array(problem_matrix)
     solution_matrix = np.array(solution_matrix)
     
@@ -243,6 +245,8 @@ def plot_matrices(solution_matrix, problem_matrix, alternatives=None):
     else:
         alternatives = [np.array(alt) for alt in alternatives]
 
+    if hide_solution == True:
+        random.shuffle (alternatives) 
     n_alternatives = len(alternatives)
     max_alts_per_row = 4
     alt_rows = math.ceil(n_alternatives / max_alts_per_row)

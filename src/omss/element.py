@@ -18,7 +18,6 @@ class Sizes(Enum):
     MEDIUM = auto()
     LARGE = auto()
 
-
 class Colors(Enum):
     BLUE = auto()
     ORANGE = auto()
@@ -27,9 +26,8 @@ class Colors(Enum):
     PURPLE = auto()
     GRAY = auto()
     RED = auto()
-    YELLOW = auto ()#
-
-      
+    YELLOW = auto ()
+     
 class Angles(Enum):
     ZERO = auto()
     THIRTY_SIX = auto()
@@ -46,8 +44,7 @@ class Positions (Enum):
     TOP_LEFT = auto()
     TOP_RIGHT = auto()
     BOTTOM_RIGHT = auto()
-    BOTTOM_LEFT = auto()
-       
+    BOTTOM_LEFT = auto()       
 
 class Linetypes(Enum):
     SOLID = auto()
@@ -70,7 +67,6 @@ class Littleshapenumbers (Enum):
      THREE = auto ()
      FOUR = auto ()
 
-# Class for BigShape element
 class BigShape:
     def __init__(self, shape, size, position, color, angle, element_index, number):
         self.shape = shape
@@ -81,22 +77,31 @@ class BigShape:
         self.number = number
         self.position = position  
         
+
+class Line:
+    def __init__(self, linetype,  position,  angle, linenumber, element_index):
+        self.linetype = linetype        
+        self.position = position      
+        self.linenumber = linenumber    
+        self.angle = angle
+        self.element_index = element_index
         
 
-
-
+        
 class LittleShape:
+#"""this class was superannoying to make since the number of littleshapes is related to the positions they can occupy, all the extended
+#code tries to deal with this"""
     _seed = None
     _random_instance = None
 
     @classmethod
-    def set_seed(cls, seed):
+    def set_seed(cls, seed): #set seed since the positions need to be able to be repeated in case of a seed
         if cls._seed is not None:
             raise RuntimeError("Seed has already been set and cannot be changed.")
         cls._seed = seed
         cls._random_instance = random.Random(seed)
 
-    @classmethod
+    @classmethod 
     def reset_seed(cls):
         cls._seed = None
         cls._random_instance = None
@@ -119,7 +124,7 @@ class LittleShape:
     def position(self, value):
         self._position = value
 
-        # Update littleshapenumber based on the number of positions
+        # update littleshapenumber based on the number of positions
         count = len(value) if isinstance(value, (list, tuple)) else 1
         int_to_name = {
             1: "ONE",
@@ -141,7 +146,7 @@ class LittleShape:
     @littleshapenumber.setter
     def littleshapenumber(self, value):
         
-        if value is None or value is 0:
+        if value == None or value == 0:
             
             self._littleshapenumber = None
             self.element_index = None
@@ -164,7 +169,7 @@ class LittleShape:
 
         self._littleshapenumber = value
 
-        # Create a sorted list of positions
+        # create a sorted list of positions
         positions_list = sorted(Positions, key=lambda p: p.name)
 
         rnd = LittleShape._random_instance or random
@@ -172,39 +177,26 @@ class LittleShape:
 
 
         
-
-
-# Class for Line element
-class Line:
-    def __init__(self, linetype,  position,  angle, linenumber, element_index):
-        self.linetype = linetype        
-        self.position = position      
-        self.linenumber = linenumber    
-        self.angle = angle
-        self.element_index = element_index
-        
-
-# Function to create a random element (either BigShape or Line)
+# function to create a random element which forms the basis of all the modifications by the rules
 def create_random_element(seed_list, element_type, element_index,  position = None):
     if element_type == "BigShape":
-        # Create random BigShape attributes
+        # create random BigShape attributes
         random_shape, seed_list = random_choice(seed_list, list(Shapes)) 
         random_size, seed_list = random_choice(seed_list, list(Sizes))
         random_color, seed_list = random_choice(seed_list, list(Colors))    
         random_angle, seed_list = random_choice(seed_list, list(Angles))
-        random_number, seed_list = random_choice(seed_list, list(Bigshapenumbers))
-        
+        random_number, seed_list = random_choice(seed_list, list(Bigshapenumbers))        
         
         
         return BigShape(shape=random_shape, size=random_size, color=random_color, angle= random_angle, element_index =element_index, number = random_number, position =None ), seed_list
         
     elif element_type == "Line":
-        # Create random Line attributes
+        # create random Line attributes
         random_line_type, seed_list = random_choice(seed_list, list(Linetypes))
-        random_number, seed_list = random_choice(seed_list, list(Linenumbers))#makes sure we don't create an empty grid as starting point
+        random_number, seed_list = random_choice(seed_list, list(Linenumbers))
         random_angle, seed_list = random_choice(seed_list, list(Angles))
        
-        if position == 'random':
+        if position == 'random': #this kind of legacy code and should be ignored, i didnt leave it out beceause it doesnt hurt anything and will be useful if we want to put back in positions rules
             element_position, seed_list = random_choice(seed_list, list(Positions))
             
         else:
@@ -212,17 +204,16 @@ def create_random_element(seed_list, element_type, element_index,  position = No
             
         return Line(linetype=random_line_type, position= element_position, angle=random_angle, linenumber=random_number, element_index =element_index), seed_list
     
-    
-    
+        
     elif element_type == "LittleShape":
-        # Create random littleshape attributes
+        # create random littleshape attributes
         random_shape, seed_list = random_choice(seed_list, list(Shapes)) 
         random_size, seed_list = random_choice(seed_list, list(Sizes))
         random_color, seed_list = random_choice(seed_list, list(Colors))    
         random_angle, seed_list = random_choice(seed_list, list(Angles))
         random_number, seed_list = random_choice(seed_list, list(Littleshapenumbers))
         
-        if position == 'random':
+        if position == 'random': #old legacy code, but i dont want to mess with it since the positions messed me up for like 2 weeks
             element_position, seed_list =random_choice(seed_list, list(Positions))
             
         else:
