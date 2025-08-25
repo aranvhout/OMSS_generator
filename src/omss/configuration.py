@@ -164,7 +164,8 @@ def select_direction (SNE_CON, MNE_CON, MNE_NCON, all_rules, seed_list):
             elif len(MNE_direction) ==1: #a single direction specfied
                 direction = next(iter(MNE_direction))  
                 set_direction(MNE, all_rules, direction)
-            elif len (MNE_direction) > 1: 
+                
+            elif len (MNE_direction) > 1: #multiple directions specified
                 for element in MNE_direction:
                     if element.direction == None: #we only set a direction for the elenments with no direction
                         direction, seed_list = random_choice(seed_list, ["addition", "subtraction"])  
@@ -175,8 +176,7 @@ def select_direction (SNE_CON, MNE_CON, MNE_NCON, all_rules, seed_list):
       
 
 def set_direction (lst, all_rules, direction):
-    for element in lst:
-        
+    for element in lst:        
         for rule in all_rules[element]:
             if isinstance(rule, Rule):
                 if rule.rule_type == Ruletype.ARITHMETIC and rule.direction == None:

@@ -5,13 +5,12 @@ from .seed import random_choice, update_seedlist, random_shuffle
 #general imports
 from enum import Enum, auto
 from typing import Optional
-
-from copy import deepcopy
 import numpy as np
 from itertools import product
 import sys
 
-class AttributeType(Enum):
+
+class AttributeType(Enum): #this is actually what the user selects when defining an attribute on which a rule operates 
     SHAPE = auto()        
     SIZE = auto()
     COLOR = auto()
@@ -24,7 +23,7 @@ class AttributeType(Enum):
     NUMBER = auto ()
     LITTLESHAPENUMBER = auto ()
         
-class Ruletype(Enum):
+class Ruletype(Enum): #this is the actual rule the user selects when creating the rules dictionary (RuleType.Constant )
     CONSTANT = auto()
     FULL_CONSTANT = auto ()
     PROGRESSION = auto()
@@ -56,25 +55,27 @@ class Rule:
     def __repr__(self):
         return (f"Rule(rule_type={self.rule_type}, attribute_type={self.attribute_type}, value={self.value}, "
                 f"direction={self.direction}, arithmetic_layout={self.arithmetic_layout}, excluded={self.excluded})") 
+    
 class Configuration:
     def __init__(self, alternative_indices):
         self.alternative_indices = alternative_indices
 
     def __repr__(self):
-        return f"Configuration(alternative_indices={self.alternative_indices})"
-       
-     
+        return f"Configuration(alternative_indices={self.alternative_indices})"      
+   
 
         
 def apply_rules(matrix, element_rules, seed_list):
-    
-    binding_list =[]
+    """applies the rules to the matrix"""
+    binding_list =[]#in case of the two rules, can show cases when the rules happn to be bound (eg distribute three is applied 
+    #to both shape and colour and by chance they match (aka the triangle is always red)). Hypothetically the puzzle will become much
+    #easier in these cases. For now we don't do anything with those cases but there is this code to track them and maybe deal with them later
     
     for rule_obj in element_rules:
         if isinstance(rule_obj, Rule):
-            rule = rule_obj.rule_type  # Accessing rule_type from Rule object        
+            rule = rule_obj.rule_type  # accessing rule_type from Rule object        
             attribute_type = rule_obj.attribute_type
-            value = rule_obj.value  # Optional additional value
+            value = rule_obj.value  # optional additional value
             direction = rule_obj.direction
             arithmetic_layout = rule_obj.arithmetic_layout
             excluded = rule_obj.excluded
@@ -94,15 +95,16 @@ def apply_rules(matrix, element_rules, seed_list):
                 
             elif rule == Ruletype.PROGRESSION:
                 progression_rule(matrix, attribute_type, seed_list)            
-                seed_list = update_seedlist(seed_list)  # Update each time
+                seed_list = update_seedlist(seed_list)  
             
             elif rule == Ruletype.DISTRIBUTE_THREE:
                 distribute_three(matrix, attribute_type, binding_list, seed_list)
-                seed_list = update_seedlist(seed_list)  # Update each time
+                seed_list = update_seedlist(seed_list)  
             
         
-        dis3_binding = check_binding(binding_list)#might be relecant for a later stage
-        # Only apply if matrix contains LittleShape objects
+        dis3_binding = check_binding(binding_list)#might be relevant for a later stage
+        
+        # if the matrix contains littleshape objects, we need to match the position with the number (which was very annoying to code)
     if isinstance(matrix[0][0], LittleShape):
        seed_list = number2position(element_rules, matrix, seed_list)
   
@@ -112,7 +114,7 @@ def apply_rules(matrix, element_rules, seed_list):
 def number2position(element_rules, matrix, seed_list):
     'this function matches number elements (eg line and littleshape) to positions within the grid'
 
-    # Decide direction once: randomly pick clockwise or counterclockwise
+    # decide direction once: randomly pick clockwise or counterclockwise (lets say u have a progression in number, the progression needs to be in the same direction)
     direction, seed_list = random_choice(seed_list, ['clockwise', 'counterclockwise'])
 
     for row in matrix:
@@ -128,18 +130,14 @@ def number2position(element_rules, matrix, seed_list):
             None
         )
 
-        positions, seed_list = coupling(rule, numbers, direction, seed_list)
-
-        # Only assign positions to numbered elements
+        positions, seed_list = coupling(rule, numbers, direction, seed_list) #matches number to position
+        
+        # assign positions to numbered elements
         for element, pos in zip(numbered_elements, positions):
             setattr(element, 'position', pos)
 
     return seed_list
 
-
-        
-
-    return seed_list
 
 
 def coupling(rule, numbers, direction, seed_list):
@@ -157,46 +155,47 @@ def coupling(rule, numbers, direction, seed_list):
         Positions.BOTTOM_LEFT,
     ]
 
-    # Reverse cycle if direction is counterclockwise
+    # reverse cycle if direction is counterclockwise
     if direction == 'counterclockwise':
         cycle_positions = list(reversed(cycle_positions))
 
-    def get_contiguous_positions(cycle, start_pos, length, seed_list):
-        start_idx = cycle.index(start_pos)
-        return [cycle[(start_idx + i) % len(cycle)] for i in range(length)], seed_list
 
-    if rule == Ruletype.CONSTANT:
+    if rule == Ruletype.CONSTANT: #positions must be constant aswell
         if len(set(numbers)) != 1:
             raise ValueError("All numbers must be the same for CONSTANT rule.")
         shared, seed_list = random_choice(seed_list, position_values, numbers[0])
         return [shared for _ in numbers], seed_list
     
-    if rule == Ruletype.FULL_CONSTANT:
+    if rule == Ruletype.FULL_CONSTANT: #positions must be constant aswell
         if len(set(numbers)) != 1:
             raise ValueError("All numbers must be the same for CONSTANT rule.")
         shared, seed_list = random_choice(seed_list, position_values, numbers[0])
         return [shared for _ in numbers], seed_list
 
-    if rule == Ruletype.DISTRIBUTE_THREE:
-        
+    if rule == Ruletype.DISTRIBUTE_THREE:# get three positions        
         result = []
         for num in numbers:
             position, seed_list = random_choice(seed_list, position_values, num)
             result.append(position)
         return result, seed_list
 
-    # Now handle ARITHMETIC with 2 or 3 numbers
-
+    
+    #arithmetic and progression
+    
+    def get_contiguous_positions(cycle, start_pos, length, seed_list):
+        start_idx = cycle.index(start_pos)
+        return [cycle[(start_idx + i) % len(cycle)] for i in range(length)], seed_list
+    
     max_idx = max_indices[0]
     result = [None] * len(numbers)
 
     start_pos, seed_list = random_choice(seed_list, cycle_positions)
-    max_pos, seed_list = get_contiguous_positions(cycle_positions, start_pos, max_number, seed_list)
-    result[max_idx] = max_pos
+    max_pos, seed_list = get_contiguous_positions(cycle_positions, start_pos, max_number, seed_list) #assign positions for largest numbers, this will be the basis for the 'rest'
+    result[max_idx] = max_pos 
 
-    rest = [i for i in range(len(numbers)) if i != max_idx]
-
-    if rule == Ruletype.ARITHMETIC:
+    rest = [i for i in range(len(numbers)) if i != max_idx] #the other numbers we can use besides the max number
+    
+    if rule == Ruletype.ARITHMETIC: #the basic logic is that we take the max product, and divide it into 2 parts (either equal (unique numbers =2( or unequal (numbers =3))
         if len(numbers) == 2:
             result[0] = max_pos
             result[1] = result[0] 
@@ -208,19 +207,15 @@ def coupling(rule, numbers, direction, seed_list):
             result[rest[0]] = sorted_pos[:n1]
             result[rest[1]] = sorted_pos[-n2:]
 
-    elif rule == Ruletype.PROGRESSION:
-        # Your original progression logic remains untouched here
+    elif rule == Ruletype.PROGRESSION: #just have a continious summation so to speak
+        
         result[rest[0]], seed_list = get_contiguous_positions(cycle_positions, start_pos, numbers[rest[0]], seed_list)
         result[rest[1]], seed_list = get_contiguous_positions(cycle_positions, start_pos, numbers[rest[1]], seed_list)
 
     return result, seed_list
 
 
-
-
-
-
-    
+   
     
 #FULL_CONSTANT
 def full_constant_rule(matrix, attribute_type, value):
@@ -228,16 +223,16 @@ def full_constant_rule(matrix, attribute_type, value):
         enum_class = ATTRIBUTETYPE_TO_ENUM.get(attribute_type)#use the mapping dict to get the match the attribute to the class
         
         try:
-            # Convert the string to uppercase and look up the corresponding enum value in the class
+            # convert the string to uppercase and look up the corresponding enum value in the class
             constant_value = enum_class[value.upper()]
             
         except KeyError:
             raise ValueError(f"Invalid value '{value}' for {attribute_type.name}.")
     else:
-        # If no value provided, use the existing attribute from the first matrix element
+        # if no value provided, use the existing attribute from the first matrix element
         constant_value = getattr(matrix[0][0], attribute_type.name.lower()) 
         
-    # Apply the constant value to all elements in the matrix
+    # apply the constant value to all elements in the matrix
     for row in matrix:
         for element in row:
             setattr(element, attribute_type.name.lower(), constant_value)
@@ -245,13 +240,13 @@ def full_constant_rule(matrix, attribute_type, value):
       
 #CONSTANT            
 def constant_rule(matrix, attribute_type, seed_list):   
-    # Get the Enum class based on the attribute
+    # get the Enum class based on the attribute
    enum_class = ATTRIBUTETYPE_TO_ENUM.get(attribute_type, None)
    
    if enum_class is None:
        raise ValueError(f"Unknown attribute: {attribute_type.name}")
 
-   # List all values of the specified attribute class
+   # list all values of the specified attribute class
    values = list(enum_class)
    n_values = len(values)
    
@@ -264,28 +259,13 @@ def constant_rule(matrix, attribute_type, seed_list):
        for element in row:
             setattr(element, attribute_type.name.lower(), constant_value)
            
-   return matrix, seed_list
-            
-#PROGRESSION        
-def flatten_cell(cell):
-    """Flattens any nested list structure inside a matrix cell and returns a flat list of elements."""
-    if not isinstance(cell, list):
-        return [cell]
-    
-    result = []
-    for item in cell:
-        if isinstance(item, list):
-            result.extend(flatten_cell(item))
-        else:
-            result.append(item)
-    return result
-
-
+   return matrix, seed_list        
+  
 #PROGRESSION        
 def progression_rule(matrix, attribute_type, seed_list):
     """Applies a progression rule across each row for a given attribute."""
     
-    # Get the maximum value, step size, and direction for the progression
+    # get the maximum value, step size, and direction for the progression
     max_value, step_size, direction, seed_list = determine_progression_params(attribute_type, seed_list)
     start_values = determine_starting_values(attribute_type, max_value, step_size, direction)  
                    
@@ -293,11 +273,11 @@ def progression_rule(matrix, attribute_type, seed_list):
     for row in matrix:            
         start_values, seed_list = adjust_starting_element(row[0], attribute_type, start_values, seed_list)#adjusts the element and updates the start values
                 
-        # Get the starting value and apply progression across the row
+        # get the starting value and apply progression across the row
         current_value = getattr(row[0], attribute_type.name.lower()).value
        
         for i, element in enumerate(row):
-            # Calculate the new value using the progression formula
+            # calculate the new value using the progression formula
             new_value = (current_value + i * step_size * direction) 
             
             #the next part ensures that we can cycle in case of position or angle
@@ -308,29 +288,23 @@ def progression_rule(matrix, attribute_type, seed_list):
                 new_value = new_value + max_value
            
             
-            # Get the corresponding Enum class from the dictionary using the attribute_type
+            # get the corresponding Enum class from the dictionary using the attribute_type
             enum_class = ATTRIBUTETYPE_TO_ENUM.get(attribute_type)
            
-            # If the attribute_type is not in the dictionary, raise an error
+            # ff the attribute_type is not in the dictionary, raise an error
             if enum_class is None:
                 raise ValueError(f"Unknown attribute type: {attribute_type.name}")
 
-            # Now, iterate through the Enum members of the enum_class to find the matching value
+            # iterate through the Enum members of the enum_class to find the matching value
             for enum_member in enum_class:           
                 if enum_member.value == new_value:
                     setattr(element, attribute_type.name.lower(), enum_member)
                     break
             else:
-                    # If no matching value is found, raise an error
-                raise ValueError(f"No matching enum value found for {new_value} in {attribute_type.name}.", attribute_type)
-                   
-                       
-            
-
-                   
-                       
-            
-                
+                    # if no matching value is found, raise an error
+                raise ValueError(f"No matching enum value found for {new_value} in {attribute_type.name}.", attribute_type)          
+                  
+   
 def determine_progression_params(attribute_type, seed_list):
     """Determines the max steps, step size, and direction for a given attribute type to make the progression rule work."""
     enum_class = ATTRIBUTETYPE_TO_ENUM.get(attribute_type)
@@ -341,8 +315,7 @@ def determine_progression_params(attribute_type, seed_list):
   
     if max_value >7:
         possible_step_sizes = [1,1,2]#in cases of 7 options can progress with 2, however I increased the numbers of 1, making a smaller progression more likely
-         
-          
+                 
     
     # based on seed chose step_size and direction        
     step_size, seed_list = random_choice(seed_list, possible_step_sizes)
@@ -387,13 +360,12 @@ def adjust_starting_element(element, attribute_type, start_value_list, seed_list
     start_value, seed_list  = random_choice(seed_list, start_value_list)
     start_value_list.remove(start_value)
     enum_class = ATTRIBUTETYPE_TO_ENUM.get(attribute_type)
-    # Set the adjusted current value back to the element
+    # set the adjusted current value back to the element
     for enum_member in enum_class:
-     if enum_member.value == start_value:
+        if enum_member.value == start_value:
          #print(enum_member, current_value, step_size, potential_value)
-         setattr(element, attribute_type.name.lower(), enum_member)     
-         break
-        
+             setattr(element, attribute_type.name.lower(), enum_member)     
+             break        
     
     else:
         raise ValueError(f"No matching enum value found for {start_value}.")
@@ -403,26 +375,26 @@ def adjust_starting_element(element, attribute_type, start_value_list, seed_list
 
 #DISTRIBUTE_THREE     
 def distribute_three(matrix, attribute_type, binding_list, seed_list):
-    # Get the total number of unique attribute values
+    # get the total number of unique attribute values
     enum_class = ATTRIBUTETYPE_TO_ENUM.get(attribute_type)
     max_value = len(enum_class)
     potential_values = list(range(1, max_value + 1))
 
-    # Get three unique values
+    # get three unique values
     distribute_three_values, seed_list = random_choice(seed_list, potential_values, number=3)
     
     # copy the values in a list and shuffle
-    rows = [distribute_three_values[:]]  # Slice the entire, distribute_three_values list hereby essentialy copying it
+    rows = [distribute_three_values[:]]  # slice the entire, distribute_three_values list hereby essentialy copying it
 
     
-    for _ in range(1, len(matrix)):  # Create the remaining rows with a cyclic shift
+    for _ in range(1, len(matrix)):  # create the remaining rows with a cyclic shift; this is essentially the best way to ensure the rows don't have overlapping values for any position
         new_row = rows[-1][1:] + rows[-1][:1]
         rows.append(new_row)
    
-    rows, seed_list = random_shuffle(seed_list, rows)  # Shuffle row order for randomness
+    rows, seed_list = random_shuffle(seed_list, rows)  # shuffle row order for randomness
     
 
-# Get the diagonal, then save the direction in binding list. 
+# get the diagonal, then save the direction in binding list. basically there are 2 configurations, we track the config to see whether it might overlap with another dis3, rn we dont do anything with it but we might in the future
     np_matrix = np.array(rows)
     diagonal = np.diagonal(np_matrix)
     if len(np.unique(diagonal)) > 1:
@@ -431,13 +403,13 @@ def distribute_three(matrix, attribute_type, binding_list, seed_list):
         binding_list.append ('upper')
     
     
-    # Assign values to elements
+    # assign values to elements
     for row, row_values in zip(matrix, rows):
         
         for i, element in enumerate(row):
             value_to_assign = row_values[i]
 
-            # Find the corresponding enum member and set the attribute
+            # find the corresponding enum member and set the attribute
             for enum_member in enum_class:
                 if enum_member.value == value_to_assign:
                     setattr(element, attribute_type.name.lower(), enum_member)
@@ -448,13 +420,11 @@ def distribute_three(matrix, attribute_type, binding_list, seed_list):
     return binding_list  
 
 
-
-
 #ARITHMETIC
 
 def arithmetic_rule(matrix, attribute_type, layout, direction, seed_list):
     
-    if layout is None: #layout is goverend by the configuration module      
+    if layout is None or layout is not None: #in the beginning we discrimated between these, this was not necessarry after all, but i cant be bothered to de-index the code below 
            
         enum_class = ATTRIBUTETYPE_TO_ENUM.get(attribute_type)
         max_value = len(enum_class)
@@ -485,43 +455,13 @@ def arithmetic_rule(matrix, attribute_type, layout, direction, seed_list):
                     if enum_member.value == value_to_assign:
                         setattr(element, attribute_type.name.lower(), enum_member)
                   
-        
-    if layout is not None:   
-        i=0
-        enum_class = ATTRIBUTETYPE_TO_ENUM.get(attribute_type)
-        max_value = len(enum_class)
-        potential_values = list(range(1, max_value + 1))        
-        arithmetic_matrix, seed_list = arithmetic_operation(potential_values, direction, layout, seed_list)
-        while arithmetic_matrix == False and i <10:
-            seed_list = update_seedlist(seed_list)
-            arithmetic_matrix, seed_list = arithmetic_operation(potential_values, direction, layout, seed_list)
-            i+=1
-        if not arithmetic_matrix:
-           print("Failed to generate a arithmetic matrix without unintended rules after 10 attempts.")
-           sys.exit(1)
-           
-   
-        for row in matrix:
-            for element in row:                
-                r,c = element.element_index
-                value_to_assign=arithmetic_matrix[r][c] 
-                if value_to_assign == 0:
-                    setattr(element, attribute_type.name.lower(), None)
-                
-                for enum_member in enum_class:                   
-                    if enum_member.value == value_to_assign:
-                        setattr(element, attribute_type.name.lower(), enum_member)      
-        
-        
-      
-        
-        
-        
-        pass
+     
     
     return seed_list
         
 def arithmetic_operation(potential_values, direction, layout,  seed_list):
+    
+    #select minimum values for the numbers and the grid, and potentially exclude answers
     if layout is not None and len(potential_values) <=3:
         min_value = 0
         answer_excluded = 0 #aka no answer excluded
@@ -531,25 +471,24 @@ def arithmetic_operation(potential_values, direction, layout,  seed_list):
         answer_excluded, seed_list = random_choice(seed_list, change_number_list) #70 percent of the times 1 is excluded as an answer beforehand
         min_value = 0
         
-    else:#in case of no layout, we we will never allow an answer of 1 (we cant have zero values)
+    else:#in case of no layout, we we will never allow an answer of 1 and (partly thus) never 0 value for a number (we cant have zero values)
         answer_excluded = 1
         min_value = 1      
                 
 
-    # Calculate potential endings, keep them as different as possible while allowing addition to be possible
-   
+    #calculate potential endings, keep them as different as possible while allowing addition to be possible   
     answers, seed_list = random_choice(seed_list, potential_values, number=3, exclude=[answer_excluded])
     
+    #calculte the operands
     potential_operands = []
-           
-        
+                 
    
     rows = [0, 1, 2]  
     
-    # Generate potential operands
+    # generate potential operands
     potential_operands = []
     for answer_index, answer in enumerate(answers):  
-        row = rows[answer_index]  # Assign the correct row for this answer
+        row = rows[answer_index]  # assign the correct row for this answer
 
         for i in range(min_value, answer):
             j = answer - i
@@ -564,18 +503,18 @@ def arithmetic_operation(potential_values, direction, layout,  seed_list):
                     potential_operands.append(reversed_pair)
 
     
-    # Filter out invalid operands based on layout
+    # filter out invalid operands based on layout
     filtered_operands = []
     for operand in potential_operands:
-        row = operand[0]  # First value is the row index
-        values = operand[1:]  # Remaining values are the numbers in that row
+        row = operand[0]  # first value is the row index
+        values = operand[1:]  # remaining values are the numbers in that row
 
         valid = True
-        # Loop through each value in the operand
+        # loop through each value in the operand
         for col_index in range(len(values)):
             value = values[col_index]
            
-            # Check if this value is zero and if its position (row, col_index+1) is in layout
+            # check if this value is zero and if its position (row, col_index+1) is in layout
             if value == 0 and (row, col_index) not in layout:
                 valid = False
                 
@@ -583,20 +522,16 @@ def arithmetic_operation(potential_values, direction, layout,  seed_list):
 
         if valid:
             filtered_operands.append(operand)
-     
-    #
-
-        
+         
    
-    #add a shuffle here to get some randomness    
-    filtered_operands, seed_list =random_shuffle (seed_list, filtered_operands)   
-        
+    #add a shuffle here to get some randomness (i think its redudant tbh)
+    filtered_operands, seed_list =random_shuffle (seed_list, filtered_operands)           
     answers, seed_list =random_shuffle (seed_list, answers)
     
     #get the most unique selection
     result= arithmetic_selection(filtered_operands, answers)
     
-    if direction == 'addition':
+    if direction == 'addition': #rn the whole code operated on the basis of a subtraction, in case of addition we just have to revert the lists!
         #try except sstructure, we can have an error in case we dotn create a valid matrix, however this is adressed later on
         try:
             # Reverse each sublist in result
@@ -610,31 +545,30 @@ def arithmetic_operation(potential_values, direction, layout,  seed_list):
 
 
 def arithmetic_selection(lst, answers):
-   
+    """can get the most unique selection of operands (matrix-wise) for arithmetic, quite complicated code, basically it gives a score for the amount of uniqueness for the operands"""
     # step 1, reduce the number of the zero possibilities
     row_groups = {}
     for sublist in lst:
-        row_groups.setdefault(sublist[0], []).append(sublist)  # Use 1nd number for grouping (aka the row number)           
+        row_groups.setdefault(sublist[0], []).append(sublist)  # use 1nd number for grouping (aka the row number)           
       
     zero = True # we use this to allow one row to contain zero values as long as there are enough options
     for key in list(row_groups):  
         if len(row_groups[key]) > 1 and not zero:
             filtered = [operand for operand in row_groups[key] if 0 not in operand]
         
-            # Ensure at least one value remains
+            # ensure at least one value remains
             if filtered:
                 row_groups[key] = filtered  
             else:
                 row_groups[key] = [row_groups[key][0]]  # Keep one original value
         else:
             zero = False
-    
-    
+     
 
      
     selected_values = [value for sublist in row_groups.values() for value in sublist]
    
-    # Step 2: Group lists by first index
+    # step 2: group lists by first index
          
     first_index_groups = {}
     for sublist in selected_values:
@@ -645,30 +579,30 @@ def arithmetic_selection(lst, answers):
     best_selection = None
     best_uniqueness_score = -1
 
-    # Step 2: Get all possible selections based on provided first indices
+    # step 2: get all possible selections based on provided first indices
     possible_selections = [first_index_groups[i] for i in answers if i in first_index_groups]
     
     if len(possible_selections) < 3:
-        return None  # Not enough valid groups to pick from
+        return None  # not enough valid groups to pick from
 
-    # Step 3: Try all combinations of picking one from each group
+    # step 3: try all combinations of picking one from each group
     for choice in product(*possible_selections):
         
-        row_set = {x[0] for x in choice}  # Get the unique row indices
+        row_set = {x[0] for x in choice}  # get the unique row indices
         
         if len(row_set) < len(choice):  
             
-            continue  # Skip selections with duplicate rows
+            continue  # skip selections with duplicate rows
         
-        # Measure uniqueness in second and third indices
+        # measure uniqueness in second and third indices
         second_index_set = {x[2] for x in choice}
         third_index_set = {x[3] for x in choice}
 
-        # Adjusted uniqueness scoring
+        #  uniqueness scoring
         uniqueness_score = (len(second_index_set) if len(second_index_set) > 1 else 0) + \
                            (len(third_index_set) if len(third_index_set) > 1 else 0)
         
-        # Keep the selection with the best uniqueness score
+        # keep the selection with the best uniqueness score
         if uniqueness_score > best_uniqueness_score:
             best_uniqueness_score = uniqueness_score
             best_selection = choice
@@ -680,58 +614,44 @@ def arithmetic_selection(lst, answers):
     # **Remove the first value (row index) only after sorting**
     best_selection_no_row_value = [selection[1:] for selection in best_selection] if best_selection else None
     
-    #do some check to prevent accidental rules from happening
+    #do some check to prevent accidental rules from happening (eg progression might happen by change 1,2,3 or 1+2 = 3)
     valid_matrix = check_for_rules(best_selection_no_row_value)
-    if valid_matrix is False: #some cool recursion
-        
+    if valid_matrix is False: #some cool recursion      
         return False
  
     
-      
-    
-    
-    
-    
-    
-    
-    
-    
     return best_selection_no_row_value
-
-#
-
-
-
 
 
 def check_for_rules (rows):
-    
+    """can check for accidental rules occuring (progression and dis3 """
     rows_cut = [row[:] for row in rows]  # Create a deep copy of the rows list
     
     rows_cut[-1].pop()
     
     valid_matrix = False
- # Check downward progression       
+    
+ # check downward progression       
     downward_progression = True
     for row in rows_cut:
         
         for i in range(len(row) - 1): 
             if row[i] <= row[i + 1]:  
                 downward_progression = False
-                break  # Exit the inner loop if not progressing
+                break  # exit the inner loop if not progressing
         if not downward_progression:
-            break  # Exit the outer loop if a non-progressing row is found 
+            break  # exit the outer loop if a non-progressing row is found 
       
 
-# Check upward progression
+# check upward progression
     upward_progression = True
     for row in rows_cut:
         for i in range(len(row) - 1): 
             if row[i] >= row[i + 1]: #any upward progression, I'm for now ignoring stepsize 
                 upward_progression = False
-                break  # Exit the inner loop if not progressing
+                break  # exit the inner loop if not progressing
         if not upward_progression:
-            break  # Exit the outer loop if a non-progressing row is found
+            break  # exit the outer loop if a non-progressing row is found
             
             
  #check distribute three
@@ -739,7 +659,7 @@ def check_for_rules (rows):
     reference_row = rows_cut[0]
 
     for row in rows_cut[1:]:
-        # Check if all values in row exist in reference_row and are unique in the row
+        # check if all values in row exist in reference_row and are unique in the row
         if not all(value in reference_row for value in row) or len(row) != len(set(row)):
             distribute_three = False
             break
@@ -759,13 +679,13 @@ def check_for_rules (rows):
         
 def check_binding(binding_list):
     """
-    Checks the binding list for dist3. If at least two elements are the same ('upper' or 'lower'),
+   checks the binding list for dist3. If at least two elements are the same ('upper' or 'lower'),
     it indicates binding.
 
    
     """
     unique_elements, counts = np.unique(binding_list, return_counts=True)
-    return any(count >= 2 for count in counts)  # True if any element appears at least twice        
+    return any(count >= 2 for count in counts)  # true if any element appears at least twice        
         
         
         
