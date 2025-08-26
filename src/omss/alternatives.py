@@ -25,7 +25,7 @@ ATTRIBUTE_TO_ENUM = {
 
 class Answer: #answer class that combines the different elementypes into one
     def __init__(self, **named_objects):
-        # store each original object by its name (e.g., 'Line', 'BigShape')
+        # store each original object by its name 
         for name, obj in named_objects.items():
             setattr(self, name, obj)
 
@@ -60,7 +60,7 @@ class Answer: #answer class that combines the different elementypes into one
 
 def create_alternatives(matrices, element_types, n_alternatives, seed_list, updated_rules):
     
-    # combine the matrices in a starting element called answer
+    # combine the last index of the matrix (or matrices) in a starting element called answer
     alternative_dict = {element_type: matrices[element_type][-1][-1] for element_type in matrices}
     answer = Answer(**alternative_dict)
    
@@ -78,8 +78,8 @@ def create_alternatives(matrices, element_types, n_alternatives, seed_list, upda
     for i in range(iterations):  
         element_type, attribute=attribute_list[i]
         new_alternative_list = []
-        for alternative in alternative_list: 
-            
+        
+        for alternative in alternative_list:             
             #this is superugly and I regret ever improving littleshape, we need to set a seed for littleshape to account for the random position
             LittleShape.reset_seed()
             LittleShape.set_seed(seed_list[0])
@@ -89,8 +89,8 @@ def create_alternatives(matrices, element_types, n_alternatives, seed_list, upda
             new_alternative_list.extend (modify_attribute(alternative, element_type, attribute, seed_list))
             alternative_list = new_alternative_list          
    
-    
-    if number_elements: #if we have an arithmetic thing going on, the alternatives are created in the same way as before, but then modified a bit  ,
+   
+    if number_elements: #if we have an arithmetic thing going on (WITH A LAYOUT, aka meaning 0/None values are present), the alternatives are created in the same way as before, but then modified a bit  ,
         alternative_list, seed_list = modify_alternatives_with_numbers(alternative_list, number_elements, element_types, seed_list)     
         alternative_list, seed_list = perform_additional_splits(deleted_splits, element_types, alternative_list, iterations, seed_list)       
         alternative_list = improve_alternatives (alternative_list, element_types, deleted_splits, iterations, seed_list)
@@ -106,6 +106,7 @@ def create_alternatives(matrices, element_types, n_alternatives, seed_list, upda
 
 
 def create_attribute_list(answer, element_types, iterations, seed_list, updated_rules):
+    "creates a list of attributes to modify based upon the specified rules"
     non_constant_attributes = []
     constant_attributes = []
     full_constant_attributes = []
@@ -130,10 +131,10 @@ def create_attribute_list(answer, element_types, iterations, seed_list, updated_
                 else:
                     non_constant_attributes.append((element_type, attribute_type))  
                     
-    #some shuffling within each category to prevent preferences
+    #some shuffling within each category to prevent preferences (eg could be that the order in which
+    #the rules are specified in the rules dictionairy affects this)
     attribute_list, seed_list = random_shuffle (seed_list, attribute_list)
-    
-    
+        
     # reorder the list based on rule categories (non-constant > constant > full-constant)
     ordered_attributes = (
         [(element_type, attr) for element_type, attr in attribute_list if (element_type, attr) in non_constant_attributes] +
@@ -141,7 +142,7 @@ def create_attribute_list(answer, element_types, iterations, seed_list, updated_
         [(element_type, attr) for element_type, attr in attribute_list if (element_type, attr) in full_constant_attributes]
     )
     
-    #modify attribute list, dealing with number attributes by essentially removing them    
+    #modify attribute list, dealing with number attributes by essentially removing them. Number attributes are dealt with later    
     modified_attribute_list, number_elements, deleted_splits = modify_attribute_list (ordered_attributes, iterations, answer, element_types)
     
    
@@ -151,21 +152,23 @@ def create_attribute_list(answer, element_types, iterations, seed_list, updated_
 
 
 def modify_attribute_list(ordered_attributes, n_iterations, answer, element_list):
-    """
-  deals with binomianal number attributes by 1) tracking and 2) removing them. The number attributes that would have been changed then get modified later. It also removes any element with 
-a None value for a number field since modifying attributes of these element wont do anything (none means the element wont be rendered)."""
+    """this is only relevant for arithmetic rules with a arithmetic layout and only specifically when there is none valeu for the answer! (need to fix this someday, it needs to be looking at the layout instead of the final cell in the matric)
+  deals with binomianal number (AKA BIGSHAPE NUMBERS) attributes by 1) tracking and 2) removing them. The number attributes that would have been changed then get modified later. It also removes any element with 
+a None value for a number field (which only happens in case of a layout) since modifying attributes of these element wont do anything (none means the element wont be rendered). So this is really only relevant for arithmetic in combination with a layout"""
 
     number_fields = ['number','littleshapenumber', 'linenumber']
     number_elements_ordered = []
     
     deleted_splits = []
     
-    # step 1:remove elements with missing number-related fields
+    # step 1: entirely remove elements with "None" number-related fields (we will deal with them even later)
     for element_type in element_list:
         element = getattr(answer, element_type, None)
         if element:
             for field in number_fields:
+               
                 if hasattr(element, field) and getattr(element, field) is None:
+                    
                     # track elements removed due to missing 'number' or 'linenumber' or littleshapenumber
                     if element_type not in number_elements_ordered:
                         number_elements_ordered.append(element_type)
@@ -185,7 +188,8 @@ a None value for a number field since modifying attributes of these element wont
     ]
     
    
-    # step 2: push NUMBER tuples outside of the first n_iterations
+    # step 2: push NUMBER tuples outside of the first n_iterations and replace it by the next non number tupple (we deal with them later),
+    #importantly track the number tupples we pushed out!
     i = 0
     while i < n_iterations:
         if i >= len(ordered_attributes):
@@ -212,7 +216,7 @@ a None value for a number field since modifying attributes of these element wont
             continue  # Re-check this position
         i += 1
 
-    # step 3: remove all instances of AttributeType.NUMBER from the list
+    # step 3: finally remove all instances of AttributeType.NUMBER from the list (diff between step 2 and 3 is, that we now also track the order of number attributes we removed)
     ordered_attributes = [
         (element_type, attribute) for element_type, attribute in ordered_attributes
         if attribute != AttributeType.NUMBER
@@ -223,7 +227,8 @@ a None value for a number field since modifying attributes of these element wont
 
 
 def modify_attribute(alternative, element_type, attribute, seed_list):
-    """Modify the given attribute of an element and return both original and modified versions."""
+    """modify the given attribute of an element and return both original and modified versions.
+    this is the workhorse of creating the alternatives"""
     #create an alternative list
     alternative_list = []
     
@@ -256,7 +261,7 @@ def modify_attribute(alternative, element_type, attribute, seed_list):
     
 
 def get_new_random_value(attribute, seed_list, arithmetic = False, exclude=None):
-    """ fetch a random value for the given attribute, ensuring it's not in 'exclude'."""
+    """ get a random value for the given attribute, ensuring it's not in 'exclude'."""
     enum_class = ATTRIBUTE_TO_ENUM.get(attribute)
   
     if arithmetic == True:
@@ -264,14 +269,14 @@ def get_new_random_value(attribute, seed_list, arithmetic = False, exclude=None)
     else:
         number_enum_classes = []
     
-    # Ensure exclude is a list
+    # ensure exclude is a list
     if exclude is None:
         exclude = []
     elif not isinstance(exclude, list):
         exclude = [exclude]
 
     
-    # Get all possible values, excluding any in the exclude list    
+    # get all possible values excluding any in the exclude list    
     possible_values = [val for val in list(enum_class) if val not in exclude]
     if 0 not in exclude and enum_class in number_enum_classes: #append zero as a potential value for number splits        
         possible_values.append (0)
@@ -279,12 +284,10 @@ def get_new_random_value(attribute, seed_list, arithmetic = False, exclude=None)
     if not possible_values:
         raise ValueError(f"No alternative values available for attribute: {attribute}")
 
-    # Get a new random value
+    # gt a new random value
     new_value, seed_list = random_choice(seed_list, possible_values)
 
     return new_value, seed_list   
-
-
 
 
 def sample_alternatives(alternative_list, n_alternatives, seed_list):
@@ -313,13 +316,11 @@ def sample_alternatives(alternative_list, n_alternatives, seed_list):
 
 def modify_alternatives_with_numbers(alternative_list, number_elements, element_types, seed_list):
     """
-    Modifies up to half of the alternative answers by changing number/linenumber fields
-    in the elements listed in element types The process uses `get_safe_candidates` to
-    ensure valid modifications and uniqueness.
+    modifies up to half of the alternative answers by changing number/linenumber fields
+    in the elements listed in element types 
     """
 
-    # step 1: convert None to 0 for removed number/linenumber fields
- 
+    # step 1: convert None to 0 for removed number/linenumber fields 
     for ans in alternative_list:
         for element_type in number_elements: 
             element_obj = getattr(ans, element_type, None)
@@ -329,23 +330,24 @@ def modify_alternatives_with_numbers(alternative_list, number_elements, element_
                         setattr(element_obj, key, 0)
                         
 
+    # 1.5: how many alternatives we want to modify, we don't want to change too many
     number_keys = ['number', 'linenumber', 'littleshapenumber']
     modified_elements_per_index = {i: set() for i in range(1, len(alternative_list))}
     modified_indices = set()
-    max_modification_list = list(range(len(alternative_list) // 4, len(alternative_list)+1))
-    
+    max_modification_list = list(range(len(alternative_list) // 4, len(alternative_list)+1))    
     max_modifications, seed_list = random_choice(seed_list, max_modification_list)
+    
     all_elements = list(alternative_list[0].__dict__.keys())
     
-    
-   
-
+      
+    #in the next steps we we will select an alternative and change its number value, we will perform check to ensure that this change won't result in an empty grid
+    #moreover, the change shouldnt result in multiple copies of an alternative. only if these checks are passed, we commmit the change
     # step 2: process elements one by one
     while len(modified_indices) < max_modifications:
         made_progress = False 
         for element_type in element_types: #i had the idea that this should be arimethic element types, but actually it does work better now, men this code is so complex i will have to recheck it
             
-            # 2.5: get safe candidates for modification
+            # 2.5: get safe candidates for modification (meaning that a change in the number value won't result in an empty grid)
             candidates = get_safe_candidates(element_type, modified_elements_per_index, alternative_list, element_types)
             
             if not candidates:
@@ -354,7 +356,6 @@ def modify_alternatives_with_numbers(alternative_list, number_elements, element_
             
             idx_to_modify, seed_list = random_choice(seed_list, candidates)
            
-
             answer_copy = copy.deepcopy(alternative_list[idx_to_modify])
             element_obj = getattr(answer_copy, element_type)
             key_to_modify = next((k for k in number_keys if hasattr(element_obj, k)), None)
@@ -366,7 +367,7 @@ def modify_alternatives_with_numbers(alternative_list, number_elements, element_
             
             setattr(element_obj, key_to_modify, new_value)
             
-            # 3.5 check if all number fields across all elements in this answer are now 0 or None
+            # 3.5 check if all number fields across all elements in this answer are now 0 or None, basically a safeguard since step 2.5 should already prevent this
             all_zero = True
             for e_type in all_elements:
                 e_obj = getattr(answer_copy, e_type)
@@ -381,7 +382,7 @@ def modify_alternatives_with_numbers(alternative_list, number_elements, element_
                
                 continue  # try again for same or next element
 
-            # step 4-5: check uniqueness
+            # step 4-5: check uniqueness (we dont want multiple copies of an alternative)
             def filtered_repr(ans):
                 repr_dict = {}
                 for e_type in all_elements:
@@ -397,21 +398,18 @@ def modify_alternatives_with_numbers(alternative_list, number_elements, element_
                
                 continue
 
-            # step 6: commit change
+            # step 6: all checks are passed and we commit the change
             alternative_list[idx_to_modify] = answer_copy
             modified_indices.add(idx_to_modify)
             modified_elements_per_index[idx_to_modify].add(element_type)
           
             made_progress = True
 
-        # If we can't find any valid candidates in the entire loop, we should exit
+        # if we can't find any valid candidates in the entire loop, we should exit
         if len(modified_indices) >= max_modifications or made_progress == False:
             break
 
     return alternative_list, seed_list
-
-
-
 
 
 
@@ -423,7 +421,7 @@ def get_safe_candidates(element_type, modified_elements_per_index, alternative_l
     for i in range(1, len(alternative_list)):
         if element_type in modified_elements_per_index[i]:
             continue
-        # make sure at least one of the *other* elements has a number/linenumber ≠ 0/None
+        # make sure at least one of the other elements has a number/linenumber ≠ 0/None
         has_nonzero_other = False
         for other_element in element_types:
             if other_element == element_type:
@@ -440,91 +438,18 @@ def get_safe_candidates(element_type, modified_elements_per_index, alternative_l
       
     return safe
 
-
-
-def improve_alternatives(alternative_list, element_types, deleted_splits, n_iterations, seed_list):
-    answer = alternative_list[0]
-    number_keys = ['number', 'linenumber', 'littleshapenumber']
-    all_elements = list(answer.__dict__.keys())
-    
-    def filtered_repr(ans):
-        repr_dict = {}
-        for e_type in all_elements:
-           
-            e_obj = getattr(ans, e_type, None)
-            if not e_obj:
-                continue
-            # only include non-number attributes
-            filtered = {
-                k: v for k, v in e_obj.__dict__.items()
-                if k not in number_keys
-            }
-            # skip if element is considered inactive
-            if filtered and any(
-                hasattr(e_obj, k) and getattr(e_obj, k) not in [None, 0] for k in number_keys
-            ):
-                repr_dict[e_type] = filtered
-        return repr(repr_dict)
-
-    for i in range(1, len(alternative_list)):
-        alt = copy.deepcopy(alternative_list[i])
-        changed = False
-
-        for e_type in element_types:
-            if e_type == "LittleShape": #for extremely complex reasons we just gotta avoid this section for littleshape
-                continue  # 
-            alt_element = getattr(alt, e_type, None)
-            answer_element = getattr(answer, e_type, None)
-
-            #  Skip if element is missing or has only None/0 in number keys
-            if not alt_element or all(
-                not hasattr(alt_element, k) or getattr(alt_element, k) in [None, 0]
-                for k in number_keys
-            ):
-                continue
-
-            for attr in alt_element.__dict__:
-                if attr in number_keys:
-                    continue
-
-                alt_val = getattr(alt_element, attr)
-                ans_val = getattr(answer_element, attr)
-
-                if alt_val != ans_val: #
-                   
-                    
-                    setattr(alt_element, attr, ans_val)
-
-                    # Uniqueness check
-                    new_repr = filtered_repr(alt)
-                    other_reprs = {
-                        filtered_repr(a)
-                        for j, a in enumerate(alternative_list)
-                        if j != i
-                    }
-
-                    if new_repr in other_reprs: 
-                        
-                        setattr(alt_element, attr, alt_val)
-                    else:
-                        
-                        changed = True
-
-        if changed:
-            alternative_list[i] = alt
-
-    return alternative_list
-
-
-
 def perform_additional_splits(deleted_splits, element_types, alternative_list, n_iterations, seed_list):
     "additional splits for the elements with a none value to make better alternatives" 
+    #most of the times the working part of this function is not exceuted since there are no more splits available
+    #in addition, even when its executed the changes might be reverted by the improve_alternatives function. in conclusion
+    #this code is a bit redudant tbf
     number_of_splits = n_iterations // len(element_types)
     deleted_split_index = 0
     
 
     for split_round in range(number_of_splits):
         if deleted_split_index >= len(deleted_splits):
+            
             break  # no more deleted splits to use
 
         element_type, attribute_type = deleted_splits[deleted_split_index]
@@ -556,14 +481,92 @@ def perform_additional_splits(deleted_splits, element_types, alternative_list, n
 
          
 
-        # Move to next attribute/element pair
+        # move to next attribute/element pair
         deleted_split_index += 1
 
     return alternative_list, seed_list
 
 
+def improve_alternatives(alternative_list, element_types, deleted_splits, n_iterations, seed_list):
+    """almost done; basically by messing with the number attribute, we essentially performed a 0.5 additional alternative split, now we 
+    compensate a bit for that by trying to modify the alternatives to look more like the correct answer while preventing a copy. Obv we dont touch the number attributes anymore
+    or else we might revert our earlier changes"""
+    answer = alternative_list[0]
+    number_keys = ['number', 'linenumber', 'littleshapenumber']
+    all_elements = list(answer.__dict__.keys())
+    
+    def filtered_repr(ans):
+        repr_dict = {}
+        for e_type in all_elements:
+           
+            e_obj = getattr(ans, e_type, None)
+            if not e_obj:
+                continue
+            # only include non-number attributes
+            filtered = {
+                k: v for k, v in e_obj.__dict__.items()
+                if k not in number_keys
+            }
+            # skip if element is basically empty (eg none values; changign this element wont result in visual changes)
+            if filtered and any(
+                hasattr(e_obj, k) and getattr(e_obj, k) not in [None, 0] for k in number_keys
+            ):
+                repr_dict[e_type] = filtered
+        return repr(repr_dict)
+
+    for i in range(1, len(alternative_list)):
+        alt = copy.deepcopy(alternative_list[i])
+        changed = False
+
+        for e_type in element_types:
+            if e_type == "LittleShape": #for extremely complex reasons we just gotta avoid this section for littleshape, it has to do with the coupling of position and number
+                continue  # 
+            alt_element = getattr(alt, e_type, None)
+            answer_element = getattr(answer, e_type, None)
+
+            #  skip if element is missing or has only None/0 in number keys
+            if not alt_element or all(
+                not hasattr(alt_element, k) or getattr(alt_element, k) in [None, 0]
+                for k in number_keys
+            ):
+                continue
+
+            for attr in alt_element.__dict__:
+                if attr in number_keys:
+                    continue
+
+                alt_val = getattr(alt_element, attr)
+                ans_val = getattr(answer_element, attr)
+
+                if alt_val != ans_val: #
+                   
+                    
+                    setattr(alt_element, attr, ans_val)
+
+                    #  check uniqueness
+                    new_repr = filtered_repr(alt)
+                    other_reprs = {
+                        filtered_repr(a)
+                        for j, a in enumerate(alternative_list)
+                        if j != i
+                    }
+
+                    if new_repr in other_reprs: 
+                        
+                        setattr(alt_element, attr, alt_val)
+                    else:
+                        
+                        changed = True
+
+        if changed:
+            alternative_list[i] = alt
+
+    return alternative_list
+
+
 
 def calculate_dissimilarity_score(selected_alternatives_list):
+    """this is simply code for calculating how different each alternative is, we need it for the output file"""
     compare_to = selected_alternatives_list[0]
     number_keys = {'number', 'linenumber', 'littleshapenumber'}
     scores = []

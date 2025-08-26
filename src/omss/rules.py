@@ -255,7 +255,7 @@ def constant_rule(matrix, attribute_type, seed_list):
        if n_values >=3: 
            values.remove (constant_value)# remove it so we get unique values for each row, only remove it when we the attribute does have 3 instances at least
         
-        # Set this constant value for the specified attribute across all elements in the row
+        # set this constant value for the specified attribute across all elements in the row
        for element in row:
             setattr(element, attribute_type.name.lower(), constant_value)
            
@@ -534,10 +534,10 @@ def arithmetic_operation(potential_values, direction, layout,  seed_list):
     if direction == 'addition': #rn the whole code operated on the basis of a subtraction, in case of addition we just have to revert the lists!
         #try except sstructure, we can have an error in case we dotn create a valid matrix, however this is adressed later on
         try:
-            # Reverse each sublist in result
+            # reverse each sublist in result
             result = [sublist[::-1] for sublist in result]
         except TypeError:
-            pass  # Ignore the error and continue
+            pass  # ignore the error and continue
 
         
     return result, seed_list           
@@ -625,7 +625,7 @@ def arithmetic_selection(lst, answers):
 
 def check_for_rules (rows):
     """can check for accidental rules occuring (progression and dis3 """
-    rows_cut = [row[:] for row in rows]  # Create a deep copy of the rows list
+    rows_cut = [row[:] for row in rows]  # create a deep copy of the rows list
     
     rows_cut[-1].pop()
     
