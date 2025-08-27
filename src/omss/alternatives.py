@@ -599,7 +599,7 @@ def calculate_dissimilarity_score(selected_alternatives_list):
 
     for alt in selected_alternatives_list:
         total_diff = 0
-        # compare all matching fields: BigShape, Line, LittleShape, etc.
+        # compare all matching fields (bigshape to bigshape etc)
         subelements = set(vars(compare_to).keys()).union(vars(alt).keys())
         for key in subelements:
             ent1 = getattr(compare_to, key, None)

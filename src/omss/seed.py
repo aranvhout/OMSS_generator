@@ -5,7 +5,7 @@ def seed_generator (seed_value):
     random.seed(seed_value)
     vector = list(range(99))
     seed_list=random.choices(vector, k=500)#based on the seed,  250 random seeds are drawn from the vector and saved in the seed_list
-    random.seed(None)
+    random.seed(None)#reset the seed to be sure
     return seed_list
 
 def update_seedlist (seed_list):
@@ -15,42 +15,41 @@ def update_seedlist (seed_list):
 
 
 
-def random_choice(seed_list, choices, number=None, exclude=None):
+def random_choice(seed_list, choices, number= None, exclude=None):
     """randomly selects a choice or multiple choices based upon the seed, allows for excluding options"""
-    random.seed(seed_list[0])
+    random.seed(seed_list[0])#set the seed
 
-    # Ensure exclude is a set for quick lookup
-    exclude = set(exclude) if exclude else set()
-
-    # Remove excluded values
-    filtered_choices = [c for c in choices if c not in exclude]
-  
-
-    if not filtered_choices:  # If all choices are excluded, return empty result
+    #deal with excluded values    
+    exclude = set(exclude) if exclude else set() # ensure exclude is a set for quick lookup
+    filtered_choices = [c for c in choices if c not in exclude] # remove excluded values 
+    if not filtered_choices:  # if all choices are excluded, return empty result
         return None, seed_list
 
+    #if there are multiple choices (this also works for single choices, it would be better to default numebr to 1 and get rid
+    #of the if statement; however it works and i dont have time to test for bugs)
     if number:
-        # Get unique choices first
+        # get unique choices first
         unique_choices = random.sample(filtered_choices, min(number, len(filtered_choices)))
 
-        # If more choices are needed, repeat from available choices
+        # if more choices are needed repeat from available choices
         remaining_choices = random.choices(unique_choices, k=max(0, number - len(unique_choices)))
 
-        # Combine unique and repeated choices
-        attribute = unique_choices + remaining_choices
+        # combine unique and repeated choices
+        choice = unique_choices + remaining_choices
     else:
-        # Select a single random choice
-        attribute = random.choice(filtered_choices)
+        # select a single random choice
+        choice = random.choice(filtered_choices)
 
     seed_list = update_seedlist(seed_list)
     random.seed(None)  # Reset randomness
 
-    return attribute, seed_list
+    return choice, seed_list
 
 def random_rule (seed_list, rules):
+   """only used for the rules_generator to select a random rule"""
    random.seed(seed_list[0])
    rule = random.choice(rules)
-   random.seed(None)  # Reset randomness
+   random.seed(None)  # reset randomness
    return (rule, seed_list)
 
 def random_shuffle (seed_list, input_list):
