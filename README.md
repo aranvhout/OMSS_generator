@@ -1,4 +1,5 @@
 # omss
+![OMSS Logo](https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/omss_logo.png)
 
 
 **omss** is a Python package for generating matrix reasoning puzzles, inspired by Raven's Progressive Matrices. It allows users to generate an unlimited number of customizable puzzles across a range of difficulty levels. Please check out the [`Documentation`](https://github.com/aranvhout/OMSS_generator/blob/main/tutorial.md) for more information. 
