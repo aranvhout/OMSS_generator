@@ -12,11 +12,6 @@
 - Colorblind-friendly visual design
 - 5 rule types: `constant`, `full_constant`, `distribute_three`, `progression`, `arithmetic`
 
-
-## Explanation of the github
-- license
-- tutorial/documentation
-
 ## Installation 
 
 ```bash

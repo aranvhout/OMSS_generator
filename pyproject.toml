@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "omss"
 version = "0.1.0"
-description = "Creates matrices for assessing fluid reasoning"
+description = ""Python package for generating customizable matrix reasoning puzzles""
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [
@@ -22,5 +22,5 @@ dependencies = [
 where = ["src"]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/your-package-name"
-BugTracker = "https://github.com/yourusername/your-package-name/issues"
+Homepage = "https://github.com/aranvhout/OMSS_generator"
+
