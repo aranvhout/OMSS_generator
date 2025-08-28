@@ -15,11 +15,9 @@
 - Generate virtually unlimited unique puzzle variations
 - Includes ~80 predefined rule sets across 6 difficulty levels, which can combine to produce a huge variety of distinct puzzles
 
-<div style="display: flex; gap: 100 px;">
-  <img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/example1.png" width="280">
-  <img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/example2.png" width="280">
-  <img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/example3.png" width="280">
-</div>
+<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/example1.png" width="260">&nbsp;&nbsp;&nbsp;
+<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/example2.png" width="260">&nbsp;&nbsp;&nbsp;
+<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/example3.png" width="260">
 
   
 
