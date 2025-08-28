@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "omss"
-version = "0.1.0"
-description = ""Python package for generating customizable matrix reasoning puzzles""
+version = "0.1.14"
+description = "Python package for generating customizable matrix reasoning puzzles, inspired by Raven Progressive Matrices"
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [
@@ -20,6 +20,7 @@ dependencies = [
 ]
 [tool.setuptools.packages.find]
 where = ["src"]
+
 
 [project.urls]
 Homepage = "https://github.com/aranvhout/OMSS_generator"

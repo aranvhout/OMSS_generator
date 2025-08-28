@@ -570,7 +570,7 @@ def render_wavy_line(img, center, length, element, amplitude=10, frequency=3):
             draw_arrowhead(img, wave_points[-2], wave_points[-1], color, thickness)
 
 
-#this map is no longer used but the colours looked so damn good
+#this map is no longer used but the colours looked soooo good
 #ORIGINAL_COLOR_MAP = {
   #    Colors.RED: (100, 60, 180),       # Softer Red V
   #    Colors.PINK: (180, 140, 255),     # Pink V

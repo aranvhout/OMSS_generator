@@ -1,16 +1,19 @@
 # omss
 
-**omss** is a Python package for generating matrix reasoning puzzles, inspired by Raven's Progressive Matrices, designed to assess fluid intelligence. It allows users to generate an unlimited number of customizable puzzles across a range of difficulty levels. 
+
+**omss** is a Python package for generating matrix reasoning puzzles, inspired by Raven's Progressive Matrices. It allows users to generate an unlimited number of customizable puzzles across a range of difficulty levels. Please check out the [`Documentation`](https://github.com/aranvhout/OMSS_generator/blob/main/tutorial.md) for more information. 
 
 
 ## Features
 
 - Customizable matrix reasoning puzzle generation
-- Adjustable difficulty via rule-based system
-- Tree-based distractor generation
 - Reproducibility with seed control
 - Colorblind-friendly visual design
-- 5 rule types: `constant`, `full_constant`, `distribute_three`, `progression`, `arithmetic`
+- 5 rule types: `distribute_three`, `progression`, `arithmetic`, `constant`, `full_constant`
+- Generate virtually unlimited unique puzzle variations
+- Includes ~80 predefined rule sets across 6 difficulty levels, which can combine to produce a huge variety of distinct puzzles
+
+  
 
 ## Installation 
 
@@ -22,9 +25,9 @@ pip install omss
 ```{python}
 #import statements
 import omss
-from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices, ruleset
 
-#the dictionary for the in which RuleTypes are coupled to AttributeTypes
+#define the rules for the puzzle
 rules = {
     'BigShape': [       
         Rule(Ruletype.DISTRIBUTE_THREE, AttributeType.SHAPE),
@@ -33,21 +36,20 @@ rules = {
         Rule(Ruletype.CONSTANT, AttributeType.NUMBER),
         Rule(Ruletype.FULL_CONSTANT, AttributeType.SIZE, value = 'medium')]}
     
-#create the matrices
-solution_matrix, problem_matrix = create_matrix(rules, save = False)
+#create the matrices and alternatives
+solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternatives =4, save = False)
 
-#plot the matrices
-plot_matrices(solution_matrix, problem_matrix)
+#plot the matrices and alternatives
+plot_matrices(solution_matrix, problem_matrix, alternatives)
 
-#save the matrices
-#
+
 ```
 
 ## Documentation
 For full examples and advanced usage, see the full tutorial and documentation: [`Tutorial and documentation`](https://github.com/aranvhout/OMSS_generator/blob/main/tutorial.md)
 
 ## License
-This project is licensed under the terms of the GNU license: ['LICENSE'](https://github.com/aranvhout/OMSS_generator/blob/main/LICENSE).
+This project is licensed under the terms of the GNU license: [LICENSE](https://github.com/aranvhout/OMSS_generator/blob/main/LICENSE).
 
 ## Acknowledgements
 This project was funded by the NWO Open Science grant ([OSF23.2.029](https://www.nwo.nl/en/projects/osf232029): *Open Matrices: A global, free resource for testing cognitive ability*) and the [Netherlands eScience Center fellowship](https://www.esciencecenter.nl/news/fellow-feature-nicholas-juud/) of Nicholas Judd.
