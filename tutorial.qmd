@@ -926,6 +926,7 @@ This function accepts three arguments:
 - `solution_matrix`: the full, completed matrix  
 - `problem_matrix`: the matrix with the final cell removed  
 - `alternatives` *(optional)*: a list of alternative matrices, if generated
+- `hide_solution`: default is `False`. If set to `True` the solution and alternatives will be shuffled before they are plotted. *Note: currently the dissimilarity information in the output file will be inaccurate if this is done.
 
 ##### Example 
 ```{python}

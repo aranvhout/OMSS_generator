@@ -251,7 +251,7 @@ def constant_rule(matrix, attribute_type, seed_list):
    n_values = len(values)
    
    for row in matrix:
-       constant_value, seed_value = random_choice(seed_list, values)
+       constant_value, seed_list = random_choice(seed_list, values)
        if n_values >=3: 
            values.remove (constant_value)# remove it so we get unique values for each row, only remove it when we the attribute does have 3 instances at least
         

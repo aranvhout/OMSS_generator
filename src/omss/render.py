@@ -436,8 +436,8 @@ def render_decagon(img, center, size, element):
 
 def render_circle(img, center, length, element):
     color = COLOR_MAP[element.color]
-    start_angle = ANGLE_MAP[element.angle] + 108 ##we need to offset it  to make the wedge center appear at the bottom, 90 +36/2
-    end_angle = start_angle + 324  # 360 - 36
+    start_angle = ANGLE_MAP[element.angle] + 99 ##we need to offset it  to make the wedge center appear at the bottom, 90 +18/2
+    end_angle = start_angle + 342  # 360 - 18
 
     # draw the filled arc
     cv2.ellipse(img, center, (int(length), int(length)), 0, start_angle, end_angle, color, -1)

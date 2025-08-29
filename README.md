@@ -2,7 +2,7 @@
 <img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/omss_logo.png" width="350">
 
 ## 
-**omss** is a Python package for generating matrix reasoning puzzles, inspired by Raven's Progressive Matrices. It allows users to generate an unlimited number of customizable puzzles across a range of difficulty levels by selecting and setting rules for visual elements. Please check out the [`Documentation`](https://github.com/aranvhout/OMSS_generator/blob/main/tutorial.md) for more information. 
+**omss** is a Python package for generating matrix reasoning puzzles, inspired by Raven's Progressive Matrices. It allows users to generate an unlimited number of customizable puzzles across a range of difficulty levels by setting rules for visual elements. Please check out the [`Documentation`](https://github.com/aranvhout/OMSS_generator/blob/main/tutorial.md) for more information. 
 
 
 ## Features
@@ -14,9 +14,9 @@
 - Generate virtually unlimited unique puzzle variations
 - Includes ~80 predefined rulesets across 6 difficulty levels, each of which can produce a huge variety of distinct puzzles
 
-<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/example1.png" width="260">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/example2.png" width="260">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/example3.png" width="260">
+<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/example1.png" width="230">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/example2.png" width="230">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/example3.png" width="230">
 
   
 
@@ -51,10 +51,10 @@ plot_matrices(solution_matrix, problem_matrix, alternatives)
 <img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/solution.png" width="260">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/problem_matrix.png" width="260">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/alternative_0.png" width="130">&nbsp;
-<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/alternative_1.png" width="130">&nbsp;
-<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/alternative_2.png" width="130">&nbsp;
-<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/alternative_3.png" width="130">&nbsp;
+<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/alternative_0.png" width="110">&nbsp;
+<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/alternative_1.png" width="110">&nbsp;
+<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/alternative_2.png" width="110">&nbsp;
+<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/alternative_3.png" width="110">&nbsp;
 
 
 ## Documentation
