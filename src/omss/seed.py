@@ -4,7 +4,7 @@ def seed_generator (seed_value):
     """creates a seed list based upon a seed value"""
     random.seed(seed_value)
     vector = list(range(99))
-    seed_list=random.choices(vector, k=500)#based on the seed,  250 random seeds are drawn from the vector and saved in the seed_list
+    seed_list=random.choices(vector, k=500)#based on the seed,  500 random seeds are drawn from the vector and saved in the seed_list
     random.seed(None)#reset the seed to be sure
     return seed_list
 

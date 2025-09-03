@@ -44,7 +44,8 @@ by the user with **Rules**.
 
 - **`rules`** (*required*, `dict`):  
   A dictionary containing both the `RuleType` and the `AttributeType` it
-  applies to.
+  applies to. This dictionairy is either specified by the user, or can
+  be imported from our standard rulesets.
 
 - **`alternatives`** (`int`, optional):  
   The number of alternatives to generate. Must be between 0 and 16 (can
@@ -84,15 +85,6 @@ by the user with **Rules**.
     in the user’s Documents directory.  
     Default: `None`.
 
-------------------------------------------------------------------------
-
-In the following sections, we will first cover the different **rules**,
-**elements**, and their **attributes**. Next, we’ll explain the process
-of **matrix generation**, the creation of **alternatives**, how
-**seeds** function, and finally, some additional **custom settings**.
-
-------------------------------------------------------------------------
-
 ## Installation and Basic Example
 
 OMSS can be installed using `pip`:
@@ -112,7 +104,7 @@ pip install .
 Once installed downloaded the following imports are required
 
 ``` python
-from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices, ruleset
 ```
 
 ##### Example
@@ -259,7 +251,7 @@ triangle, square, circle).
 
 ##### Example
 
-Until now, our puzzles have been fairly lackluster. By applying the
+Until now, our puzzles have been fairly simple. By applying the
 `DISTRIBUTE_THREE` rule, we can start creating puzzles with actual
 variation and a more complicated logical structure.
 
@@ -293,9 +285,9 @@ plot_matrices(solution_matrix, problem_matrix)
 It’s also possible to apply multiple `DISTRIBUTE_THREE` rules to
 different `AttributeTypes` within a single matrix. Building on the
 previous example, we now apply a `DISTRIBUTE_THREE` rule to both the
-shape and color attributes. This creates an even more varied and
-engaging puzzle by distributing three distinct shapes and three distinct
-colors across each row.
+shape and color attributes. This creates an even more difficulty puzzle
+by distributing three distinct shapes and three distinct colors across
+each row.
 
 ``` python
 import omss
@@ -332,8 +324,7 @@ to more complex shapes, allowing the rule to create a logical
 progression.
 
 `PROGRESSION` can be also applied to less intuitive attributes, such as
-color; however, doing so might produce less intuitive or meaningful
-results.
+color; however, doing so will produce less intuitive results.
 
 ##### Example
 
@@ -491,7 +482,7 @@ provides a detailed overview of each `element` and its associated
 `BigShape` supports the following `Attributetypes`:
 
 - **`SHAPE`**  
-  Defines the shapes of the BigShape object. There are currently six
+  Defines the shapes of the BigShape object. There are currently five
   shapes, ordered from least to most polygonal: `TRIANGLE`, `SQUARE`,
   `PENTAGON`, `SEPTAGON`, and `CIRCLE`.
 
@@ -558,7 +549,7 @@ following `Attributetypes`:
   Four values are available: `ONE`, `TWO`, `THREE`, and `FOUR`.
 
 - **`SHAPE`**  
-  Defines the shapes of the LittleShape object. There are currently six
+  Defines the shapes of the LittleShape object. There are currently five
   shapes, ordered from least to most polygonal: `TRIANGLE`, `SQUARE`,
   `PENTAGON`, `SEPTAGON`, and `CIRCLE`.
 
@@ -963,11 +954,11 @@ Voilà! The alternatives are now still modified in terms of
 `LITTLESHAPENUMBER`, as this attribute is governed by a `PROGRESSION`
 rule. However, since `COLOR` is now set to `FULL_CONSTANT`, it is less
 likely to be included as modification. Instead the program selects other
-available AttributeTypes—such as `SHAPE` or `ANGLE`.
+available AttributeTypes such as `SHAPE` or `ANGLE`.
 
-However, if you would increase the number of alternatives in the above
-example (for example to 32), at some point even the `AttributeTypes`
-goverend by `FULL_CONSTANT` will be modified!
+If you would increase the number of alternatives in the above example
+(for example to 32), at some point even the `AttributeTypes` goverend by
+`FULL_CONSTANT` will be modified!
 
 Alternative generation works in the same way for matrices consisting of
 multiple elements. Below we will create a matrix consisting of both a
@@ -1147,7 +1138,7 @@ plot_matrices(solution_matrix, problem_matrix, alternatives)
 It is also possible to set a seed for the alternatives **without setting
 a seed for the matrix**. In this case, the alternatives become more
 constrained: 1. Based on the same input matrix, the alternatives will
-always be the same—because the `alternative_seed` ensures deterministic
+always be the same because the `alternative_seed` ensures deterministic
 behavior. 2. However, since the matrix itself is randomly generated (due
 to the absence of a `seed` for the matrix), the input to the
 alternatives will vary between runs.
@@ -1192,13 +1183,12 @@ The process involves several steps:
 
     1.  A **random starting matrix** is generated, consisting of a 3 × 3
         grid of elements with random instances for the `AttributeTypes`.
-    2.  
-    3.  This matrix serves as the foundation for applying the specified
-        `RuleTypes` to each `AttributeType`.  
-        For instance, if the first element in a row is blue and the rule
-        specifies `CONSTANT` for the `COLOR` attribute, the entire row
-        will be assigned that same blue color.
-    4.  Each rule is applied in sequence until all defined attribute
+        1.  This matrix serves as the foundation for applying the
+            specified `RuleTypes` to each `AttributeType`.  
+            For instance, if the first element in a row is blue and the
+            rule specifies `CONSTANT` for the `COLOR` attribute, the
+            entire row will be assigned that same blue color.
+    2.  Each rule is applied in sequence until all defined attribute
         types have been processed.
         - **Note:** Any `AttributeType` without an explicitly defined
           `RuleType` will remain random, as the attributes in the
@@ -1258,6 +1248,10 @@ This function accepts three arguments:
 - `problem_matrix`: the matrix with the final cell removed  
 - `alternatives` *(optional)*: a list of alternative matrices, if
   generated
+- `hide_solution`: default is `False`. If set to `True` the solution and
+  alternatives will be shuffled before they are plotted. \*Note:
+  currently the dissimilarity information in the output file will be
+  inaccurate if this is done.
 
 ##### Example
 
@@ -1367,8 +1361,8 @@ print(output_file)
     }
 
     SEEDS
-    seed = 647193
-    alternative seed = 215078
+    seed = 738244
+    alternative seed = 143936
 
     ALTERNATIVES
     number of alternatives: 2

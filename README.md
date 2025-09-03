@@ -48,8 +48,8 @@ solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternative
 plot_matrices(solution_matrix, problem_matrix, alternatives)
 ```
 
-<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/solution.png" width="260">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/problem_matrix.png" width="260">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/solution.png" width="260">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 <img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/alternative_0.png" width="110">&nbsp;
 <img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/alternative_1.png" width="110">&nbsp;

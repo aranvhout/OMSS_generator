@@ -42,7 +42,7 @@ OMSS works with **elements** which are placed in 3 x 3 matrix. These elements ha
 #### Parameters
 
 - **`rules`** (*required*, `dict`):  
-  A dictionary containing both the `RuleType` and the `AttributeType` it applies to.
+  A dictionary containing both the `RuleType` and the `AttributeType` it applies to. This dictionairy is either specified by the user, or can be imported from our standard rulesets.
 
 - **`alternatives`** (`int`, optional):  
   The number of alternatives to generate. Must be between 0 and 16 (can be up to 32 depending on settings).  
@@ -76,11 +76,7 @@ OMSS works with **elements** which are placed in 3 x 3 matrix. These elements ha
   - If `None` and `save=True`, a folder named `OMSS_output` is created in the user’s Documents directory.  
   Default: `None`.
 
----
 
-In the following sections, we will first cover the different **rules**, **elements**, and their **attributes**. Next, we’ll explain the process of **matrix generation**, the creation of **alternatives**, how **seeds** function, and finally, some additional **custom settings**.
-
----
 
 ## Installation and Basic Example
 
@@ -101,7 +97,7 @@ pip install .
 Once installed downloaded the following imports are required
 
 ```{python}
-from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices
+from omss import Ruletype, AttributeType, Rule, create_matrix, plot_matrices, ruleset
 ```
 
 
@@ -208,7 +204,7 @@ plot_matrices(problem_matrix, solution_matrix)
 The `DISTRIBUTE_THREE` rule distributes **three distinct values** of an attribute across each row. For example, if the shape attribute uses this rule, each row will contain the same three different shapes (e.g., triangle, square, circle).
 
 ##### Example
-Until now, our puzzles have been fairly lackluster. By applying the `DISTRIBUTE_THREE` rule, we can start creating puzzles with actual variation and a more complicated logical structure.
+Until now, our puzzles have been fairly simple. By applying the `DISTRIBUTE_THREE` rule, we can start creating puzzles with actual variation and a more complicated logical structure.
 
 Let’s enhance the previous matrix by applying the `DISTRIBUTE_THREE` rule to the color attribute. This means each row will now contain three different colors, adding a more interesting pattern for the solver to detect.
 
@@ -232,7 +228,7 @@ solution_matrix, problem_matrix = create_matrix(rules, save = False)
 plot_matrices(solution_matrix, problem_matrix)
 ```
 
-It’s also possible to apply multiple `DISTRIBUTE_THREE` rules to different `AttributeTypes` within a single matrix. Building on the previous example, we now apply a `DISTRIBUTE_THREE` rule to both the shape and color attributes. This creates an even more varied and engaging puzzle by distributing three distinct shapes and three distinct colors across each row.
+It’s also possible to apply multiple `DISTRIBUTE_THREE` rules to different `AttributeTypes` within a single matrix. Building on the previous example, we now apply a `DISTRIBUTE_THREE` rule to both the shape and color attributes. This creates an even more difficulty puzzle by distributing three distinct shapes and three distinct colors across each row.
 
 ```{python}
 import omss
@@ -262,7 +258,7 @@ The `PROGRESSION` rule increases or decreases the value of an attribute across a
 
 Attributes are represented by classes that have a defined order. The `PROGRESSION` rule follows this order to modify attribute values step-by-step. For instance, the shape attribute is ordered from simpler to more complex shapes, allowing the rule to create a logical progression.
 
-`PROGRESSION` can be also applied to less intuitive attributes, such as color; however, doing so might produce less intuitive or meaningful results.
+`PROGRESSION` can be also applied to less intuitive attributes, such as color; however, doing so will produce less intuitive results.
 
 
 
@@ -384,7 +380,7 @@ As of yet OMSS supports three different elements. `BigShape`, `LittleShape` and 
 `BigShape` supports the following `Attributetypes`:
 
 - **`SHAPE`**  
-  Defines the shapes of the BigShape object. There are currently six shapes, ordered from least to most polygonal: `TRIANGLE`, `SQUARE`, `PENTAGON`, `SEPTAGON`, and `CIRCLE`.
+  Defines the shapes of the BigShape object. There are currently five shapes, ordered from least to most polygonal: `TRIANGLE`, `SQUARE`, `PENTAGON`, `SEPTAGON`, and `CIRCLE`.
 
 - **`COLOR`**  
   Specifies the color of the object. Eight color options are available: `BLUE`, `ORANGE`, `GREEN`, `BROWN`, `PURPLE`, `GRAY`, `RED`, and `YELLOW`. All hues have been selected to be colorblind-friendly.
@@ -430,7 +426,7 @@ plot_matrices(solution_matrix, problem_matrix)
   Indicates the number of `LittleShape` objects placed in a grid cell. Four values are available: `ONE`, `TWO`, `THREE`, and `FOUR`.
 
 - **`SHAPE`**  
-  Defines the shapes of the LittleShape object. There are currently six shapes, ordered from least to most polygonal: `TRIANGLE`, `SQUARE`, `PENTAGON`, `SEPTAGON`, and `CIRCLE`.
+  Defines the shapes of the LittleShape object. There are currently five shapes, ordered from least to most polygonal: `TRIANGLE`, `SQUARE`, `PENTAGON`, `SEPTAGON`, and `CIRCLE`.
 
 - **`COLOR`**  
   Specifies the color of the object. Eight color options are available: `BLUE`, `ORANGE`, `GREEN`, `BROWN`, `PURPLE`, `GRAY`, `RED`, and `YELLOW`. All hues have been selected to be colorblind-friendly.
@@ -725,9 +721,9 @@ solution_matrix, problem_matrix, alternatives = create_matrix(rules, alternative
 plot_matrices(solution_matrix, problem_matrix, alternatives)
 ```
 
-Voilà! The alternatives are now still modified in terms of `LITTLESHAPENUMBER`, as this attribute is governed by a `PROGRESSION` rule. However, since `COLOR` is now set to `FULL_CONSTANT`, it is less likely to be included as modification. Instead the program selects other available AttributeTypes—such as `SHAPE` or `ANGLE`.
+Voilà! The alternatives are now still modified in terms of `LITTLESHAPENUMBER`, as this attribute is governed by a `PROGRESSION` rule. However, since `COLOR` is now set to `FULL_CONSTANT`, it is less likely to be included as modification. Instead the program selects other available AttributeTypes such as `SHAPE` or `ANGLE`.
 
-However, if you would increase the number of alternatives in the above example (for example to 32), at some point even the `AttributeTypes` goverend by `FULL_CONSTANT` will be modified!
+If you would increase the number of alternatives in the above example (for example to 32), at some point even the `AttributeTypes` goverend by `FULL_CONSTANT` will be modified!
 
 Alternative generation works in the same way for matrices consisting of multiple elements. Below we will create a matrix consisting of both a `BigShape` and `Line` element
 
@@ -855,7 +851,7 @@ plot_matrices(solution_matrix, problem_matrix, alternatives)
 ```
 
 It is also possible to set a seed for the alternatives **without setting a seed for the matrix**. In this case, the alternatives become more constrained:
-1. Based on the same input matrix, the alternatives will always be the same—because the `alternative_seed` ensures deterministic behavior.
+1. Based on the same input matrix, the alternatives will always be the same because the `alternative_seed` ensures deterministic behavior.
 2. However, since the matrix itself is randomly generated (due to the absence of a `seed` for the matrix), the input to the alternatives will vary between runs.
 
 In essence, this means that for a given combination of rules and attribute types, the same internal logic will be used to generate the list of attributes that are modified in the alternatives. While the content of the matrix changes between runs, the way in which alternatives are built from it remains fixed. This allows for some consistency in how variation is introduced in the alternatives while still producing fresh matrices each time.
@@ -878,10 +874,9 @@ In this section, we explain some of the inner workings of the program, specifica
    Rules are processed separately for each element type (e.g., `BigShape`, `Line`, etc.). For each element type, the following steps are executed:
 
    1. A **random starting matrix** is generated, consisting of a 3 × 3 grid of elements with random instances for the `AttributeTypes`. 
-   2. 
-   3. This matrix serves as the foundation for applying the specified `RuleTypes` to each `AttributeType`.  
+      1. This matrix serves as the foundation for applying the specified `RuleTypes` to each `AttributeType`.  
       For instance, if the first element in a row is blue and the rule specifies `CONSTANT` for the `COLOR` attribute, the entire row will be assigned that same blue color.
-   4. Each rule is applied in sequence until all defined attribute types have been processed.
+   2. Each rule is applied in sequence until all defined attribute types have been processed.
       -  **Note:** Any `AttributeType` without an explicitly defined `RuleType` will remain random, as the attributes in the original starting matrix are also random.
 
     These steps are repeated until all element matrices are generated. The matrices are then saved in a dictionary and passed to the rendering module.

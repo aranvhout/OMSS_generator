@@ -386,7 +386,7 @@ def render_decagon(img, center, size, element):
     # shift the starting angle to a different point on the decagon
     base_angle = 0  
 
-    # Step 1: Define initial (unrotated) decagon points
+    # step 1: define initial (unrotated) decagon points
     C1 = [size * cos(base_angle + 2 * pi * 0 / 10), size * sin(base_angle + 2 * pi * 0 / 10)]
     C2 = [size * cos(base_angle + 2 * pi * 1 / 10), size * sin(base_angle + 2 * pi * 1 / 10)]
     C3 = [size * cos(base_angle + 2 * pi * 2 / 10), size * sin(base_angle + 2 * pi * 2 / 10)]

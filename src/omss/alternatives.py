@@ -213,7 +213,7 @@ a None value for a number field (which only happens in case of a layout) since m
                 i += 1
                 continue
 
-            continue  # Re-check this position
+            continue  
         i += 1
 
     # step 3: finally remove all instances of AttributeType.NUMBER from the list (diff between step 2 and 3 is, that we now also track the order of number attributes we removed)
