@@ -1009,7 +1009,8 @@ print(output_file)
 
 ## Acknowledgements
 
-This project was funded by the NWO Open Science grant (insert grantnumber and some more details).
+## Acknowledgements
+This project was funded by the NWO Open Science grant ([OSF23.2.029](https://www.nwo.nl/en/projects/osf232029): *Open Matrices: A global, free resource for testing cognitive ability*) and the [Netherlands eScience Center fellowship](https://www.esciencecenter.nl/news/fellow-feature-nicholas-juud/) of Nicholas Judd.
 
 The package itself was inspired in part by [`raven-gen`](https://github.com/shlomenu/raven-gen).  *Chi Zhang*, *Feng Gao*, *Baoxiong Jia*, *Yixin Zhu*, *Song-Chun Zhu* *Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2019*  
 

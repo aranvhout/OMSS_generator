@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "omss"
-version = "0.1.23"
+version = "0.1.0"
 description = "Python package for generating customizable matrix reasoning puzzles, inspired by Raven Progressive Matrices"
 readme = "README.md"
 license = { file = "LICENSE" }
