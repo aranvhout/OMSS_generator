@@ -1,3 +1,7 @@
+[![PyPi](https://img.shields.io/pypi/v/matplotlib)](https://pypi.org/project/matplotlib/)
+[![Downloads](https://img.shields.io/pypi/dm/omss)](https://pypi.org/project/omss)
+
+
 
 <img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/omss_logo.png" width="350">
 
