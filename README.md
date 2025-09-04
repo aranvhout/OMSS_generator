@@ -1,4 +1,4 @@
-[![PyPi](https://img.shields.io/pypi/v/matplotlib)](https://pypi.org/project/matplotlib/)
+[![PyPi](https://img.shields.io/pypi/v/omss)](https://pypi.org/project/omss/)
 [![Downloads](https://img.shields.io/pypi/dm/omss)](https://pypi.org/project/omss)
 
 
