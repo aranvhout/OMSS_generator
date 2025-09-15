@@ -1,5 +1,5 @@
 [![PyPi](https://img.shields.io/pypi/v/omss)](https://pypi.org/project/omss/)
-[//]: [![Downloads](https://img.shields.io/pypi/dw/omss)](https://pypi.org/project/omss)
+[//]: #[![Downloads](https://img.shields.io/pypi/dw/omss)](https://pypi.org/project/omss)
 
 
 
