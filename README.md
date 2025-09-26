@@ -1,6 +1,5 @@
 [![PyPi](https://img.shields.io/pypi/v/omss)](https://pypi.org/project/omss/)
-<!--- [![Downloads](https://img.shields.io/pypi/dw/omss)](https://pypi.org/project/omss) --->
-
+[![Downloads](https://img.shields.io/pypi/dm/omss)](https://pypi.org/project/omss)
 
 
 <img src="https://raw.githubusercontent.com/aranvhout/OMSS_generator/main/images/omss_logo.png" width="350">
